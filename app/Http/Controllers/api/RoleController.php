@@ -64,6 +64,7 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
+
         $this->roleService->deleteRole($id);
         return response()->json(['message' => 'Role deleted successfully']);
     }
