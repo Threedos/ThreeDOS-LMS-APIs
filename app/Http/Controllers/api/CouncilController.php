@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
-use App\Services\CouncilService;
+use App\Http\Requests\CouncilRequests\AllCouncilRequest;
+use App\Http\Requests\CouncilRequests\CouncilCreateRequest;
+use App\Services\CouncilService;    
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 
 
 class CouncilController extends Controller
 {
+        use AuthorizesRequests  ;
+
     protected $councilService;
 
     public function __construct(CouncilService $councilService)
@@ -21,26 +24,20 @@ class CouncilController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(AllCouncilRequest $request)
     {
-        return response()->json($this->councilService->getAllCouncils());
+        // return response()->json("hello");
+        // $this->authorize('viewAny', Council::class);
+
+        return response()->json($this->councilService->getAllCouncils($request));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CouncilCreateRequest $request)
     {
-        //
-        $validator = Validator::make($request->all(), [
-            'name' => 'required',
-            'description' => 'required',
-            // 'head_id' => 'required',
-            // 'instructor_id' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
-        }
+        
         $council = $this->councilService->createCouncil([
             'name' => $request->name,
             'description' => $request->description,

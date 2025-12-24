@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Str;
 class AuthService
 {
     public function login(array $credentials)
@@ -37,5 +37,32 @@ class AuthService
     public function logout($user)
     {
         $user->currentAccessToken()->delete();
+    }
+
+
+
+    public function SendVerificationEmail(User $user){
+        $user->currentAccessToken()->delete();
+        $user->currentAccessToken()->create([
+            'name' => 'auth-token',
+            'token' => Str::random(60),
+        ]);
+
+
+    }
+
+    public function VerifyEmail($email, $token){
+        $user = User::where('email', $email)->first();
+        if (!$user) {
+            return false;
+        }
+
+        if($token != $user->email_verification_token){
+            return false;
+        }
+
+        $user->email_verified_at = now();
+        $user->save();
+        return true;
     }
 }

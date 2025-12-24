@@ -16,8 +16,6 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('description');
-            $table->uuid('head_id')->nullable()->index();
-            $table->uuid('instructor_id')->nullable()->index();
             $table->timestamps();
         });
     }
@@ -27,6 +25,8 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('councils');
+        Schema::enableForeignKeyConstraints();
     }
 };

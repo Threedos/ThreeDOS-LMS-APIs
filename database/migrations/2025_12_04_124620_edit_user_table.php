@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             //
             // $table->string('id')->primary();
-           
+            $table->string('access_token')->nullable();
+            $table->boolean('revoked')->default(false);
             $table->foreignUuid('role_id')->references('id')->on('roles')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignUuid('council_id')->references('id')->on('councils')->cascadeOnDelete()->cascadeOnUpdate();
             

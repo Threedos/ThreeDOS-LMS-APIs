@@ -2,14 +2,20 @@
 
 namespace App\Repositories;
 
+use App\Http\Requests\CouncilRequests\AllCouncilRequest;
 use App\Interfaces\CouncilRepositoryInterface;
 use App\Models\Council;
 
 class CouncilRepository implements CouncilRepositoryInterface
 {
-    public function getAllCouncils()
+    public function getAllCouncils(AllCouncilRequest $request)
     {
-        return Council::all();
+        $Query = Council::query();
+
+if ($request->search) {
+            $Query->where('name', 'like', '%' . $request->search . '%');
+        }
+        return $Query->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex);
     }
 
     public function getCouncilById($councilId)

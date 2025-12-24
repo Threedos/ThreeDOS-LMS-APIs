@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable  implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable,HasUuids;
@@ -25,6 +26,10 @@ class User extends Authenticatable
         'email',
         'password',
         'role_id',
+        'council_id',
+        'access_token',
+        'revoked',
+
     ];
 
     /**
@@ -50,9 +55,30 @@ class User extends Authenticatable
         ];
     }
 
+
+  public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key-value array, containing any custom claims to be added to JWT
+     */
+    public function getJWTCustomClaims()
+    {
+        return [
+            'user_id' => $this->id,
+            'role_id' => $this->role_id,
+            'name' => $this->name,
+            'email' => $this->email,
+            'council_id' => $this->council_id,
+        ];
+    }
+
+
     public function role()
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsToOne(Role::class);
     }
 
     public function councils()

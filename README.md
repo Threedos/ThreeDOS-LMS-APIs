@@ -73,3 +73,30 @@ The API provides endpoints for managing the entities listed above. Standard CRUD
 *   `UserController`
 *   `TaskController`
 *   `TaskSubmissionController`
+
+## Error Handling
+
+This project implements a **Global Exception Handler** for API routes to ensure consistent JSON responses for errors.
+
+### Implementation Details:
+*   **Handler Class**: `app/Exceptions/ApiExceptionHandler.php`
+    *   This class intercepts exceptions thrown during request execution.
+    *   It maps specific exceptions (e.g., `ModelNotFoundException`, `AuthenticationException`, `ValidationException`) to appropriate HTTP status codes and custom JSON messages.
+*   **Registration**: The handler is registered in `bootstrap/app.php` using the `withExceptions` configuration method. It is configured to only handle exceptions for routes beginning with `api/*`.
+
+### Error Response Format:
+All API errors follow this JSON structure:
+
+```json
+{
+    "status": "error",
+    "message": "A descriptive error message",
+    "errors": { ... } // Optional: Validation errors if applicable
+}
+```
+
+### Supported Status Codes:
+*   **404 Not Found**: For non-existent resources or routes.
+*   **401 Unauthenticated**: For unauthorized access attempts.
+*   **422 Validation Error**: For invalid input data (includes an `errors` object).
+*   **500 Server Error**: For generic internal server errors (default).

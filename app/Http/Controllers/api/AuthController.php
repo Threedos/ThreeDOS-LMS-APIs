@@ -4,6 +4,9 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\AuthService;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 
 class AuthController extends Controller
@@ -19,27 +22,45 @@ class AuthController extends Controller
     {
         $credentials = $request->only('email', 'password');
 
-        $result = $this->authService->login($credentials);
+        $user = User::where('email', $credentials['email'])->first();
 
-        if ($result) {
-            return response()->json(['token' => $result['token']]);
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            return response()->json(['error' => 'Invalid credentials'], 401);
         }
 
-        return response()->json(['error' => 'Unauthorized'], 401);
+        // Create JWT token
+        $token = JWTAuth::fromUser($user);
+
+        // Store token in database
+        $user->update([
+            'access_token' => $token,
+            'revoked' => false,
+        ]);
+
+        return response()->json([
+            'access_token' => $token,
+            'expires_in' => JWTAuth::factory()->getTTL() * 60
+        ]);
     }
 
+    // Revoke token manually
     public function logout(Request $request)
     {
-        $this->authService->logout($request->user());
-        return response()->json(['message' => 'Logged out successfully']);
+        $user = auth()->user();
+        $user->update([
+            'revoked' => true,
+            'access_token' => null
+        ]);
+
+        return response()->json(['message' => 'Token revoked']);
     }
 
+    // public function register(Request $request)
+    // {
+    //     $result = $this->authService->register($request->all());
 
-    public function register(Request $request)
-    {
-        $result = $this->authService->register($request->all());
-
-        return response()->json(['token' => $result['token']]);
-    }
+    //     return response()->json(['token' => $result['token']]);
+    // }
+    
 
 }

@@ -9,16 +9,19 @@ use App\Http\Controllers\api\TaskSubmissionController;
 use App\Http\Controllers\api\CouncilController;
 
 
-
-
-//Routes
-
-Route::post('login', [AuthController::class, 'login']);
-Route::post('logout', [AuthController::class, 'logout']);
-Route::post('register', [AuthController::class, 'register']);
-
-Route::apiResource('roles', RoleController::class);
-Route::apiResource('councils', CouncilController::class);
-Route::apiResource('tasks', TaskController::class);
-Route::apiResource('task-submissions', TaskSubmissionController::class);
-Route::apiResource('users', UserController::class);
+    
+    //Routes
+    
+    Route::post('login', [AuthController::class, 'login'])->name('login');
+    Route::post('register', [AuthController::class, 'register']);
+    Route::apiResource('councils', CouncilController::class, ['only' => ['index', 'show']]);
+    
+    Route::middleware(['auth:api', 'throttle:api'])->group(function () {
+        Route::post('logout', [AuthController::class, 'logout']);
+        Route::apiResource('councils', CouncilController::class, ['only' => ['store', 'update', 'destroy']]);
+        Route::apiResource('users', UserController::class);
+        Route::apiResource('roles', RoleController::class);
+        Route::apiResource('tasks', TaskController::class);
+        Route::apiResource('task-submissions', TaskSubmissionController::class);
+    });
+    

@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Interfaces\CouncilRepositoryInterface;
-
+use App\Http\Requests\CouncilRequests\AllCouncilRequest;
 class CouncilService
 {
     protected $councilRepository;
@@ -13,9 +13,9 @@ class CouncilService
         $this->councilRepository = $councilRepository;
     }
 
-    public function getAllCouncils()
+    public function getAllCouncils(AllCouncilRequest $request)
     {
-        return $this->councilRepository->getAllCouncils();
+        return $this->councilRepository->getAllCouncils($request);
     }
 
     public function getCouncilById($councilId)
