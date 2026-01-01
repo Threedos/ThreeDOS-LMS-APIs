@@ -18,9 +18,9 @@ return new class extends Migration
             $table->foreignUuid('task_id')->references('id')->on('tasks')->onDelete('cascade');
             $table->foreignUuid('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('file');
-            $table->string('status');
-            $table->string('grade');
-            $table->string('comment');
+            $table->string('status')->default('Submitted');
+            $table->string('grade')->nullable();
+            $table->string('comment')->nullable();
             $table->foreignUuid('council_id')->references('id')->on('councils')->onDelete('cascade');
             $table->timestamps();
         });

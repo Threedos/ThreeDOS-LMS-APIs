@@ -20,6 +20,12 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('access_token')->nullable();
+            $table->boolean('revoked')->default(false);
+            $table->foreignUuid('role_id')->references('id')->on('roles')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignUuid('council_id')->references('id')->on('councils')->cascadeOnDelete()->cascadeOnUpdate();
+
+
             $table->rememberToken();
             $table->timestamps();
         });
@@ -45,6 +51,13 @@ return new class extends Migration
      */
     public function down(): void
     {
+    
+        Schema::table('users', function (Blueprint $table) {
+            //
+
+            $table->dropForeign(['role_id']);
+            $table->dropForeign(['council_id']);
+        });
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
