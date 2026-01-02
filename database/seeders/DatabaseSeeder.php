@@ -20,19 +20,22 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
 
+        if(Role::count() == 0){
         Role::create(['name' => 'Head']);
         Role::create(['name' => 'Instructor']);
         Role::create(['name' => 'Delegate']);
-
+        }
+        
+        if(Council::count() == 0){
         Council::create([
             'name' => 'Backend Development Council',
             'description' => 'Backend Development Council',
         ]);
+        }
 
 
 
-
-
+       
         User::create([
             'name' => 'Mohamed Tarek',
             'email' => fake()->email(),
@@ -41,7 +44,7 @@ class DatabaseSeeder extends Seeder
             'council_id' => Council::where('name', 'Backend Development Council')->first()->id,
         ]);
 
-
+     
 
 
     }
