@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
 
         User::create([
             'name' => 'Mohamed Tarek',
-            'email' => 'mohamedtarek@example.com',
+            'email' => fake()->email(),
             'password' => 'password',
             'role_id' => Role::where('name', 'Head')->first()->id,
             'council_id' => Council::where('name', 'Backend Development Council')->first()->id,
