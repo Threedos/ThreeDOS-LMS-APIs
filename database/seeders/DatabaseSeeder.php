@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,18 +21,20 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
 
-        if(Role::count() == 0){
-        Role::create(['name' => 'Head']);
-        Role::create(['name' => 'Instructor']);
-        Role::create(['name' => 'Delegate']);
-        }
-        
-        if(Council::count() == 0){
-        Council::create([
-            'name' => 'Backend Development Council',
-            'description' => 'Backend Development Council',
-        ]);
-        }
+               // Roles (run once)
+        $headRole = Role::firstOrCreate(['name' => 'Head']);
+        $instructorRole = Role::firstOrCreate(['name' => 'Instructor']);
+        $delegateRole = Role::firstOrCreate(['name' => 'Delegate']);
+
+        // Council (run once)
+        $backendCouncil = Council::firstOrCreate(
+            ['name' => 'Backend Development Council'],
+            ['description' => 'Backend Development Council']
+        );
+        $frontendCouncil = Council::firstOrCreate(
+            ['name' => 'Frontend Development Council'],
+            ['description' => 'Frontend Development Council']
+        );
 
 
 
@@ -39,12 +42,20 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Mohamed Tarek',
             'email' => fake()->email(),
-            'password' => 'password',
-            'role_id' => Role::where('name', 'Head')->first()->id,
-            'council_id' => Council::where('name', 'Backend Development Council')->first()->id,
+            'password' => Hash::make('password'),
+            'role_id' => $headRole->id,
+            'council_id' => $backendCouncil->id,
         ]);
 
-     
+        User::create([
+            'name' => 'John Doe',
+            'email' => fake()->email(),
+            'password' => Hash::make('password'),
+            'role_id' => $instructorRole->id,
+            'council_id' => $backendCouncil->id,
+        ]);
+
+        
 
 
     }
