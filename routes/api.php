@@ -13,7 +13,7 @@ use App\Http\Controllers\api\CouncilController;
 //Routes
 
 Route::post('login', [AuthController::class, 'login'])->name('login');
-Route::post('register', [AuthController::class, 'register']);
+// Route::post('register', [AuthController::class, 'register']);
 Route::apiResource('councils', CouncilController::class, ['only' => ['index', 'show']]);
 
 Route::middleware(['auth:api', 'throttle:api'])->group(function () {
