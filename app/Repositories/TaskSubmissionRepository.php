@@ -4,12 +4,41 @@ namespace App\Repositories;
 
 use App\Interfaces\TaskSubmissionRepositoryInterface;
 use App\Models\TaskSubmission;
-
+use Illuminate\Support\Facades\Auth;
 class TaskSubmissionRepository implements TaskSubmissionRepositoryInterface
 {
-    public function getAllTaskSubmissions()
+
+
+    private function baseQuery($taskSubmissionPaginatedRequest){
+     
+        $search = $taskSubmissionPaginatedRequest->search;
+        $filter = auth()->user()->council_id;
+        $query = TaskSubmission::query();
+        if ($search) {
+            $query->where('title', 'like', "%{$search}%");
+        }
+        if ($filter) {
+            $query->where('council_id', '=', $filter);
+        }
+        return $query;
+    }
+    public function getAllTaskSubmissionsForUser($taskSubmissionPaginatedRequest)
     {
-        return TaskSubmission::all();
+           $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
+        $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
+        $query = $this->baseQuery($taskSubmissionPaginatedRequest);
+        $query->where('user_id', '=', auth()->user()->id)->skip(($pageIndex - 1) * $pageSize)->take($pageSize);
+        return $query->get();
+    }
+
+
+     public function getAllTaskSubmissionsForCouncil($taskSubmissionPaginatedRequest)
+    {
+        $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
+        $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
+        $query = $this->baseQuery($taskSubmissionPaginatedRequest);
+        $query->skip(($pageIndex - 1) * $pageSize)->take($pageSize);
+        return $query->get();
     }
 
     public function getTaskSubmissionById($submissionId)

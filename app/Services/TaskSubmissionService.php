@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Interfaces\TaskSubmissionRepositoryInterface;
-
+use App\Http\Requests\TaskSubmissionRequests\TaskSubmissionPaginatedRequest;
 class TaskSubmissionService
 {
     protected $taskSubmissionRepository;
@@ -13,9 +13,14 @@ class TaskSubmissionService
         $this->taskSubmissionRepository = $taskSubmissionRepository;
     }
 
-    public function getAllTaskSubmissions()
+    public function getAllTaskSubmissionsForUser(TaskSubmissionPaginatedRequest $taskSubmissionPaginatedRequest)
     {
-        return $this->taskSubmissionRepository->getAllTaskSubmissions();
+        return $this->taskSubmissionRepository->getAllTaskSubmissionsForUser($taskSubmissionPaginatedRequest->all());
+    }
+
+    public function getAllTaskSubmissionsForCouncil(TaskSubmissionPaginatedRequest $taskSubmissionPaginatedRequest)
+    {
+        return $this->taskSubmissionRepository->getAllTaskSubmissionsForCouncil($taskSubmissionPaginatedRequest->all());
     }
 
     public function getTaskSubmissionById($submissionId)

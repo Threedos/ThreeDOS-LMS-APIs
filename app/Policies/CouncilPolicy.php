@@ -21,7 +21,8 @@ class CouncilPolicy
      */
     public function view(User $user, Council $council): bool
     {
-        return true;
+        // Users can view their own council
+        return $user->council_id === $council->id || $user->role->name === 'Head' || $user->role->name === 'Instructor';
     }
 
     /**
@@ -29,7 +30,11 @@ class CouncilPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === 'Instructor' || $user->role === 'Head';
+        // Only Head or Instructor can create? Actually, maybe only Admin?
+        // Assuming the prompt implies Head/Instructor manage things.
+        // Usually Council creation might be Super Admin or Head.
+        // Let's stick to user request: "Head, Instructor, Delegate(which only view most of models)"
+        return $user->role->name === 'Instructor' || $user->role->name === 'Head';
     }
 
     /**
@@ -37,7 +42,7 @@ class CouncilPolicy
      */
     public function update(User $user, Council $council): bool
     {
-        return ($user->role === 'Instructor' || $user->role === 'Head') && $user->council_id === $council->id;
+        return ($user->role->name === 'Instructor' || $user->role->name === 'Head') && $user->council_id === $council->id;
     }
 
     /**
@@ -45,7 +50,7 @@ class CouncilPolicy
      */
     public function delete(User $user, Council $council): bool
     {
-        return ($user->role === 'Instructor' || $user->role === 'Head') && $user->council_id === $council->id;
+        return ($user->role->name === 'Instructor' || $user->role->name === 'Head') && $user->council_id === $council->id;
     }
 
     /**
@@ -53,7 +58,7 @@ class CouncilPolicy
      */
     public function restore(User $user, Council $council): bool
     {
-        return ($user->role === 'Instructor' || $user->role === 'Head') && $user->council_id === $council->id;
+        return ($user->role->name === 'Instructor' || $user->role->name === 'Head') && $user->council_id === $council->id;
     }
 
     /**
@@ -61,6 +66,6 @@ class CouncilPolicy
      */
     public function forceDelete(User $user, Council $council): bool
     {
-        return ($user->role === 'Instructor' || $user->role === 'Head') && $user->council_id === $council->id;
+        return ($user->role->name === 'Instructor' || $user->role->name === 'Head') && $user->council_id === $council->id;
     }
 }

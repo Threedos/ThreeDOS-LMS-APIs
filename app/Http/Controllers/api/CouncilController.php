@@ -4,15 +4,16 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CouncilRequests\AllCouncilRequest;
 use App\Http\Requests\CouncilRequests\CouncilCreateRequest;
-use App\Services\CouncilService;    
+use App\Services\CouncilService;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Models\Council;
 
 
 
 class CouncilController extends Controller
 {
-        use AuthorizesRequests  ;
+    use AuthorizesRequests;
 
     protected $councilService;
 
@@ -27,7 +28,7 @@ class CouncilController extends Controller
     public function index(AllCouncilRequest $request)
     {
         // return response()->json("hello");
-        // $this->authorize('viewAny', Council::class);
+        $this->authorize('viewAny', Council::class);
 
         return response()->json($this->councilService->getAllCouncils($request));
     }
@@ -37,7 +38,7 @@ class CouncilController extends Controller
      */
     public function store(CouncilCreateRequest $request)
     {
-        
+        $this->authorize('create', Council::class);
         $council = $this->councilService->createCouncil([
             'name' => $request->name,
             'description' => $request->description,
@@ -53,6 +54,8 @@ class CouncilController extends Controller
      */
     public function show(string $id)
     {
+        $council = Council::findOrFail($id);
+        $this->authorize('view', $council);
         return response()->json($this->councilService->getCouncilById($id));
     }
 
@@ -61,6 +64,8 @@ class CouncilController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $council = Council::findOrFail($id);
+        $this->authorize('update', $council);
         $this->councilService->updateCouncil($id, $request->all());
         return response()->json(['message' => 'Council updated successfully']);
     }
@@ -70,6 +75,8 @@ class CouncilController extends Controller
      */
     public function destroy(string $id)
     {
+        $council = Council::findOrFail($id);
+        $this->authorize('delete', $council);
         $this->councilService->deleteCouncil($id);
         return response()->json(['message' => 'Council deleted successfully']);
     }

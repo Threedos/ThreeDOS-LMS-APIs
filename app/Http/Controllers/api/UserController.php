@@ -7,7 +7,9 @@ use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
+use App\Http\Requests\UserRequests\CreateUserRequest; 
+use App\Http\Requests\UserRequests\UpdateUserRequest; 
+use App\Http\Requests\PaginatedRequest;
 class UserController extends Controller
 {
     use AuthorizesRequests;
@@ -21,16 +23,16 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(PaginatedRequest $request)
     {
         $this->authorize('viewAny', User::class);
-        return response()->json($this->userService->getAllUsers());
+        return response()->json($this->userService->getAllUsers($request));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateUserRequest $request)
     {
         // return response()->json($request->all());
         $this->authorize('create', User::class);
@@ -50,7 +52,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateUserRequest $request, string $id)
     {
         $this->authorize('update', User::class);
         $this->userService->updateUser($id, $request->all());

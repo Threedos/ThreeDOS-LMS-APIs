@@ -4,12 +4,25 @@ namespace App\Repositories;
 
 use App\Interfaces\UserRepositoryInterface;
 use App\Models\User;
+use App\Http\Requests\PaginatedRequest;
 
 class UserRepository implements UserRepositoryInterface
 {
-    public function getAllUsers()
+    public function getAllUsers($request)
     {
-        return User::all();
+        $pageIndex = $request->pageIndex ?? 1;
+        $pageSize = $request->pageSize ?? 10;
+        $search = $request->search;
+        $sort = $request->sort;
+        $query = User::query();
+        if ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+        if ($sort) {
+            $query->orderBy($sort);
+        }
+        $query->skip(($pageIndex - 1) * $pageSize)->take($pageSize);
+        return $query->get();
     }
 
     public function getUserById($userId)

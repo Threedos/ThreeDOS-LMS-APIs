@@ -7,7 +7,7 @@ use App\Services\AuthService;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
-
+use App\Http\Requests\UserRequests\LoginRequest;
 
 class AuthController extends Controller
 {
@@ -18,7 +18,7 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
 
@@ -61,6 +61,6 @@ class AuthController extends Controller
 
     //     return response()->json(['token' => $result['token']]);
     // }
-    
+
 
 }

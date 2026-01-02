@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Interfaces\UserRepositoryInterface;
-
+use App\Http\Requests\PaginatedRequest;
 class UserService
 {
     protected $userRepository;
@@ -13,9 +13,9 @@ class UserService
         $this->userRepository = $userRepository;
     }
 
-    public function getAllUsers()
+    public function getAllUsers(PaginatedRequest $request)
     {
-        return $this->userRepository->getAllUsers();
+        return $this->userRepository->getAllUsers($request);
     }
 
     public function getUserById($userId)

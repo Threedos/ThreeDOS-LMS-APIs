@@ -7,7 +7,7 @@ use App\Policies\TaskPolicy;
 use App\Services\TaskService;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
+use App\Http\Requests\TaskRequests\TaskPaginatedRequest;
 class TaskController extends Controller
 {
     use AuthorizesRequests;
@@ -21,10 +21,10 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(TaskPaginatedRequest $request)
     {
-      
-        return response()->json($this->taskService->getAllTasks());
+        $this->authorize('viewAny', Task::class);
+        return response()->json($this->taskService->getAllTasks($request));
     }
 
     /**
@@ -42,7 +42,8 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        
+        $task = Task::findOrFail($id);
+        $this->authorize('view', $task);
         return response()->json($this->taskService->getTaskById($id));
     }
 
@@ -51,7 +52,8 @@ class TaskController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $this->authorize('update', Task::class);
+        $task = Task::findOrFail($id);
+        $this->authorize('update', $task);
         $this->taskService->updateTask($id, $request->all());
         return response()->json(['message' => 'Task updated successfully']);
     }
@@ -61,7 +63,8 @@ class TaskController extends Controller
      */
     public function destroy(string $id)
     {
-        $this->authorize('delete', Task::class);
+        $task = Task::findOrFail($id);
+        $this->authorize('delete', $task);
         $this->taskService->deleteTask($id);
         return response()->json(['message' => 'Task deleted successfully']);
     }

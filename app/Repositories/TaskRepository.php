@@ -7,9 +7,21 @@ use App\Models\Task;
 
 class TaskRepository implements TaskRepositoryInterface
 {
-    public function getAllTasks()
+    public function getAllTasks($request)
     {
-        return Task::all();
+        $pageIndex = $request->pageIndex ?? 1;
+        $pageSize = $request->pageSize ?? 10;
+        $search = $request->search;
+        $filter = $request->filter;
+        $query = Task::query();
+        if ($search) {
+            $query->where('title', 'like', "%{$search}%");
+        }
+        if ($filter) {
+            $query->where('council_id', '=', $filter);
+        }
+        $query->skip(($pageIndex - 1) * $pageSize)->take($pageSize);
+        return $query->get();
     }
 
     public function getTaskById($taskId)

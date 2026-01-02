@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Interfaces\TaskRepositoryInterface;
-
+use App\Http\Requests\TaskRequests\TaskPaginatedRequest;
 class TaskService
 {
     protected $taskRepository;
@@ -13,9 +13,9 @@ class TaskService
         $this->taskRepository = $taskRepository;
     }
 
-    public function getAllTasks()
+    public function getAllTasks(TaskPaginatedRequest $request)
     {
-        return $this->taskRepository->getAllTasks();
+        return $this->taskRepository->getAllTasks($request);
     }
 
     public function getTaskById($taskId)
