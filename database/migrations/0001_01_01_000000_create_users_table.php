@@ -10,7 +10,8 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+
+          Schema::create('users', function (Blueprint $table) {
 
 
             $table->uuid('id')->primary();
@@ -21,9 +22,7 @@ return new class extends Migration {
             $table->string('password');
             $table->text('access_token')->nullable();
             $table->boolean('revoked')->default(false);
-            $table->foreignUuid('role_id')->references('id')->on('roles')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignUuid('council_id')->references('id')->on('councils')->cascadeOnDelete()->cascadeOnUpdate();
-
+        
 
             $table->rememberToken();
             $table->timestamps();
