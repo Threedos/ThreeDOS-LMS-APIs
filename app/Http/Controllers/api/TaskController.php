@@ -8,6 +8,7 @@ use App\Services\TaskService;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\TaskRequests\TaskPaginatedRequest;
+use Illuminate\Support\Facades\Cache;
 class TaskController extends Controller
 {
     use AuthorizesRequests;
@@ -24,7 +25,19 @@ class TaskController extends Controller
     public function index(TaskPaginatedRequest $request)
     {
         $this->authorize('viewAny', Task::class);
-        return response()->json($this->taskService->getAllTasks($request));
+
+        $pageIndex = $request->input('pageIndex');
+        $pageSize = $request->input('pageSize');
+        $search = $request->input('search', '');
+        $filter = $request->input('filter', '');
+
+        $cacheKey = "tasks:page_{$pageIndex}:size_{$pageSize}:search_{$search}:filter_{$filter}";
+
+        $tasks = Cache::tags(['tasks'])->remember($cacheKey, 3600, function () use ($request) {
+            return $this->taskService->getAllTasks($request);
+        });
+
+        return response()->json($tasks);
     }
 
     /**
@@ -34,6 +47,7 @@ class TaskController extends Controller
     {
         $this->authorize('create', Task::class);
         $task = $this->taskService->createTask($request->all());
+        Cache::tags(['tasks'])->flush();
         return response()->json($task, 201);
     }
 
@@ -55,6 +69,7 @@ class TaskController extends Controller
         $task = Task::findOrFail($id);
         $this->authorize('update', $task);
         $this->taskService->updateTask($id, $request->all());
+        Cache::tags(['tasks'])->flush();
         return response()->json(['message' => 'Task updated successfully']);
     }
 
@@ -66,6 +81,7 @@ class TaskController extends Controller
         $task = Task::findOrFail($id);
         $this->authorize('delete', $task);
         $this->taskService->deleteTask($id);
+        Cache::tags(['tasks'])->flush();
         return response()->json(['message' => 'Task deleted successfully']);
     }
 }
