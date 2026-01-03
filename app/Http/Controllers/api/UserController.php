@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\UserRequests\CreateUserRequest;
 use App\Http\Requests\UserRequests\UpdateUserRequest;
 use App\Http\Requests\PaginatedRequest;
+use App\Http\Resources\UserResource;
 class UserController extends Controller
 {
     use AuthorizesRequests;
