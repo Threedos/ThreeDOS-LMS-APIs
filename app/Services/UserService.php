@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Interfaces\UserRepositoryInterface;
 use App\Http\Requests\PaginatedRequest;
+use App\Http\Resources\UserResource;
 class UserService
 {
     protected $userRepository;
@@ -20,7 +21,7 @@ class UserService
 
     public function getUserById($userId)
     {
-        return $this->userRepository->getUserById($userId);
+        return UserResource::make($this->userRepository->getUserById($userId));
     }
 
     public function createUser(array $userDetails)
