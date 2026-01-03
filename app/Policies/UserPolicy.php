@@ -15,7 +15,7 @@ class UserPolicy
         if (auth()->user()->role->name === 'Instructor' || auth()->user()->role->name === 'Head') {
             return true;
         }
-        return false;
+        return true;
     }
 
     /**
@@ -31,7 +31,10 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === 'Instructor' || $user->role === 'Head';
+        if (auth()->user()->role->name === 'Instructor' || auth()->user()->role->name === 'Head') {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -39,7 +42,10 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        return ($user->role->name === 'Instructor' || $user->role->name === 'Head') && $user->id === $model->id;
+        if (auth()->user()->role->name === 'Instructor' || auth()->user()->role->name === 'Head') {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -47,7 +53,10 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        return $user->role->name === 'Instructor' || $user->role->name === 'Head';
+        if (auth()->user()->role->name === 'Instructor' || auth()->user()->role->name === 'Head') {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -55,7 +64,10 @@ class UserPolicy
      */
     public function restore(User $user, User $model): bool
     {
-        return $user->role->name === 'Instructor' || $user->role->name === 'Head';
+        if (auth()->user()->role->name === 'Instructor' || auth()->user()->role->name === 'Head') {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -63,6 +75,9 @@ class UserPolicy
      */
     public function forceDelete(User $user, User $model): bool
     {
-        return $user->role->name === 'Instructor' || $user->role->name === 'Head';
+        if (auth()->user()->role->name === 'Instructor' || auth()->user()->role->name === 'Head') {
+            return true;
+        }
+        return false;
     }
 }
