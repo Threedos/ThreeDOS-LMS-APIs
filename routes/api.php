@@ -11,7 +11,9 @@ use App\Http\Controllers\api\CouncilController;
 
 
 //Routes
-
+Route::get('/instance', function () {
+    return response()->json(gethostname());
+});
 Route::post('login', [AuthController::class, 'login'])->name('login');
 // Route::post('register', [AuthController::class, 'register']);
 
