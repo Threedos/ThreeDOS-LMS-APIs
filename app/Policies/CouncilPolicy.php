@@ -22,7 +22,7 @@ class CouncilPolicy
     public function view(User $user, Council $council): bool
     {
         // Users can view their own council
-        return $user->council_id === $council->id || $user->role->name === 'Head' || $user->role->name === 'Instructor';
+        return true;
     }
 
     /**
