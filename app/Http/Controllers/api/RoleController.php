@@ -5,7 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Services\RoleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-
+use Illuminate\Support\Facades\Cache;
 
 class RoleController extends Controller
 {
@@ -21,7 +21,15 @@ class RoleController extends Controller
      */
     public function index()
     {
-        return response()->json($this->roleService->getAllRoles());
+          $roles = Cache::remember(
+        'roles:all',
+        now()->addHour(),
+        function () {
+            return $this->roleService->getAllRoles();
+        }
+    );
+
+    return response()->json($roles);
     }
 
     /**
