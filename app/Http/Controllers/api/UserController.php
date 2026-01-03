@@ -46,9 +46,9 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $this->authorize('viewAny', User::class);
-
         $userModel = $this->userService->getUserById($id);
+        $this->authorize('view', $userModel);
+
 
         return response()->json($userModel);
     }
