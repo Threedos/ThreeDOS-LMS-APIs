@@ -7,8 +7,8 @@ use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use App\Http\Requests\UserRequests\CreateUserRequest; 
-use App\Http\Requests\UserRequests\UpdateUserRequest; 
+use App\Http\Requests\UserRequests\CreateUserRequest;
+use App\Http\Requests\UserRequests\UpdateUserRequest;
 use App\Http\Requests\PaginatedRequest;
 class UserController extends Controller
 {
@@ -25,8 +25,8 @@ class UserController extends Controller
      */
     public function index(PaginatedRequest $request)
     {
-        $this->authorize('viewAny', User::class);
-        
+        // $this->authorize('viewAny', User::class);
+
         return response()->json($this->userService->getAllUsers($request));
     }
 
@@ -46,11 +46,11 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-      $this->authorize('viewAny', User::class);
+        $this->authorize('viewAny', User::class);
 
-    $userModel = $this->userService->getUserById($id);
+        $userModel = $this->userService->getUserById($id);
 
-    return response()->json($userModel);
+        return response()->json($userModel);
     }
 
     /**
