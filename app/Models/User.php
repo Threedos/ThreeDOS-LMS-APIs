@@ -10,10 +10,10 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use SensitiveParameterValue;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable  implements JWTSubject
+class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable,HasUuids;
+    use HasFactory, Notifiable, HasUuids;
 
     /**
      * The attributes that are mass assignable.
@@ -60,7 +60,7 @@ class User extends Authenticatable  implements JWTSubject
     }
 
 
-  public function getJWTIdentifier()
+    public function getJWTIdentifier()
     {
         return $this->getKey();
     }
@@ -85,7 +85,7 @@ class User extends Authenticatable  implements JWTSubject
         return $this->belongsTo(Role::class);
     }
 
-    public function councils()
+    public function council()
     {
         return $this->belongsTo(Council::class);
     }
