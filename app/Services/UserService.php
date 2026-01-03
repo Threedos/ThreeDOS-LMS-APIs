@@ -16,12 +16,12 @@ class UserService
 
     public function getAllUsers(PaginatedRequest $request)
     {
-        return UserResource::collection($this->userRepository->getAllUsers($request));
+        return $this->userRepository->getAllUsers($request);
     }
 
     public function getUserById($userId)
     {
-        return UserResource::make($this->userRepository->getUserById($userId));
+        return $this->userRepository->getUserById($userId);
     }
 
     public function createUser(array $userDetails)
