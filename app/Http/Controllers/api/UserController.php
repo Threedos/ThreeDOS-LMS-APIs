@@ -33,10 +33,13 @@ class UserController extends Controller
         $pageSize = $request->input('pageSize');
         $search = $request->input('search', '');
         $cacheKey = "users:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
-        $users = Cache::tags(['users'])->remember($cacheKey, 3600, function () use ($request) {
-            return UserResource::collection($this->userService->getAllUsers($request));
-        });
-        return $users;
+       
+       if(Cache::has($cacheKey)) {
+           return response()->json(Cache::get($cacheKey));
+       }
+       $users = UserResource::collection($this->userService->getAllUsers($request));
+       Cache::put($cacheKey, $users, 3600);
+       return $users;
     }
 
     /**
@@ -62,7 +65,7 @@ class UserController extends Controller
 
         $userModel = $this->userService->getUserById($id);
         $this->authorize('view', $userModel);
-        Cache::tags(['users'])->put($cacheKey, $userModel, 3600);
+        Cache::put($cacheKey, $userModel, 3600);
         return UserResource::make($userModel);
     }
 
