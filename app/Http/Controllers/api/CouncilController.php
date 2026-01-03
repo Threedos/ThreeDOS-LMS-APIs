@@ -67,8 +67,8 @@ class CouncilController extends Controller
      */
     public function show(string $id)
     {
-        // $council = Council::findOrFail($id);
-        $this->authorize('view', Council::class);
+        $council = Council::findOrFail($id);
+        $this->authorize('view', $council);
         return response()->json($this->councilService->getCouncilById($id));
     }
 
