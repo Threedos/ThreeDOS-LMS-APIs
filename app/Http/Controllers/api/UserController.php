@@ -25,7 +25,7 @@ class UserController extends Controller
      */
     public function index(PaginatedRequest $request)
     {
-        // $this->authorize('viewAny', User::class);
+        $this->authorize('viewAny', User::class);
 
         return response()->json($this->userService->getAllUsers($request));
     }
