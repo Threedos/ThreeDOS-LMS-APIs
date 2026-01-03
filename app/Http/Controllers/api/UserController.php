@@ -11,6 +11,7 @@ use App\Http\Requests\UserRequests\CreateUserRequest;
 use App\Http\Requests\UserRequests\UpdateUserRequest;
 use App\Http\Requests\PaginatedRequest;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Cache;
 class UserController extends Controller
 {
     use AuthorizesRequests;
@@ -26,9 +27,16 @@ class UserController extends Controller
      */
     public function index(PaginatedRequest $request)
     {
-        $this->authorize('viewAny', User::class);
 
-        return UserResource::collection($this->userService->getAllUsers($request));
+        $this->authorize('viewAny', User::class);
+        $pageIndex = $request->input('pageIndex');
+        $pageSize = $request->input('pageSize');
+        $search = $request->input('search', '');
+        $cacheKey = "users:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
+        $users = Cache::tags(['users'])->remember($cacheKey, 3600, function () use ($request) {
+            return UserResource::collection($this->userService->getAllUsers($request));
+        });
+        return $users;
     }
 
     /**
@@ -47,9 +55,14 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
+        $cacheKey = "user:{$id}";
+        if(Cache::has($cacheKey)) {
+            return response()->json(Cache::get($cacheKey));
+        }
+
         $userModel = $this->userService->getUserById($id);
         $this->authorize('view', $userModel);
-
+        Cache::tags(['users'])->put($cacheKey, $userModel, 3600);
         return UserResource::make($userModel);
     }
 

@@ -8,7 +8,7 @@ use App\Services\CouncilService;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\Council;
-// use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Cache;
 
 
 
@@ -35,11 +35,11 @@ class CouncilController extends Controller
         $pageSize = $request->input('pageSize');
         $search = $request->input('search', '');
 
-        // $cacheKey = "councils:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
+        $cacheKey = "councils:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
 
-        // $councils = Cache::tags(['councils'])->remember($cacheKey, 3600, function () use ($request) {
-        //     return $this->councilService->getAllCouncils($request);
-        // });
+        $councils = Cache::tags(['councils'])->remember($cacheKey, 3600, function () use ($request) {
+            return $this->councilService->getAllCouncils($request);
+        });
         $councils = $this->councilService->getAllCouncils($request);
         return response()->json($councils);
     }
@@ -67,6 +67,11 @@ class CouncilController extends Controller
      */
     public function show(string $id)
     {
+        $cacheKey = "council:{$id}";
+        if(Cache::has($cacheKey)) {
+            return response()->json(Cache::get($cacheKey));
+        }
+
         $council = Council::findOrFail($id);
         $this->authorize('view', $council);
         return response()->json($this->councilService->getCouncilById($id));
@@ -89,6 +94,7 @@ class CouncilController extends Controller
      */
     public function destroy(string $id)
     {
+        Cache::forget('council:' . $id);
         // $council = Council::findOrFail($id);
         $this->authorize('delete', Council::class);
         $this->councilService->deleteCouncil($id);

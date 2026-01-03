@@ -55,7 +55,14 @@ class RoleController extends Controller
      */
     public function show(string $id)
     {
-        return response()->json($this->roleService->getRoleById($id));
+        $role = Cache::remember(
+            'role:' . $id,
+            now()->addHour(),
+            function () use ($id) {
+                return $this->roleService->getRoleById($id);
+            }
+        );
+        return response()->json($role);
     }
 
     /**
@@ -63,7 +70,8 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-    
+        Cache::forget('role:' . $id);
+        Cache::forget('roles:all');
         $this->roleService->updateRole($id, $request->all());
         return response()->json(['message' => 'Role updated successfully']);
     }
@@ -73,7 +81,8 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
-
+        Cache::forget('role:' . $id);
+        Cache::forget('roles:all');
         $this->roleService->deleteRole($id);
         return response()->json(['message' => 'Role deleted successfully']);
     }
