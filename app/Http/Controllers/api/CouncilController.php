@@ -67,8 +67,8 @@ class CouncilController extends Controller
      */
     public function show(string $id)
     {
-        $council = Council::findOrFail($id);
-        $this->authorize('view', $council);
+        // $council = Council::findOrFail($id);
+        $this->authorize('view', Council::class);
         return response()->json($this->councilService->getCouncilById($id));
     }
 
@@ -77,8 +77,8 @@ class CouncilController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $council = Council::findOrFail($id);
-        $this->authorize('update', $council);
+        // $council = Council::findOrFail($id);
+        $this->authorize('update', Council::class);
         $this->councilService->updateCouncil($id, $request->all());
         // Cache::tags(['councils'])->flush();
         return response()->json(['message' => 'Council updated successfully']);
@@ -89,8 +89,8 @@ class CouncilController extends Controller
      */
     public function destroy(string $id)
     {
-        $council = Council::findOrFail($id);
-        $this->authorize('delete', $council);
+        // $council = Council::findOrFail($id);
+        $this->authorize('delete', Council::class);
         $this->councilService->deleteCouncil($id);
         // Cache::tags(['councils'])->flush();
         return response()->json(['message' => 'Council deleted successfully']);
