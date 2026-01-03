@@ -11,10 +11,7 @@ class PaginatedRequest extends FormRequest
      */
     public function authorize(): bool
     {
- if ($this->user()->role->name === 'Head' || $this->user()->role->name === 'Instructor') {
-            return true;
-        }
-        return false;
+        return true;
     }
 
     /**
