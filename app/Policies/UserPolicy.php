@@ -12,8 +12,10 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-       
-      return true;
+        if (auth()->user()->role->name === 'Instructor' || auth()->user()->role->name === 'Head') {
+            return true;
+        }
+        return false;
     }
 
     /**
