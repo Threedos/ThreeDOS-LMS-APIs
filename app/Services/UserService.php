@@ -21,7 +21,7 @@ class UserService
 
     public function getUserById($userId)
     {
-        return $this->userRepository->getUserById($userId);
+        return UserResource::make($this->userRepository->getUserById($userId));
     }
 
     public function createUser(array $userDetails)
