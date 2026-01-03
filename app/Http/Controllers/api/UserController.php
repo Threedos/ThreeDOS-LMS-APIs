@@ -49,8 +49,7 @@ class UserController extends Controller
         $userModel = $this->userService->getUserById($id);
         $this->authorize('view', $userModel);
 
-
-        return response()->json($userModel);
+        return UserResource::make($userModel);
     }
 
     /**
