@@ -58,7 +58,9 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, string $id)
     {
-        $this->authorize('update', User::class);
+        $userModel = $this->userService->getUserById($id);
+        $this->authorize('update', $userModel);
+
         $this->userService->updateUser($id, $request->all());
         return response()->json(['message' => 'User updated successfully']);
     }
@@ -68,7 +70,9 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        $this->authorize('delete', User::class);
+        $userModel = $this->userService->getUserById($id);
+        $this->authorize('delete', $userModel);
+
         $this->userService->deleteUser($id);
         return response()->json(['message' => 'User deleted successfully']);
     }
