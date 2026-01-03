@@ -28,7 +28,7 @@ class UserController extends Controller
     {
         $this->authorize('viewAny', User::class);
 
-        return response()->json($this->userService->getAllUsers($request));
+        return UserResource::collection($this->userService->getAllUsers($request));
     }
 
     /**
