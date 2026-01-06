@@ -13,8 +13,9 @@ class TaskSubmissionRepository implements TaskSubmissionRepositoryInterface
 {
 
 
-    private function baseQuery($taskSubmissionPaginatedRequest){
-     
+    private function baseQuery($taskSubmissionPaginatedRequest)
+    {
+
         $search = $taskSubmissionPaginatedRequest->search ?? null;
         $filter = auth()->user()->council_id ?? null;
         $query = TaskSubmission::query();
@@ -28,7 +29,7 @@ class TaskSubmissionRepository implements TaskSubmissionRepositoryInterface
     }
     public function getAllTaskSubmissionsForUser($taskSubmissionPaginatedRequest)
     {
-           $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
+        $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
         $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
         $query = $this->baseQuery($taskSubmissionPaginatedRequest);
         $query->where('user_id', '=', auth()->user()->id)->skip(($pageIndex - 1) * $pageSize)->take($pageSize);
@@ -36,7 +37,7 @@ class TaskSubmissionRepository implements TaskSubmissionRepositoryInterface
     }
 
 
-     public function getAllTaskSubmissionsForCouncil($taskSubmissionPaginatedRequest)
+    public function getAllTaskSubmissionsForCouncil($taskSubmissionPaginatedRequest)
     {
         $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
         $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
@@ -52,7 +53,13 @@ class TaskSubmissionRepository implements TaskSubmissionRepositoryInterface
 
     public function createTaskSubmission(array $submissionDetails)
     {
-        return TaskSubmission::create($submissionDetails);
+        return TaskSubmission::create([
+            'task_id' => $submissionDetails['task_id'],
+            'user_id' => $submissionDetails['user_id'],
+            'file' => $submissionDetails['file'],
+            'status' => $submissionDetails['status'],
+            'council_id' => $submissionDetails['council_id'],
+        ]);
     }
 
     public function updateTaskSubmission($submissionId, array $newDetails)
