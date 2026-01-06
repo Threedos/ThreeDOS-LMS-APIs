@@ -12,7 +12,7 @@ class TaskSubmissionRepository implements TaskSubmissionRepositoryInterface
     private function baseQuery($taskSubmissionPaginatedRequest){
      
         $search = $taskSubmissionPaginatedRequest->search ?? null;
-        $filter = auth()->user()->council_id;
+        $filter = auth()->user()->council_id ?? null;
         $query = TaskSubmission::query();
         if ($search) {
             $query->where('title', 'like', "%{$search}%");
