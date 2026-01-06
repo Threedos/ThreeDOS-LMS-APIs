@@ -47,6 +47,7 @@ class RoleController extends Controller
         $role = $this->roleService->createRole([
             "name" => $request->name,
         ]);
+        Cache::forget('roles:all');
         return response()->json($role, 201);
     }
 
