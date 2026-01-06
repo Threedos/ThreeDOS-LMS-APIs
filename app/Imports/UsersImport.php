@@ -38,7 +38,7 @@ class UsersImport implements ToCollection, WithHeadingRow
                 }
             }   
 
-            User::create([
+            User::firstOrCreate([
                 'name' => $row['name'],
                 'email' => $row['email'],
                 'password' => isset($row['password']) ? Hash::make($row['password']) : Hash::make('12345678'),
