@@ -40,7 +40,7 @@ class TaskSubmissionPolicy
     public function create(User $user): bool
     {
         // Delegate can submit task (create submission)
-        return $user->role->name === 'Delegate' && $user->council_id !== null;
+        return ($user->role->name === 'Delegate' || $user->role->name === 'Instructor' || $user->role->name === 'Head') && $user->council_id !== null ;
     }
 
     /**
