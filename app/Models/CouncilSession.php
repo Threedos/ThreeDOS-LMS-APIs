@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Session extends Model
+class CouncilSession extends Model
 {
     /** @use HasFactory<\Database\Factories\SessionFactory> */
     use HasFactory;
-    protected $table = 'sessions';
+    protected $table = 'Council_sessions';
     protected $keyType = 'string';
     protected $primaryKey = 'id';
     protected $incrementing = false;

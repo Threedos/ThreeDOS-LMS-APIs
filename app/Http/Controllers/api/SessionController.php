@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SessionRequests\StoreSessionRequest;
 use App\Http\Requests\SessionRequests\UpdateSessionRequest;
-use App\Models\Session;
+use App\Models\CouncilSession;
 use App\Http\Resources\SessionResource;
 use App\Http\Requests\SessionRequests\PaginatedSessionRequest;
 
@@ -17,7 +17,7 @@ class SessionController extends Controller
     {
         //
         $council_id = $request->user()->council_id;
-        $baseQuery= Session::query();
+        $baseQuery= CouncilSession::query();
         $baseQuery= $baseQuery->where('council_id',$council_id);
         if ($request->search) {
             $baseQuery= $baseQuery->where('title','like',"%{$request->search}%");
@@ -34,7 +34,7 @@ class SessionController extends Controller
     public function store(StoreSessionRequest $request)
     {
         //  
-        $session = Session::create($request->validated());
+        $session = CouncilSession::create($request->validated());
         return response()->json($session, 201);
     }
 
@@ -44,7 +44,7 @@ class SessionController extends Controller
     public function show(string $id)
     {
         //
-        $session = Session::findOrFail($id);
+        $session = CouncilSession::findOrFail($id);
         return response()->json($session);
     }
 
@@ -55,7 +55,7 @@ class SessionController extends Controller
     public function update(UpdateSessionRequest $request, string $id)
     {
         //
-        $session = Session::findOrFail($id);
+        $session = CouncilSession::findOrFail($id);
         $session->update($request->validated());
         return response()->json($session);
     }
@@ -66,7 +66,7 @@ class SessionController extends Controller
     public function destroy(string $id)
     {
         //
-        $session = Session::findOrFail($id);
+        $session = CouncilSession::findOrFail($id);
         $session->delete();
         return response()->json(null, 204);
     }
