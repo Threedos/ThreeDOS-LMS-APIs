@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Http\Requests\UserRequests;
+namespace App\Http\Requests\AttendanceRequests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-
-class BulkCreateUserRequest extends FormRequest
+class UpdateAttendanceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +22,10 @@ class BulkCreateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => 'required|file|mimes:xlsx,xls,csv',
+            //
+            'user_id' => 'required|exists:users,id',
+            'session_id' => 'required|exists:sessions,id',
+            'status' => 'required|in:present,absent,late',
         ];
     }
 }

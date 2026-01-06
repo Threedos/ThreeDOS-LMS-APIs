@@ -1,18 +1,17 @@
 <?php
 
-namespace App\Http\Requests\UserRequests;
+namespace App\Http\Requests\SessionRequests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-
-class BulkCreateUserRequest extends FormRequest
+class PaginatedSessionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        return false;
     }
 
     /**
@@ -23,7 +22,11 @@ class BulkCreateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => 'required|file|mimes:xlsx,xls,csv',
+            //
+            'pageIndex' => 'nullable|integer',
+            'pageSize' => 'nullable|integer',
+            'search' => 'nullable|string',
+            
         ];
     }
 }

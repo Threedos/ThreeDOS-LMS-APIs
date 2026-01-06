@@ -7,7 +7,8 @@ use App\Http\Controllers\api\UserController;
 use App\Http\Controllers\api\TaskController;
 use App\Http\Controllers\api\TaskSubmissionController;
 use App\Http\Controllers\api\CouncilController;
-
+use App\Http\Controllers\api\SessionController;
+use App\Http\Controllers\api\AttendanceController;
 
 
 //Routes
@@ -28,6 +29,9 @@ Route::middleware(['auth:api', 'throttle:api'])->group(function () {
         'task-submissions/user',
         [TaskSubmissionController::class, 'GetAllTaskSubmissionsForUser']
     );
+    Route::apiResource('sessions', SessionController::class);
+    Route::apiResource('attendances', AttendanceController::class);
+    
     
     Route::apiResource('task-submissions', TaskSubmissionController::class);
 });
