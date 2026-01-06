@@ -1,10 +1,22 @@
 #!/bin/bash
 set -e
 
-# Clear caches at runtime (Redis must be running)
-php artisan config:clear
-php artisan cache:clear
-php artisan route:clear
+echo "Starting Laravel application..."
+
+# Wait for database to be ready (optional but helpful)
+php artisan db:show 2>/dev/null || sleep 5
+
+# Run migrations
+echo "Running migrations..."
+php artisan migrate --force
+
+# Clear and cache configs
+echo "Optimizing application..."
+php artisan optimize:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
 
 # Start Laravel server
-php artisan serve --host=0.0.0.0 --port=8000
+echo "Starting web server on port 8000..."
+exec php artisan serve --host=0.0.0.0 --port=8000
