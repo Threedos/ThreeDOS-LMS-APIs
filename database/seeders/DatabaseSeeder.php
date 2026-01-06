@@ -28,12 +28,12 @@ class DatabaseSeeder extends Seeder
 
         // Council (run once)
         $backendCouncil = Council::firstOrCreate(
-            ['name' => 'Backend Development Council'],
-            ['description' => 'Backend Development Council']
+            ['name' => 'Backend Development Council'
+            ,'description' => 'Backend Development Council']
         );
         $frontendCouncil = Council::firstOrCreate(
-            ['name' => 'Frontend Development Council'],
-            ['description' => 'Frontend Development Council']
+            ['name' => 'Frontend Development Council'
+            ,'description' => 'Frontend Development Council']
         );
 
 
@@ -55,8 +55,14 @@ class DatabaseSeeder extends Seeder
             'council_id' => $frontendCouncil->id,
         ]);
 
-            
 
+        User::firstOrCreate([
+              'name' => 'John Doe',
+            'email' => fake()->email(),
+            'password' => Hash::make('password'),
+            'role_id' => $delegateRole->id,
+            'council_id' => $frontendCouncil->id,
+        ]);
 
     }
 }
