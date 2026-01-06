@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -11,30 +10,18 @@ return new class extends Migration
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        Schema::table('tasksubmissions', function (Blueprint $table) {
-            // Only add 'id' if it does not exist
-            if (!Schema::hasColumn('tasksubmissions', 'id')) {
-                $table->uuid('id')->first();
-            }
-        });
-
-        // Drop old primary key if exists
-        $sm = Schema::getConnection()->getDoctrineSchemaManager();
-        $indexes = $sm->listTableIndexes('tasksubmissions');
-        if (isset($indexes['PRIMARY'])) {
+        // Only add 'id' column if it doesn't exist
+        if (!Schema::hasColumn('tasksubmissions', 'id')) {
             Schema::table('tasksubmissions', function (Blueprint $table) {
-                $table->dropPrimary(['task_id', 'user_id']);
+                $table->uuid('id')->first();
             });
         }
 
-        // Make 'id' the primary key if not already
-        Schema::table('tasksubmissions', function (Blueprint $table) {
-            $sm = Schema::getConnection()->getDoctrineSchemaManager();
-            $indexes = $sm->listTableIndexes('tasksubmissions');
-            if (!isset($indexes['PRIMARY'])) {
-                $table->primary('id');
-            }
-        });
+        // Drop old primary key safely
+        DB::statement('ALTER TABLE tasksubmissions DROP PRIMARY KEY');
+
+        // Make 'id' the primary key
+        DB::statement('ALTER TABLE tasksubmissions ADD PRIMARY KEY (id)');
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
@@ -43,13 +30,9 @@ return new class extends Migration
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        Schema::table('tasksubmissions', function (Blueprint $table) {
-            if (Schema::hasColumn('tasksubmissions', 'id')) {
-                $table->dropPrimary(['id']);
-                $table->dropColumn('id');
-                $table->primary(['task_id', 'user_id']);
-            }
-        });
+        DB::statement('ALTER TABLE tasksubmissions DROP PRIMARY KEY');
+        DB::statement('ALTER TABLE tasksubmissions ADD PRIMARY KEY (task_id, user_id)');
+        DB::statement('ALTER TABLE tasksubmissions DROP COLUMN id');
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
