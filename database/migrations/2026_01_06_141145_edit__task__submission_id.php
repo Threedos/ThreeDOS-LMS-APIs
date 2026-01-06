@@ -9,25 +9,33 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Disable foreign key checks temporarily
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        // 1️⃣ Add new 'id' column (UUID) first
         Schema::table('tasksubmissions', function (Blueprint $table) {
-            $table->uuid('id')->first(); // adds new column
+            // Only add 'id' if it does not exist
+            if (!Schema::hasColumn('tasksubmissions', 'id')) {
+                $table->uuid('id')->first();
+            }
         });
 
-        // 2️⃣ Drop old primary key
+        // Drop old primary key if exists
+        $sm = Schema::getConnection()->getDoctrineSchemaManager();
+        $indexes = $sm->listTableIndexes('tasksubmissions');
+        if (isset($indexes['PRIMARY'])) {
+            Schema::table('tasksubmissions', function (Blueprint $table) {
+                $table->dropPrimary(['task_id', 'user_id']);
+            });
+        }
+
+        // Make 'id' the primary key if not already
         Schema::table('tasksubmissions', function (Blueprint $table) {
-            $table->dropPrimary(['task_id', 'user_id']);
+            $sm = Schema::getConnection()->getDoctrineSchemaManager();
+            $indexes = $sm->listTableIndexes('tasksubmissions');
+            if (!isset($indexes['PRIMARY'])) {
+                $table->primary('id');
+            }
         });
 
-        // 3️⃣ Make 'id' the primary key
-        Schema::table('tasksubmissions', function (Blueprint $table) {
-            $table->primary('id');
-        });
-
-        // Re-enable foreign key checks
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 
@@ -36,9 +44,11 @@ return new class extends Migration
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
         Schema::table('tasksubmissions', function (Blueprint $table) {
-            $table->dropPrimary(['id']);
-            $table->dropColumn('id');
-            $table->primary(['task_id', 'user_id']); // restore old primary key
+            if (Schema::hasColumn('tasksubmissions', 'id')) {
+                $table->dropPrimary(['id']);
+                $table->dropColumn('id');
+                $table->primary(['task_id', 'user_id']);
+            }
         });
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
