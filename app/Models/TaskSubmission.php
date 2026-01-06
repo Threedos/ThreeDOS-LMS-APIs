@@ -8,16 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class TaskSubmission extends Model
 {
     //
-    use HasUuids;
+    // use HasUuids;
     protected $table = 'tasksubmissions';
 
 
-    
+
     public $incrementing = false; //    auto-increment id
 
     protected $primaryKey = null; // disables primary key if none exists
     public $keyType = 'string';
-    protected $fillable = [ 
+    protected $fillable = [
         'task_id',
         'user_id',
         'file',
@@ -25,7 +25,7 @@ class TaskSubmission extends Model
         'grade',
         'comment',
         'council_id',
-        
+
     ];
 
     public function task()
@@ -37,7 +37,7 @@ class TaskSubmission extends Model
     {
         return $this->belongsTo(User::class);
     }
-    
+
     public function council()
     {
         return $this->belongsTo(Council::class);
