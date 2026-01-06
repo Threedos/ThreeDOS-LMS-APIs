@@ -20,6 +20,7 @@ Route::post('login', [AuthController::class, 'login'])->name('login');
 Route::middleware(['auth:api', 'throttle:api'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::apiResource('councils', CouncilController::class);
+    Route::post('users/bulk', [UserController::class, 'BulkStore']);
     Route::apiResource('users', UserController::class);
     Route::apiResource('roles', RoleController::class);
     Route::apiResource('tasks', TaskController::class);

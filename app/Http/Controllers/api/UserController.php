@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\UserRequests\CreateUserRequest;
 use App\Http\Requests\UserRequests\UpdateUserRequest;
+use App\Http\Requests\UserRequests\BulkCreateUserRequest;
+use App\Imports\UsersImport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\PaginatedRequest;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Cache;
@@ -23,6 +26,16 @@ class UserController extends Controller
     }
 
     /**
+     * Store a newly created resource in storage in bulk.
+     */
+    public function BulkStore(BulkCreateUserRequest $request)
+    {
+        $this->authorize('create', User::class);
+        Excel::import(new UsersImport, $request->file('file'));
+        return response()->json(['message' => 'Users imported successfully']);
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(PaginatedRequest $request)
@@ -33,13 +46,13 @@ class UserController extends Controller
         $pageSize = $request->input('pageSize');
         $search = $request->input('search', '');
         $cacheKey = "users:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
-       
-       if(Cache::has($cacheKey)) {
-           return response()->json(Cache::get($cacheKey));
-       }
-       $users = UserResource::collection($this->userService->getAllUsers($request));
-       Cache::put($cacheKey, $users, 3600);
-       return $users;
+
+        if (Cache::has($cacheKey)) {
+            return response()->json(Cache::get($cacheKey));
+        }
+        $users = UserResource::collection($this->userService->getAllUsers($request));
+        Cache::put($cacheKey, $users, 3600);
+        return $users;
     }
 
     /**
@@ -59,7 +72,7 @@ class UserController extends Controller
     public function show(string $id)
     {
         $cacheKey = "user:{$id}";
-        if(Cache::has($cacheKey)) {
+        if (Cache::has($cacheKey)) {
             return response()->json(Cache::get($cacheKey));
         }
 
