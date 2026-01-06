@@ -9,6 +9,7 @@ class TaskSubmission extends Model
 {
     //
     use HasUuids;
+    protected $table = 'tasksubmissions';
        public $incrementing = false;
     public $keyType = 'string';
     protected $fillable = [ 
