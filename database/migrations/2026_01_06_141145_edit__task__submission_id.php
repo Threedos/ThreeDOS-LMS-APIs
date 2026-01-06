@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('tasksubmission', function (Blueprint $table) {
             //
             $table->uuid('id')->primary();
-
+            $table->dropPrimary(['task_id', 'user_id']);
         });
     }
 
