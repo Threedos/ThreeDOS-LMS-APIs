@@ -3,26 +3,28 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-     public function up(): void
+    public function up(): void
     {
-        // Temporarily disable foreign key checks
+        // Disable foreign key checks temporarily
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
+        // 1️⃣ Add new 'id' column (UUID) first
         Schema::table('tasksubmissions', function (Blueprint $table) {
-
-            // Make it the primary key
-            $table->uuid('id')->first()->primary();
+            $table->uuid('id')->first(); // adds new column
         });
 
-        // Optional: drop old composite primary key columns if needed
+        // 2️⃣ Drop old primary key
         Schema::table('tasksubmissions', function (Blueprint $table) {
-            $table->dropColumn(['task_id', 'user_id']); // only if safe
+            $table->dropPrimary(['task_id', 'user_id']);
+        });
+
+        // 3️⃣ Make 'id' the primary key
+        Schema::table('tasksubmissions', function (Blueprint $table) {
+            $table->primary('id');
         });
 
         // Re-enable foreign key checks
@@ -34,15 +36,9 @@ return new class extends Migration
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
         Schema::table('tasksubmissions', function (Blueprint $table) {
-            // Recreate old columns
-            $table->unsignedBigInteger('task_id');
-            $table->unsignedBigInteger('user_id');
-
-            // Restore composite primary key
-            $table->primary(['task_id', 'user_id']);
-
-            // Drop the UUID primary
+            $table->dropPrimary(['id']);
             $table->dropColumn('id');
+            $table->primary(['task_id', 'user_id']); // restore old primary key
         });
 
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
