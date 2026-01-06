@@ -1,19 +1,24 @@
 # Base image
 FROM php:8.4-apache
 
-# Install system dependencies
+# Install system dependencies + GD requirements
 RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    zip \
+    libzip-dev \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    zip \
-    unzip \
-    git \
+    libpq-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd \
-    && docker-php-ext-install pdo pdo_mysql \
-    && docker-php-ext-enable gd \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && docker-php-ext-install \
+        pdo \
+        pdo_mysql \
+        gd \
+        zip \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install Redis PHP extension
 RUN pecl install redis \
@@ -34,7 +39,7 @@ RUN composer install --no-interaction --optimize-autoloader
 # Expose Laravel port
 EXPOSE 8000
 
-# Use entrypoint script to clear caches at runtime
+# Entrypoint
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
