@@ -1,7 +1,7 @@
 # Base image
 FROM php:8.4-apache
 
-# Install system dependencies + GD requirements
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Redis PHP extension
+# Install Redis extension
 RUN pecl install redis \
     && docker-php-ext-enable redis
 
