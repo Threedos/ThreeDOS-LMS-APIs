@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
 
 
        
-        User::create([
+        User::firstOrCreate([
             'name' => 'Mohamed Tarek',
             'email' => fake()->email(),
             'password' => Hash::make('password'),
@@ -47,15 +47,15 @@ class DatabaseSeeder extends Seeder
             'council_id' => $backendCouncil->id,
         ]);
 
-        User::create([
+        User::firstOrCreate([
             'name' => 'John Doe',
             'email' => fake()->email(),
             'password' => Hash::make('password'),
             'role_id' => $instructorRole->id,
-            'council_id' => $backendCouncil->id,
+            'council_id' => $frontendCouncil->id,
         ]);
 
-        
+            
 
 
     }
