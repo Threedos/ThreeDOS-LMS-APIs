@@ -28,7 +28,7 @@ Route::middleware(['auth:api', 'throttle:api'])->group(function () {
         'task-submissions/user',
         [TaskSubmissionController::class, 'GetAllTaskSubmissionsForUser']
     );
-
+    
     Route::apiResource('task-submissions', TaskSubmissionController::class);
 });
 
