@@ -8,14 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class TaskSubmission extends Model
 {
     //
-    // use HasUuids;
+    use HasUuids;
     protected $table = 'tasksubmissions';
 
 
 
     public $incrementing = false; //    auto-increment id
 
-    protected $primaryKey = null; // disables primary key if none exists
     public $keyType = 'string';
     protected $fillable = [
         'task_id',
