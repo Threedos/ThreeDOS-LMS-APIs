@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('tasksubmissions', function (Blueprint $table) {
             // Primary Key
-            $table->primary(['task_id', 'user_id']);
+            $table->uuid('id')->primary();
             // Foreign keys
             $table->foreignUuid('task_id')->references('id')->on('tasks')->onDelete('cascade');
             $table->foreignUuid('user_id')->references('id')->on('users')->onDelete('cascade');
