@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('tasksubmission', function (Blueprint $table) {
+        Schema::table('tasksubmissions', function (Blueprint $table) {
             //
-            $table->uuid('id')->primary();
             $table->dropPrimary(['task_id', 'user_id']);
+            $table->uuid('id')->primary();
         });
     }
 
@@ -23,7 +23,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('tasksubmission', function (Blueprint $table) {
+        Schema::table('tasksubmissions', function (Blueprint $table) {
             //
         });
     }
