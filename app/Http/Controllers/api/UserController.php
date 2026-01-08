@@ -53,15 +53,13 @@ class UserController extends Controller
         return response()->json(Cache::get($cacheKey));
     }
 
-    $usersPaginator = $this->userService->getAllUsers($request);
+    $users = $this->userService->getAllUsers($request);
 
-    $usersCollection = UserResource::collection($usersPaginator);
+    
 
-    $data = $usersCollection->response()->getData(true);
+    Cache::put($cacheKey, $users, 3600);
 
-    Cache::put($cacheKey, $data, 3600);
-
-    return response()->json($data);
+    return response()->json($users);
     }
 
     /**
