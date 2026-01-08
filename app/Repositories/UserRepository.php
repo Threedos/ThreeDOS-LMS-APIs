@@ -14,7 +14,9 @@ class UserRepository implements UserRepositoryInterface
         $pageSize = $request->pageSize ?? 10;
         $search = $request->search;
         $sort = $request->sort;
-        $query = User::query()->select('id', 'name', 'email', 'role_id', 'council_id')->with('role', 'council');
+        $query = User::query()->select('id', 'name', 'email', 'role_id', 'council_id')
+        // ->with('role', 'council')
+        ;
         if ($search) {
             $query->where('name', 'like', "%{$search}%");
         }

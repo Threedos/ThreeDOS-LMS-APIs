@@ -53,7 +53,7 @@ class UserController extends Controller
         return response()->json(Cache::get($cacheKey));
     }
 
-    $users = $this->userService->getAllUsers($request);
+    $users = UserResource::collection($this->userService->getAllUsers($request));
 
     
 
