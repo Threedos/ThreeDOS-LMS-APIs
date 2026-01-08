@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 use App\Http\Controllers\api\RoleController;
 use App\Http\Controllers\api\AuthController;
@@ -17,7 +18,7 @@ Route::get('/instance', function () {
 Route::post('login', [AuthController::class, 'login'])->name('login');
 // Route::post('register', [AuthController::class, 'register']);
 
-Route::middleware(['auth:api', 'throttle:api'])->group(function () {
+Route::middleware(['auth:api', \App\Http\Middleware\RateLimiting::class])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::apiResource('councils', CouncilController::class);
     Route::post('users/bulk', [UserController::class, 'BulkStore']);
@@ -30,7 +31,7 @@ Route::middleware(['auth:api', 'throttle:api'])->group(function () {
     );
     Route::apiResource('sessions', CouncilSessionController::class);
     Route::apiResource('attendances', AttendanceController::class);
-    
+
     Route::get('/notifications', function (Request $request) {
         return $request->user()->notifications;
     });
