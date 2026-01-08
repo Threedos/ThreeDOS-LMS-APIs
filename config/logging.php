@@ -52,6 +52,18 @@ return [
 
     'channels' => [
 
+
+
+    // Existing channels...
+    
+    'api_errors' => [
+        'driver' => 'single',
+        'path' => storage_path('logs/api_errors.log'),
+        'level' => 'error',
+    ],
+
+
+
         'stack' => [
             'driver' => 'stack',
             'channels' => explode(',', (string) env('LOG_STACK', 'single')),

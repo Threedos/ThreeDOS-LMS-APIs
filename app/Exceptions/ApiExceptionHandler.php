@@ -1,26 +1,13 @@
 <?php
 
-namespace App\Exceptions;
-
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Validation\ValidationException;
-use Throwable;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class ApiExceptionHandler
 {
-    /**
-     * Handle the exception and return a custom JSON response.
-     */
-    public static function handle(Throwable $e, Request $request): Response
+    public static function handle(Throwable $e, Request $request): \Illuminate\Http\JsonResponse
     {
-        // Only handle API requests or if specific conditions met
-        // For this task, we assume all requests handled by this handler are targeted for API response
-        // But we can check $request->is('api/*') in bootstrap/app.php before calling this.
-
+        // --- 1. Determine status and message ---
         $statusCode = 500;
         $message = 'Server Error';
         $errors = null;
@@ -38,12 +25,25 @@ class ApiExceptionHandler
         } elseif ($e instanceof \Symfony\Component\HttpKernel\Exception\HttpException) {
             $statusCode = $e->getStatusCode();
             $message = $e->getMessage() ?: 'Error';
-        }
-
-        else {
+        } else {
             $message = $e->getMessage();
         }
 
+        // --- 2. Log the exception with full context ---
+        Log::channel('api_errors')->error('API Exception', [
+            'status_code' => $statusCode,
+            'message' => $message,
+            'exception_class' => get_class($e),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'stack' => $e->getTraceAsString(),
+            'url' => $request->fullUrl(),
+            'method' => $request->method(),
+            'input' => $request->except(['password', 'password_confirmation']),
+            'user_id' => Auth::id(),
+        ]);
+
+        // --- 3. Prepare JSON response ---
         $response = [
             'status' => 'error',
             'message' => $message,
