@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Interfaces\TaskSubmissionRepositoryInterface;
 use App\Http\Requests\TaskSubmissionRequests\TaskSubmissionPaginatedRequest;
+use App\Notifications\EventNotification;
 class TaskSubmissionService
 {
     protected $taskSubmissionRepository;
@@ -35,7 +36,25 @@ class TaskSubmissionService
 
     public function updateTaskSubmission($submissionId, array $submissionDetails)
     {
-        return $this->taskSubmissionRepository->updateTaskSubmission($submissionId, $submissionDetails);
+        $submission = $this->taskSubmissionRepository
+            ->updateTaskSubmission($submissionId, $submissionDetails);
+        if($submissionDetails['status'] == 'graded') {
+        // Resolve recipient correctly
+        $delegate = $submission->user;
+
+        // Notify the instructor
+        $delegate->notify(
+            new EventNotification(
+                'Task Updated',
+                'A submission was updated',
+                [
+                   'task' => $submission->task->name,
+                ]
+            )
+        );
+    }
+
+return $submission;
     }
 
     public function deleteTaskSubmission($submissionId)

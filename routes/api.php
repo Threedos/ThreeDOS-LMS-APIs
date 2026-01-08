@@ -10,7 +10,6 @@ use App\Http\Controllers\api\CouncilController;
 use App\Http\Controllers\api\SessionController;
 use App\Http\Controllers\api\AttendanceController;
 
-
 //Routes
 Route::get('/instance', function () {
     return response()->json(gethostname());
@@ -32,7 +31,9 @@ Route::middleware(['auth:api', 'throttle:api'])->group(function () {
     Route::apiResource('sessions', SessionController::class);
     Route::apiResource('attendances', AttendanceController::class);
     
-    
+    Route::get('/notifications', function (Request $request) {
+        return $request->user()->notifications;
+    });
     Route::apiResource('task-submissions', TaskSubmissionController::class);
 });
 
