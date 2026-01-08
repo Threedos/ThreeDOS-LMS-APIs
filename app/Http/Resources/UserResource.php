@@ -22,7 +22,6 @@ class UserResource extends JsonResource
             'from' => $this->firstItem(),
             'last_page' => $this->lastPage(),
             'last_page_url' => $this->url($this->lastPage()),
-            'links' => $this->linkCollection(), // optional for page links
             'next_page_url' => $this->nextPageUrl(),
             'path' => $this->path(),
             'per_page' => $this->perPage(),
@@ -32,16 +31,5 @@ class UserResource extends JsonResource
         ];
     }
 
-    // Optional: format links like your example
-    private function linkCollection()
-    {
-        return collect($this->links())->map(function ($link) {
-            return [
-                'url' => $link['url'],
-                'label' => $link['label'],
-                'active' => $link['active'],
-                'page' => $link['active'] ? $this->currentPage() : null,
-            ];
-        });
-    }
+ 
 }

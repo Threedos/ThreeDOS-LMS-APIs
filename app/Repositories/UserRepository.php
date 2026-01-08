@@ -21,8 +21,8 @@ class UserRepository implements UserRepositoryInterface
         if ($sort) {
             $query->orderBy($sort);
         }
-        $query->skip(($pageIndex - 1) * $pageSize)->take($pageSize);
-        return $query->get();
+        // Laravel pagination (LengthAwarePaginator)
+        return $query->paginate($pageSize, ['*'], 'page', $pageIndex);
     }
 
     public function getUserById($userId)

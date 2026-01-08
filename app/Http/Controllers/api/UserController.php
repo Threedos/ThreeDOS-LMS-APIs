@@ -41,19 +41,27 @@ class UserController extends Controller
     public function index(PaginatedRequest $request)
     {
 
-        $this->authorize('viewAny', User::class);
-        $pageIndex = $request->input('pageIndex');
-        $pageSize = $request->input('pageSize');
-        $search = $request->input('search', '');
-        $cacheKey = "users:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
+      $this->authorize('viewAny', User::class);
 
-        if (Cache::has($cacheKey)) {
-            return response()->json(Cache::get($cacheKey));
-        }
-        $users = UserResource::collection($this->userService->getAllUsers($request));
-        $data = $users->response()->getData(true);
-        Cache::put($cacheKey, $data, 3600);
-        return response()->json($data);
+    $pageIndex = $request->input('pageIndex', 1);
+    $pageSize = $request->input('pageSize', 10);
+    $search = $request->input('search', '');
+
+    $cacheKey = "users:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
+
+    if (Cache::has($cacheKey)) {
+        return response()->json(Cache::get($cacheKey));
+    }
+
+    $usersPaginator = $this->userService->getAllUsers($request);
+
+    $usersCollection = UserResource::collection($usersPaginator);
+
+    $data = $usersCollection->response()->getData(true);
+
+    Cache::put($cacheKey, $data, 3600);
+
+    return response()->json($data);
     }
 
     /**
