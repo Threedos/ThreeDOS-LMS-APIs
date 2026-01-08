@@ -14,6 +14,7 @@ use App\Imports\UsersImport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\PaginatedRequest;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\UserCollection;
 use Illuminate\Support\Facades\Cache;
 class UserController extends Controller
 {
@@ -40,8 +41,7 @@ class UserController extends Controller
      */
     public function index(PaginatedRequest $request)
     {
-
-      $this->authorize('viewAny', User::class);
+   $this->authorize('viewAny', User::class);
 
     $pageIndex = $request->input('pageIndex', 1);
     $pageSize = $request->input('pageSize', 10);
@@ -53,13 +53,15 @@ class UserController extends Controller
         return response()->json(Cache::get($cacheKey));
     }
 
-    $users = UserResource::collection($this->userService->getAllUsers($request));
+    $usersPaginator = $this->userService->getAllUsers($request); // must return paginate()
 
-    
+    $usersCollection = new UserCollection($usersPaginator); // wrap paginator
 
-    Cache::put($cacheKey, $users, 3600);
+    $data = $usersCollection->response()->getData(true);
 
-    return response()->json($users);
+    Cache::put($cacheKey, $data, 3600);
+
+    return response()->json($data);
     }
 
     /**
