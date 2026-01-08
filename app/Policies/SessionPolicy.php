@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\CouncilSession;
 use App\Models\Session;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -13,15 +14,15 @@ class SessionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Session $session): bool
+    public function view(User $user, CouncilSession $session): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,38 +30,53 @@ class SessionPolicy
      */
     public function create(User $user): bool
     {
+        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+            return true;
+        }
         return false;
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Session $session): bool
+    public function update(User $user, CouncilSession $session): bool
     {
+        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+            return true;
+        }
         return false;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Session $session): bool
+    public function delete(User $user, CouncilSession $session): bool
     {
+        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+            return true;
+        }
         return false;
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Session $session): bool
+    public function restore(User $user, CouncilSession $session): bool
     {
+        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+            return true;
+        }
         return false;
     }
 
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Session $session): bool
+    public function forceDelete(User $user, CouncilSession $session): bool
     {
+        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+            return true;
+        }
         return false;
     }
 }

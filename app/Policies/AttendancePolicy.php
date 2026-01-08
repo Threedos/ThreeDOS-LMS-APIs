@@ -13,7 +13,7 @@ class AttendancePolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,7 +21,7 @@ class AttendancePolicy
      */
     public function view(User $user, Attendance $attendance): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,6 +29,9 @@ class AttendancePolicy
      */
     public function create(User $user): bool
     {
+        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+            return true;
+        }
         return false;
     }
 
@@ -37,6 +40,9 @@ class AttendancePolicy
      */
     public function update(User $user, Attendance $attendance): bool
     {
+        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+            return true;
+        }
         return false;
     }
 
@@ -45,6 +51,9 @@ class AttendancePolicy
      */
     public function delete(User $user, Attendance $attendance): bool
     {
+        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+            return true;
+        }
         return false;
     }
 
@@ -53,6 +62,9 @@ class AttendancePolicy
      */
     public function restore(User $user, Attendance $attendance): bool
     {
+        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+            return true;
+        }
         return false;
     }
 
@@ -61,6 +73,9 @@ class AttendancePolicy
      */
     public function forceDelete(User $user, Attendance $attendance): bool
     {
+        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+            return true;
+        }
         return false;
     }
 }
