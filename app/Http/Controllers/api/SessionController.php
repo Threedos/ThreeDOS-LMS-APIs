@@ -24,7 +24,8 @@ class SessionController extends Controller
         }
 
         $sessions = $baseQuery->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex);
-        return SessionResource::collection($sessions);
+        // return SessionResource::collection($sessions);
+        return response()->json($sessions);
     }
 
 
