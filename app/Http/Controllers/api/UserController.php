@@ -16,14 +16,17 @@ use App\Http\Requests\PaginatedRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserCollection;
 use Illuminate\Support\Facades\Cache;
+use App\Services\CacheService;
 class UserController extends Controller
 {
     use AuthorizesRequests;
     protected $userService;
+    protected $cacheService;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserService $userService, CacheService $cacheService)
     {
         $this->userService = $userService;
+        $this->cacheService = $cacheService;
     }
 
     /**
@@ -33,6 +36,10 @@ class UserController extends Controller
     {
         $this->authorize('create', User::class);
         Excel::import(new UsersImport, $request->file('file'));
+
+        // Clear all user cache after bulk import
+        $this->cacheService->clearResourceCache('users');
+
         return response()->json(['message' => 'Users imported successfully']);
     }
 
@@ -41,27 +48,22 @@ class UserController extends Controller
      */
     public function index(PaginatedRequest $request)
     {
-   $this->authorize('viewAny', User::class);
+        $this->authorize('viewAny', User::class);
 
-    $pageIndex = $request->input('pageIndex', 1);
-    $pageSize = $request->input('pageSize', 10);
-    $search = $request->input('search', '');
+        $pageIndex = $request->input('pageIndex', 1);
+        $pageSize = $request->input('pageSize', 10);
+        $search = $request->input('search', '');
 
-    $cacheKey = "users:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
+        $cacheKey = "users:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
 
-    if (Cache::has($cacheKey)) {
-        return response()->json(Cache::get($cacheKey));
-    }
-
-    $usersPaginator = $this->userService->getAllUsers($request); // must return paginate()
-
-    $usersCollection = new UserCollection($usersPaginator); // wrap paginator
-
-    $data = $usersCollection->response()->getData(true);
-
-    Cache::put($cacheKey, $data, 3600);
-
-    return response()->json($data);
+        // Use Redis cache service
+        return response()->json(
+            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
+                $usersPaginator = $this->userService->getAllUsers($request);
+                $usersCollection = new UserCollection($usersPaginator);
+                return $usersCollection->response()->getData(true);
+            })
+        );
     }
 
     /**
@@ -72,6 +74,10 @@ class UserController extends Controller
         // return response()->json($request->all());
         $this->authorize('create', User::class);
         $user = $this->userService->createUser($request->all());
+
+        // Clear user list cache after creating a new user
+        $this->cacheService->clearResourceCache('users');
+
         return response()->json('User created successfully', 201);
     }
 
@@ -81,17 +87,16 @@ class UserController extends Controller
     public function show(string $id)
     {
         $cacheKey = "user:{$id}";
-        if (Cache::has($cacheKey)) {
-            return response()->json(Cache::get($cacheKey));
-        }
 
-        $userModel = $this->userService->getUserById($id);
-        $this->authorize('view', $userModel);
-
-        $resource = UserResource::make($userModel);
-        $data = $resource->response()->getData(true);
-        Cache::put($cacheKey, $data, 3600);
-        return response()->json($data);
+        // Use Redis cache service with remember pattern
+        return response()->json(
+            $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
+                $userModel = $this->userService->getUserById($id);
+                $this->authorize('view', $userModel);
+                $resource = UserResource::make($userModel);
+                return $resource->response()->getData(true);
+            })
+        );
     }
 
     /**
@@ -103,6 +108,11 @@ class UserController extends Controller
         $this->authorize('update', $userModel);
 
         $this->userService->updateUser($id, $request->all());
+
+        // Clear specific user cache and user list cache
+        $this->cacheService->forget("user:{$id}");
+        $this->cacheService->clearResourceCache('users');
+
         return response()->json(['message' => 'User updated successfully']);
     }
 
@@ -115,6 +125,11 @@ class UserController extends Controller
         $this->authorize('delete', $userModel);
 
         $this->userService->deleteUser($id);
+
+        // Clear specific user cache and user list cache
+        $this->cacheService->forget("user:{$id}");
+        $this->cacheService->clearResourceCache('users');
+
         return response()->json(['message' => 'User deleted successfully']);
     }
 }

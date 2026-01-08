@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\Council;
 use Illuminate\Support\Facades\Cache;
-
+use App\Services\CacheService;
 
 
 class CouncilController extends Controller
@@ -17,10 +17,12 @@ class CouncilController extends Controller
     use AuthorizesRequests;
 
     protected $councilService;
+    protected $cacheService;
 
-    public function __construct(CouncilService $councilService)
+    public function __construct(CouncilService $councilService, CacheService $cacheService)
     {
         $this->councilService = $councilService;
+        $this->cacheService = $cacheService;
     }
 
     /**
@@ -37,11 +39,12 @@ class CouncilController extends Controller
 
         $cacheKey = "councils:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
 
-        $councils = Cache::tags(['councils'])->remember($cacheKey, 3600, function () use ($request) {
-            return $this->councilService->getAllCouncils($request);
-        });
-        $councils = $this->councilService->getAllCouncils($request);
-        return response()->json($councils);
+        // Use Redis cache service
+        return response()->json(
+            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
+                return $this->councilService->getAllCouncils($request);
+            })
+        );
     }
 
     /**
@@ -57,7 +60,8 @@ class CouncilController extends Controller
             // 'instructor_id' => $request->instructor_id,
         ]);
 
-        // Cache::tags(['councils'])->flush();
+        // Clear council cache after creating
+        $this->cacheService->clearResourceCache('councils');
 
         return response()->json(['message' => 'Council created successfully'], 201);
     }
@@ -68,13 +72,15 @@ class CouncilController extends Controller
     public function show(string $id)
     {
         $cacheKey = "council:{$id}";
-        if(Cache::has($cacheKey)) {
-            return response()->json(Cache::get($cacheKey));
-        }
 
-        $council = Council::findOrFail($id);
-        $this->authorize('view', $council);
-        return response()->json($this->councilService->getCouncilById($id));
+        // Use Redis cache service with remember pattern
+        return response()->json(
+            $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
+                $council = Council::findOrFail($id);
+                $this->authorize('view', $council);
+                return $this->councilService->getCouncilById($id);
+            })
+        );
     }
 
     /**
@@ -85,7 +91,11 @@ class CouncilController extends Controller
         // $council = Council::findOrFail($id);
         $this->authorize('update', Council::class);
         $this->councilService->updateCouncil($id, $request->all());
-        // Cache::tags(['councils'])->flush();
+
+        // Clear specific council cache and council list cache
+        $this->cacheService->forget("council:{$id}");
+        $this->cacheService->clearResourceCache('councils');
+
         return response()->json(['message' => 'Council updated successfully']);
     }
 
@@ -94,11 +104,14 @@ class CouncilController extends Controller
      */
     public function destroy(string $id)
     {
-        Cache::forget('council:' . $id);
         // $council = Council::findOrFail($id);
         $this->authorize('delete', Council::class);
         $this->councilService->deleteCouncil($id);
-        // Cache::tags(['councils'])->flush();
+
+        // Clear specific council cache and council list cache
+        $this->cacheService->forget("council:{$id}");
+        $this->cacheService->clearResourceCache('councils');
+
         return response()->json(['message' => 'Council deleted successfully']);
     }
 }

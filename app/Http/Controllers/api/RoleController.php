@@ -5,15 +5,17 @@ use App\Http\Controllers\Controller;
 use App\Services\RoleService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Cache;
+use App\Services\CacheService;
 
 class RoleController extends Controller
 {
     protected $roleService;
+    protected $cacheService;
 
-    public function __construct(RoleService $roleService)
+    public function __construct(RoleService $roleService, CacheService $cacheService)
     {
         $this->roleService = $roleService;
+        $this->cacheService = $cacheService;
     }
 
     /**
@@ -21,15 +23,12 @@ class RoleController extends Controller
      */
     public function index()
     {
-          $roles = Cache::remember(
-        'roles:all',
-        now()->addHour(),
-        function () {
-            return $this->roleService->getAllRoles();
-        }
-    );
-
-    return response()->json($roles);
+        // Use Redis cache service
+        return response()->json(
+            $this->cacheService->remember('roles:all', 3600, function () {
+                return $this->roleService->getAllRoles();
+            })
+        );
     }
 
     /**
@@ -47,7 +46,10 @@ class RoleController extends Controller
         $role = $this->roleService->createRole([
             "name" => $request->name,
         ]);
-        Cache::forget('roles:all');
+
+        // Clear role cache after creating
+        $this->cacheService->clearResourceCache('roles');
+
         return response()->json($role, 201);
     }
 
@@ -56,14 +58,12 @@ class RoleController extends Controller
      */
     public function show(string $id)
     {
-        $role = Cache::remember(
-            'role:' . $id,
-            now()->addHour(),
-            function () use ($id) {
+        // Use Redis cache service
+        return response()->json(
+            $this->cacheService->remember('role:' . $id, 3600, function () use ($id) {
                 return $this->roleService->getRoleById($id);
-            }
+            })
         );
-        return response()->json($role);
     }
 
     /**
@@ -71,9 +71,12 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        Cache::forget('role:' . $id);
-        Cache::forget('roles:all');
         $this->roleService->updateRole($id, $request->all());
+
+        // Clear specific role cache and role list cache
+        $this->cacheService->forget("role:{$id}");
+        $this->cacheService->clearResourceCache('roles');
+
         return response()->json(['message' => 'Role updated successfully']);
     }
 
@@ -82,9 +85,12 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
-        Cache::forget('role:' . $id);
-        Cache::forget('roles:all');
         $this->roleService->deleteRole($id);
+
+        // Clear specific role cache and role list cache
+        $this->cacheService->forget("role:{$id}");
+        $this->cacheService->clearResourceCache('roles');
+
         return response()->json(['message' => 'Role deleted successfully']);
     }
 }

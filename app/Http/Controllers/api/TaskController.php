@@ -8,15 +8,17 @@ use App\Services\TaskService;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\TaskRequests\TaskPaginatedRequest;
-// use Illuminate\Support\Facades\Cache;
+use App\Services\CacheService;
 class TaskController extends Controller
 {
     use AuthorizesRequests;
     protected $taskService;
+    protected $cacheService;
 
-    public function __construct(TaskService $taskService)
+    public function __construct(TaskService $taskService, CacheService $cacheService)
     {
         $this->taskService = $taskService;
+        $this->cacheService = $cacheService;
     }
 
     /**
@@ -31,15 +33,14 @@ class TaskController extends Controller
         $search = $request->input('search', '');
         $filter = $request->input('filter', '');
 
-        // $cacheKey = "tasks:page_{$pageIndex}:size_{$pageSize}:search_{$search}:filter_{$filter}";
+        $cacheKey = "tasks:page_{$pageIndex}:size_{$pageSize}:search_{$search}:filter_{$filter}";
 
-        // $tasks = Cache::tags(['tasks'])->remember($cacheKey, 3600, function () use ($request) {
-        //     return $this->taskService->getAllTasks($request);
-        // });
-
-        $tasks = $this->taskService->getAllTasks($request);
-
-        return response()->json($tasks);
+        // Use Redis cache service
+        return response()->json(
+            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
+                return $this->taskService->getAllTasks($request);
+            })
+        );
     }
 
     /**
@@ -49,7 +50,10 @@ class TaskController extends Controller
     {
         $this->authorize('create', Task::class);
         $task = $this->taskService->createTask($request->all());
-        // Cache::tags(['tasks'])->flush();
+
+        // Clear task cache after creating
+        $this->cacheService->clearResourceCache('tasks');
+
         return response()->json($task, 201);
     }
 
@@ -58,9 +62,16 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        $task = Task::findOrFail($id);
-        $this->authorize('view', $task);
-        return response()->json($this->taskService->getTaskById($id));
+        $cacheKey = "task:{$id}";
+
+        // Use Redis cache service with remember pattern
+        return response()->json(
+            $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
+                $task = Task::findOrFail($id);
+                $this->authorize('view', $task);
+                return $this->taskService->getTaskById($id);
+            })
+        );
     }
 
     /**
@@ -71,7 +82,11 @@ class TaskController extends Controller
         $task = Task::findOrFail($id);
         $this->authorize('update', $task);
         $this->taskService->updateTask($id, $request->all());
-        // Cache::tags(['tasks'])->flush();
+
+        // Clear specific task cache and task list cache
+        $this->cacheService->forget("task:{$id}");
+        $this->cacheService->clearResourceCache('tasks');
+
         return response()->json(['message' => 'Task updated successfully']);
     }
 
@@ -83,7 +98,11 @@ class TaskController extends Controller
         $task = Task::findOrFail($id);
         $this->authorize('delete', $task);
         $this->taskService->deleteTask($id);
-        // Cache::tags(['tasks'])->flush();
+
+        // Clear specific task cache and task list cache
+        $this->cacheService->forget("task:{$id}");
+        $this->cacheService->clearResourceCache('tasks');
+
         return response()->json(['message' => 'Task deleted successfully']);
     }
 }

@@ -8,24 +8,39 @@ use App\Models\CouncilSession;
 use App\Http\Resources\SessionResource;
 use App\Http\Requests\SessionRequests\PaginatedSessionRequest;
 use App\Http\Controllers\Controller;
+use App\Services\CacheService;
 class CouncilSessionController extends Controller
 {
+    protected $cacheService;
+
+    public function __construct(CacheService $cacheService)
+    {
+        $this->cacheService = $cacheService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(PaginatedSessionRequest $request)
     {
-        //
         $council_id = $request->user()->council_id;
-        $baseQuery= CouncilSession::query();
-        $baseQuery= $baseQuery->where('council_id',$council_id);
-        if ($request->search) {
-            $baseQuery= $baseQuery->where('title','like',"%{$request->search}%");
-        }
+        $pageIndex = $request->pageIndex;
+        $pageSize = $request->pageSize;
+        $search = $request->search ?? '';
 
-        $sessions = $baseQuery->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex);
-        // return SessionResource::collection($sessions);
-        return response()->json($sessions);
+        $cacheKey = "sessions:council_{$council_id}:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
+
+        // Use Redis cache service
+        return response()->json(
+            $this->cacheService->remember($cacheKey, 3600, function () use ($request, $council_id) {
+                $baseQuery = CouncilSession::query();
+                $baseQuery = $baseQuery->where('council_id', $council_id);
+                if ($request->search) {
+                    $baseQuery = $baseQuery->where('title', 'like', "%{$request->search}%");
+                }
+                return $baseQuery->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex);
+            })
+        );
     }
 
 
@@ -36,6 +51,10 @@ class CouncilSessionController extends Controller
     {
         //  
         $session = CouncilSession::create($request->validated());
+
+        // Clear session cache after creating
+        $this->cacheService->clearResourceCache('sessions');
+
         return response()->json($session, 201);
     }
 
@@ -44,9 +63,14 @@ class CouncilSessionController extends Controller
      */
     public function show(string $id)
     {
-        //
-        $session = CouncilSession::findOrFail($id);
-        return response()->json($session);
+        $cacheKey = "session:{$id}";
+
+        // Use Redis cache service
+        return response()->json(
+            $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
+                return CouncilSession::findOrFail($id);
+            })
+        );
     }
 
 
@@ -58,6 +82,11 @@ class CouncilSessionController extends Controller
         //
         $session = CouncilSession::findOrFail($id);
         $session->update($request->validated());
+
+        // Clear specific session cache and session list cache
+        $this->cacheService->forget("session:{$id}");
+        $this->cacheService->clearResourceCache('sessions');
+
         return response()->json($session);
     }
 
@@ -69,6 +98,11 @@ class CouncilSessionController extends Controller
         //
         $session = CouncilSession::findOrFail($id);
         $session->delete();
+
+        // Clear specific session cache and session list cache
+        $this->cacheService->forget("session:{$id}");
+        $this->cacheService->clearResourceCache('sessions');
+
         return response()->json(null, 204);
     }
 }
