@@ -51,8 +51,9 @@ class UserController extends Controller
             return response()->json(Cache::get($cacheKey));
         }
         $users = UserResource::collection($this->userService->getAllUsers($request));
-        Cache::put($cacheKey, $users, 3600);
-        return $users;
+        $data = $users->response()->getData(true);
+        Cache::put($cacheKey, $data, 3600);
+        return response()->json($data);
     }
 
     /**
@@ -78,8 +79,11 @@ class UserController extends Controller
 
         $userModel = $this->userService->getUserById($id);
         $this->authorize('view', $userModel);
-        Cache::put($cacheKey, $userModel, 3600);
-        return UserResource::make($userModel);
+
+        $resource = UserResource::make($userModel);
+        $data = $resource->response()->getData(true);
+        Cache::put($cacheKey, $data, 3600);
+        return response()->json($data);
     }
 
     /**
