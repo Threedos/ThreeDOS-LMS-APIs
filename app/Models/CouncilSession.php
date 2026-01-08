@@ -12,7 +12,7 @@ class CouncilSession extends Model
     protected $table = 'Council_sessions';
     protected $keyType = 'string';
     protected $primaryKey = 'id';
-    protected $incrementing = false;
+    public $incrementing = false;
     protected $fillable = [
         'title',
         'date',
