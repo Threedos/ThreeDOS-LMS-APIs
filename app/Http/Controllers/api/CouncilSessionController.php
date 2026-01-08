@@ -7,7 +7,7 @@ use App\Http\Requests\SessionRequests\UpdateSessionRequest;
 use App\Models\CouncilSession;
 use App\Http\Resources\SessionResource;
 use App\Http\Requests\SessionRequests\PaginatedSessionRequest;
-
+use App\Http\Controllers\Controller;
 class CouncilSessionController extends Controller
 {
     /**

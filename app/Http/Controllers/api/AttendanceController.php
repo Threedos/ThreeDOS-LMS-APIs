@@ -7,7 +7,7 @@ use App\Http\Requests\AttendanceRequests\UpdateAttendanceRequest;
 use App\Models\Attendance;
 use App\Http\Resources\AttendanceResource;
 use App\Http\Requests\AttendanceRequests\PaginatedAttendanceRequest;
-
+use App\Http\Controllers\Controller;
 class AttendanceController extends Controller
 {
     /**
