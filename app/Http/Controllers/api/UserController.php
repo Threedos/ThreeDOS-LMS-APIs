@@ -54,7 +54,7 @@ class UserController extends Controller
     }
 
     $usersPaginator = $this->userService->getAllUsers($request); // must return paginate()
-
+    return $usersPaginator;
     $usersCollection = new UserCollection($usersPaginator); // wrap paginator
 
     $data = $usersCollection->response()->getData(true);
