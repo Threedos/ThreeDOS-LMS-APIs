@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api;
 
 use App\Http\Requests\SessionRequests\StoreSessionRequest;
 use App\Http\Requests\SessionRequests\UpdateSessionRequest;
@@ -8,7 +8,7 @@ use App\Models\CouncilSession;
 use App\Http\Resources\SessionResource;
 use App\Http\Requests\SessionRequests\PaginatedSessionRequest;
 
-class SessionController extends Controller
+class CouncilSessionController extends Controller
 {
     /**
      * Display a listing of the resource.

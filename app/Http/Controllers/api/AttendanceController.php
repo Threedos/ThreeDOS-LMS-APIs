@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\api;
 
 use App\Http\Requests\AttendanceRequests\StoreAttendanceRequest;
 use App\Http\Requests\AttendanceRequests\UpdateAttendanceRequest;
