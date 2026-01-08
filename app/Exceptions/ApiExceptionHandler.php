@@ -1,7 +1,16 @@
 <?php
 
+namespace App\Exceptions;
+
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Throwable;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Illuminate\Auth\AuthenticationException;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class ApiExceptionHandler
 {
@@ -29,19 +38,19 @@ class ApiExceptionHandler
             $message = $e->getMessage();
         }
 
-        // // --- 2. Log the exception with full context ---
-        // Log::channel('api_errors')->error('API Exception', [
-        //     'status_code' => $statusCode,
-        //     'message' => $message,
-        //     'exception_class' => get_class($e),
-        //     'file' => $e->getFile(),
-        //     'line' => $e->getLine(),
-        //     'stack' => $e->getTraceAsString(),
-        //     'url' => $request->fullUrl(),
-        //     'method' => $request->method(),
-        //     'input' => $request->except(['password', 'password_confirmation']),
-        //     'user_id' => Auth::id(),
-        // ]);
+        // --- 2. Log the exception with full context ---
+        Log::channel('api_errors')->error('API Exception', [
+            'status_code' => $statusCode,
+            'message' => $message,
+            'exception_class' => get_class($e),
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+            'stack' => $e->getTraceAsString(),
+            'url' => $request->fullUrl(),
+            'method' => $request->method(),
+            'input' => $request->except(['password', 'password_confirmation']),
+            'user_id' => Auth::id(),
+        ]);
 
         // --- 3. Prepare JSON response ---
         $response = [
