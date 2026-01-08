@@ -11,7 +11,7 @@ class UserCollection extends ResourceCollection
     {
         return [
             'current_page' => $this->currentPage(),
-            'data' => UserResource::collection($this->collection),
+            'data' => $this->collection, // Simply use the collection directly
             'first_page_url' => $this->url(1),
             'from' => $this->firstItem(),
             'last_page' => $this->lastPage(),
