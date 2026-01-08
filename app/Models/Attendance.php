@@ -13,7 +13,7 @@ class Attendance extends Model
     protected $table = 'attendances';
     protected $keyType = 'string';
     protected $primaryKey = 'id';
-    protected $incrementing = false;
+    public $incrementing = false;
     protected $fillable = [
         'user_id',
         'session_id',
