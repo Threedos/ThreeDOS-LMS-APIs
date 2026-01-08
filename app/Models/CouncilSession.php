@@ -27,6 +27,6 @@ class CouncilSession extends Model
     }
     public function attendance()
     {
-        return $this->hasMany(Attendance::class);
+        return $this->hasMany(Attendance::class, 'session_id', 'id');
     }
 }
