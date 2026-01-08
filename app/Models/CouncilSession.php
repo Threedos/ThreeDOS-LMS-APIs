@@ -11,7 +11,7 @@ class CouncilSession extends Model
     use HasFactory;
     protected $table = 'CouncilSession';
     protected $keyType = 'string';
-    protected $primaryKey = 'id';
+    // protected $primaryKey = 'id';
     public $incrementing = false;
     protected $fillable = [
         'title',

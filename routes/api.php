@@ -36,7 +36,7 @@ Route::middleware(['auth:api', \App\Http\Middleware\RateLimiting::class])->group
 
     Route::apiResource('sessions', CouncilSessionController::class)->middleware('cache.response:3600');
     Route::apiResource('attendances', AttendanceController::class)->middleware('cache.response:3600');
-
+    Route::post('attendances/bulk', [AttendanceController::class, 'bulkStore']);
     Route::get('/notifications', function (Request $request) {
         return $request->user()->notifications;
     })->middleware('cache.response:1800'); // Cache notifications for 30 minutes

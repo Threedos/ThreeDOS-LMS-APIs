@@ -9,8 +9,13 @@ use App\Http\Resources\AttendanceResource;
 use App\Http\Requests\AttendanceRequests\PaginatedAttendanceRequest;
 use App\Http\Controllers\Controller;
 use App\Services\CacheService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Requests\AttendanceRequests\BulkCreateAttendanceRequest;
+use App\Imports\AttendanceImport;
 class AttendanceController extends Controller
 {
+    use AuthorizesRequests;
     protected $cacheService;
 
     public function __construct(CacheService $cacheService)
@@ -47,12 +52,27 @@ class AttendanceController extends Controller
     public function store(StoreAttendanceRequest $request)
     {
         //
+        $this->authorize('create', Attendance::class);
         $attendance = Attendance::create($request->validated());
 
         // Clear attendance cache after creating
         $this->cacheService->clearResourceCache('attendances');
 
         return response()->json($attendance, 201);
+    }
+
+
+
+    public function bulkStore(BulkCreateAttendanceRequest $request)
+    {
+
+        $this->authorize('create', Attendance::class);
+        Excel::import(new AttendanceImport, $request->file('file'));
+
+        // Clear attendance cache after bulk import
+        $this->cacheService->clearResourceCache('attendances');
+
+        return response()->json(['message' => 'Attendances imported successfully']);
     }
 
     /**

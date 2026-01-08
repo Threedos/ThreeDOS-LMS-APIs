@@ -9,6 +9,7 @@ use App\Http\Resources\SessionResource;
 use App\Http\Requests\SessionRequests\PaginatedSessionRequest;
 use App\Http\Controllers\Controller;
 use App\Services\CacheService;
+use App\Models\Attendance;
 class CouncilSessionController extends Controller
 {
     protected $cacheService;
@@ -33,8 +34,7 @@ class CouncilSessionController extends Controller
         // Use Redis cache service
         return response()->json(
             $this->cacheService->remember($cacheKey, 3600, function () use ($request, $council_id) {
-                $baseQuery = CouncilSession::query();
-                $baseQuery = $baseQuery->where('council_id', $council_id);
+                $baseQuery = CouncilSession::where('council_id', $council_id)->withCount('attendance');
                 if ($request->search) {
                     $baseQuery = $baseQuery->where('title', 'like', "%{$request->search}%");
                 }
@@ -68,9 +68,10 @@ class CouncilSessionController extends Controller
         // Use Redis cache service
         return response()->json(
             $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
-                return CouncilSession::findOrFail($id);
+                return CouncilSession::findOrFail($id)->withCount('attendance');
             })
         );
+
     }
 
 
