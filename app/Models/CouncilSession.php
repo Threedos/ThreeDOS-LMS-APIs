@@ -9,7 +9,7 @@ class CouncilSession extends Model
 {
     /** @use HasFactory<\Database\Factories\SessionFactory> */
     use HasFactory;
-    protected $table = 'Council_sessions';
+    protected $table = 'CouncilSession';
     protected $keyType = 'string';
     protected $primaryKey = 'id';
     public $incrementing = false;
