@@ -6,6 +6,7 @@ use App\Interfaces\TaskSubmissionRepositoryInterface;
 use App\Http\Requests\TaskSubmissionRequests\TaskSubmissionPaginatedRequest;
 use App\Notifications\EventNotification;
 use App\Enums\TaskStatusEnum;
+use Illuminate\Support\Facades\Storage;
 
 class TaskSubmissionService
 {
@@ -30,20 +31,32 @@ class TaskSubmissionService
     {
         return $this->taskSubmissionRepository->getTaskSubmissionById($submissionId);
     }
-
     public function createTaskSubmission(array $submissionDetails)
     {
-        $userId=auth()->user()->id;
-        $councilId=auth()->user()->council_id;
-        $data=[
-            'user_id'=>$userId,
-            'council_id'=>$councilId,
-            'task_id'=>$submissionDetails['task_id'],
-            'file'=>$submissionDetails['file'],
-            'status'=>TaskStatusEnum::SUBMITTED->value,
+        $user = auth()->user();
+
+        if (!($submissionDetails['file'] instanceof \Illuminate\Http\UploadedFile)) {
+            throw new \InvalidArgumentException('Invalid file upload');
+        }
+
+        $filePath = Storage::disk('s3')
+            ->putFile('task-submissions', $submissionDetails['file']);
+
+        if (!$filePath) {
+            throw new \RuntimeException('Failed to upload file to S3');
+        }
+
+        $data = [
+            'user_id'    => $user->id,
+            'council_id' => $user->council_id,
+            'task_id'    => $submissionDetails['task_id'],
+            'file'       => $filePath,
+            'status'     => TaskStatusEnum::SUBMITTED->value,
         ];
+
         return $this->taskSubmissionRepository->createTaskSubmission($data);
     }
+
 
     public function updateTaskSubmission($submissionId, array $submissionDetails)
     {
