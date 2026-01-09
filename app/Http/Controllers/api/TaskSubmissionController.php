@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\TaskSubmissionRequests\TaskSubmissionPaginatedRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Services\CacheService;
+use App\Http\Requests\taskSubmissionRequests\CreateTaskSubmissionRequest;
 
 class TaskSubmissionController extends Controller
 {
@@ -65,10 +66,20 @@ class TaskSubmissionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CreateTaskSubmissionRequest $request)
     {
         $this->authorize('create', TaskSubmission::class);
-        $submission = $this->taskSubmissionService->createTaskSubmission($request->all());
+        
+        $userId=$request->user()->id;
+        $councilId=$request->user()->council_id;
+        $data=[
+            'user_id'=>$userId,
+            'council_id'=>$councilId,
+            'task_id'=>$request->task_id,
+            'file'=>$request->file,
+            'status'=>'submitted',
+        ];
+        $submission = $this->taskSubmissionService->createTaskSubmission($data);
 
         // Clear task submission cache after creating
         $this->cacheService->clearResourceCache('task_submissions');
@@ -102,7 +113,7 @@ class TaskSubmissionController extends Controller
         $submission = TaskSubmission::findOrFail($id);
         $this->authorize('update', $submission);
         $this->taskSubmissionService->updateTaskSubmission($id, $request->all());
-
+        
         // Clear specific submission cache and submission list cache
         $this->cacheService->forget("task_submission:{$id}");
         $this->cacheService->clearResourceCache('task_submissions');

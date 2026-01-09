@@ -53,13 +53,7 @@ class TaskSubmissionRepository implements TaskSubmissionRepositoryInterface
 
     public function createTaskSubmission(array $submissionDetails)
     {
-        return TaskSubmission::create([
-            'task_id' => $submissionDetails['task_id'],
-            'user_id' => $submissionDetails['user_id'],
-            'file' => $submissionDetails['file'],
-            'status' => $submissionDetails['status'],
-            'council_id' => $submissionDetails['council_id'],
-        ]);
+        return TaskSubmission::create($submissionDetails);
     }
 
     public function updateTaskSubmission($submissionId, array $newDetails)
