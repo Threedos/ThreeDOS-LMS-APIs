@@ -2,9 +2,9 @@
 
 namespace App\Enums;
 
-enum TaskStatusEnum
+
+enum TaskStatusEnum: string
 {
-    //
-    case SUBMITTED;
-    case GRADED;
+    case SUBMITTED = 'submitted';
+    case GRADED    = 'graded';
 }
