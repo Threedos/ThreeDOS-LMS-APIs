@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Interfaces\TaskSubmissionRepositoryInterface;
 use App\Http\Requests\TaskSubmissionRequests\TaskSubmissionPaginatedRequest;
 use App\Notifications\EventNotification;
+use App\Enums\TaskStatusEnum;
+
 class TaskSubmissionService
 {
     protected $taskSubmissionRepository;
@@ -31,7 +33,16 @@ class TaskSubmissionService
 
     public function createTaskSubmission(array $submissionDetails)
     {
-        return $this->taskSubmissionRepository->createTaskSubmission($submissionDetails);
+        $userId=auth()->user()->id;
+        $councilId=auth()->user()->council_id;
+        $data=[
+            'user_id'=>$userId,
+            'council_id'=>$councilId,
+            'task_id'=>$submissionDetails['task_id'],
+            'file'=>$submissionDetails['file'],
+            'status'=>TaskStatusEnum::SUBMITTED->value,
+        ];
+        return $this->taskSubmissionRepository->createTaskSubmission($data);
     }
 
     public function updateTaskSubmission($submissionId, array $submissionDetails)

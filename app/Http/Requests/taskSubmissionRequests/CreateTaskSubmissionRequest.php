@@ -25,7 +25,7 @@ class CreateTaskSubmissionRequest extends FormRequest
             //
             'task_id'=>'required',
             'file'=>'required',
-            'status'=>'required',
+            
         ];
     }
 }
