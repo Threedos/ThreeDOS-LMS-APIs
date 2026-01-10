@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Http\Requests\UserRequests\LoginRequest;
+use App\Http\Resources\UserProfileResource;
 
 class AuthController extends Controller
 {
@@ -36,11 +37,12 @@ class AuthController extends Controller
             'access_token' => $token,
             'revoked' => false,
         ]);
-
+        $user = new UserProfileResource($user);
         return response()->json([
+            'user' => $user,
             'access_token' => $token,
             'expires_in' => JWTAuth::factory()->getTTL() * 60,
-            'role' => $user->role->name
+            // 'role' => $user->role->name
         ]);
     }
 
