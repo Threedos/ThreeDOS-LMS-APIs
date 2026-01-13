@@ -16,7 +16,7 @@ return new class extends Migration
             $table->timestamps();
             $table->string('team_number');
             $table->foreignUuid('council_id')->constrained('councils');
-
+            $table->string('task_link')->nullable();
         });
     }
 

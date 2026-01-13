@@ -14,7 +14,8 @@ class Team extends Model
     public $incrementing =false;
     protected $fillable =[
                 'team_number',
-                'council_id'
+                'council_id',
+                'task_link'
             ];
 
 
