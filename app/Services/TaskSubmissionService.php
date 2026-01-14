@@ -48,7 +48,6 @@ class TaskSubmissionService
 
         $data = [
             'user_id'    => $user->id,
-            'council_id' => $user->council_id,
             'task_id'    => $submissionDetails['task_id'],
             'file'       => $filePath,
             'status'     => TaskStatusEnum::SUBMITTED->value,
