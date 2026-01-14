@@ -11,7 +11,7 @@ use App\Http\Controllers\api\CouncilController;
 use App\Http\Controllers\api\CouncilSessionController;
 use App\Http\Controllers\api\AttendanceController;
 use App\Http\Controllers\api\CacheController;
-
+use App\Http\Middleware\RateLimiting;
 //Routes
 Route::get('/instance', function () {
     return response()->json(gethostname());
@@ -19,7 +19,7 @@ Route::get('/instance', function () {
 Route::post('login', [AuthController::class, 'login'])->name('login');
 // Route::post('register', [AuthController::class, 'register']);
 
-Route::middleware(['auth:api', \App\Http\Middleware\RateLimiting::class])->group(function () {
+Route::middleware(['auth:api', RateLimiting::class,'throttle:60,1'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
 
     // Apply cache middleware to resource routes (caches GET requests for 1 hour = 3600 seconds)
