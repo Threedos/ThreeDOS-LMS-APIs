@@ -16,6 +16,7 @@ class Task extends Model
         'description',
         'due_date',
         'status',
+        'CouncilSession_id',
         'council_id',
     ];
 
