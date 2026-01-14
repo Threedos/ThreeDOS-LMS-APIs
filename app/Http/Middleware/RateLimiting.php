@@ -21,8 +21,8 @@ class RateLimiting
         // Multi-tier rate limiting
         $limits = [
             'minute' => ['limit' => $user->rate_limit ?? 60, 'window' => 60],
-            'hour' => ['limit' => $user->hourly_limit ?? 1000, 'window' => 3600],
-            'day' => ['limit' => $user->daily_limit ?? 10000, 'window' => 86400],
+            'hour' => ['limit' => $user->hourly_limit ?? 200, 'window' => 3600],
+            'day' => ['limit' => $user->daily_limit ?? 3000, 'window' => 86400],
         ];
 
         foreach ($limits as $tier => $config) {
