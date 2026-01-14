@@ -38,10 +38,7 @@ Route::middleware(['auth:api', \App\Http\Middleware\RateLimiting::class])->group
     })->middleware('cache.response:1800'); // Cache notifications for 30 minutes
 
     Route::apiResource('task-submissions', TaskSubmissionController::class)->middleware('cache.response:3600');
-    Route::get(
-        'task-submissions/user',
-        [TaskSubmissionController::class, 'GetAllTaskSubmissionsForUser']
-    )->middleware('cache.response:3600');
+  
 
     // Cache management routes
     Route::prefix('cache')->group(function () {
