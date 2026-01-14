@@ -32,8 +32,8 @@ class TaskController extends Controller
         $pageSize = $request->input('pageSize');
         $search = $request->input('search', '');
         $filter = $request->input('filter', '');
-
-        $cacheKey = "tasks:page_{$pageIndex}:size_{$pageSize}:search_{$search}:filter_{$filter}";
+        $council_id = auth()->user()->council->id;
+        $cacheKey = "tasks:council_{$council_id}:page_{$pageIndex}:size_{$pageSize}:search_{$search}:filter_{$filter}";
 
         // Use Redis cache service
         return response()->json(

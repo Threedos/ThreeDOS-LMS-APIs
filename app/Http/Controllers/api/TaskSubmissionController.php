@@ -23,43 +23,34 @@ class TaskSubmissionController extends Controller
         $this->cacheService = $cacheService;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    public function GetAllTaskSubmissionsForUser(TaskSubmissionPaginatedRequest $taskSubmissionPaginatedRequest)
-    {
-        $this->authorize('viewOwn', TaskSubmission::class);
-
-        $userId = $taskSubmissionPaginatedRequest->user()->id;
-        $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
-        $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
-
-        $cacheKey = "task_submissions:user_{$userId}:page_{$pageIndex}:size_{$pageSize}";
-
-        // Use Redis cache service
-        return response()->json(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($taskSubmissionPaginatedRequest) {
-                return $this->taskSubmissionService->getAllTaskSubmissionsForUser($taskSubmissionPaginatedRequest);
-            })
-        );
-    }
-
+    //this is for Instructors & Heads
     public function index(TaskSubmissionPaginatedRequest $taskSubmissionPaginatedRequest)
     {
+          $user = $taskSubmissionPaginatedRequest->user();
+    $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
+    $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
+
+    if ($user->role->name == 'Instructor' || $user->role->name == 'Head') {
+        // For Instructors & Heads
         $this->authorize('viewAny', TaskSubmission::class);
+        $scope = 'council';
+        $scopeId = $user->council_id;
+        $serviceMethod = 'getAllTaskSubmissionsForCouncil';
+    } elseif($user->role->name == 'Delegate') {
+        // For normal Users
+        $this->authorize('viewOwn', TaskSubmission::class);
+        $scope = 'user';
+        $scopeId = $user->id;
+        $serviceMethod = 'getAllTaskSubmissionsForUser';
+    }
 
-        $councilId = $taskSubmissionPaginatedRequest->user()->council_id;
-        $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
-        $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
+    $cacheKey = "task_submissions:{$scope}_{$scopeId}:page_{$pageIndex}:size_{$pageSize}";
 
-        $cacheKey = "task_submissions:council_{$councilId}:page_{$pageIndex}:size_{$pageSize}";
-
-        // Use Redis cache service
-        return response()->json(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($taskSubmissionPaginatedRequest) {
-                return $this->taskSubmissionService->getAllTaskSubmissionsForCouncil($taskSubmissionPaginatedRequest);
-            })
-        );
+    return response()->json(
+        $this->cacheService->remember($cacheKey, 3600, function () use ($taskSubmissionPaginatedRequest, $serviceMethod) {
+            return $this->taskSubmissionService->$serviceMethod($taskSubmissionPaginatedRequest);
+        })
+    );
     }
 
     /**
