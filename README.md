@@ -32,8 +32,8 @@ Authenticate a user and retrieve an access token.
     "user": {
       "name": "User Name",
       "email": "user@example.com",
-      "role": { "id": "uuid", "name": "RoleName" },
-      "council": { "id": "uuid", "name": "CouncilName" }
+      "role":"RoleName"},
+      "council":"CouncilName"
     },
     "access_token": "eyJ0eX...",
     "expires_in": 3600
