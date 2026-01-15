@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\TeamMembers;
 use App\Models\User;
+use App\Enums\RolesEnum;
 use Illuminate\Auth\Access\Response;
 
 class TeamMembersPolicy
@@ -13,7 +14,7 @@ class TeamMembersPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value]);
     }
 
     /**
@@ -21,7 +22,11 @@ class TeamMembersPolicy
      */
     public function view(User $user, TeamMembers $teamMembers): bool
     {
-        return false;
+        if (in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value])) {
+            return $user->council_id === $teamMembers->team->council_id;
+        }
+
+        return $user->id === $teamMembers->user_id;
     }
 
     /**
@@ -29,7 +34,7 @@ class TeamMembersPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value]);
     }
 
     /**
@@ -37,7 +42,8 @@ class TeamMembersPolicy
      */
     public function update(User $user, TeamMembers $teamMembers): bool
     {
-        return false;
+        return in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value])
+            && $user->council_id === $teamMembers->team->council_id;
     }
 
     /**
@@ -45,7 +51,8 @@ class TeamMembersPolicy
      */
     public function delete(User $user, TeamMembers $teamMembers): bool
     {
-        return false;
+        return in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value])
+            && $user->council_id === $teamMembers->team->council_id;
     }
 
     /**
@@ -53,7 +60,8 @@ class TeamMembersPolicy
      */
     public function restore(User $user, TeamMembers $teamMembers): bool
     {
-        return false;
+        return in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value])
+            && $user->council_id === $teamMembers->team->council_id;
     }
 
     /**
@@ -61,6 +69,7 @@ class TeamMembersPolicy
      */
     public function forceDelete(User $user, TeamMembers $teamMembers): bool
     {
-        return false;
+        return in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value])
+            && $user->council_id === $teamMembers->team->council_id;
     }
 }

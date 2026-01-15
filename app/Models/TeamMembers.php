@@ -10,7 +10,7 @@ class TeamMembers extends Model
     /** @use HasFactory<\Database\Factories\TeamMembersFactory> */
     use HasFactory;
 
-    protected $fillable=[
+    protected $fillable = [
         'team_id',
         'user_id',
         'rate',
@@ -20,9 +20,10 @@ class TeamMembers extends Model
 
 
 
-    public function team(){
-        $this->belongsTo(Team::class);
+    public function team()
+    {
+        return $this->belongsTo(Team::class);
     }
 
-    
+
 }
