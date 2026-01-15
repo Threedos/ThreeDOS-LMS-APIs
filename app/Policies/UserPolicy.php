@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
+use App\Enums\RolesEnum;
 
 class UserPolicy
 {
@@ -28,7 +29,7 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        if (auth()->user()->role->name === 'Instructor' || auth()->user()->role->name === 'Head') {
+        if (auth()->user()->role->name === RolesEnum::Instructor->value || auth()->user()->role->name === RolesEnum::Head->value) {
             return true;
         }
         return false;
@@ -37,20 +38,27 @@ class UserPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, User $model): bool
+    public function update(User $authUser, User $targetUser): bool
     {
-        if (auth()->user()->role->name === 'Instructor' || auth()->user()->role->name === 'Head') {
+        if (in_array($authUser->role->name, [
+            RolesEnum::Head->value,
+            RolesEnum::Instructor->value,
+        ], true)) {
             return true;
         }
-        return false;
+
+        return
+            $authUser->role->name === RolesEnum::Delegate->value &&
+            $authUser->id === $targetUser->id;
     }
+
 
     /**
      * Determine whether the user can delete the model.
      */
     public function delete(User $user, User $model): bool
     {
-        if (auth()->user()->role->name === 'Instructor' || auth()->user()->role->name === 'Head') {
+        if (auth()->user()->role->name === RolesEnum::Instructor->value || auth()->user()->role->name === RolesEnum::Head->value) {
             return true;
         }
         return false;
@@ -61,7 +69,7 @@ class UserPolicy
      */
     public function restore(User $user, User $model): bool
     {
-        if (auth()->user()->role->name === 'Instructor' || auth()->user()->role->name === 'Head') {
+        if (auth()->user()->role->name === RolesEnum::Instructor->value || auth()->user()->role->name === RolesEnum::Head->value) {
             return true;
         }
         return false;
@@ -72,7 +80,7 @@ class UserPolicy
      */
     public function forceDelete(User $user, User $model): bool
     {
-        if (auth()->user()->role->name === 'Instructor' || auth()->user()->role->name === 'Head') {
+        if (auth()->user()->role->name === RolesEnum::Instructor->value || auth()->user()->role->name === RolesEnum::Head->value) {
             return true;
         }
         return false;

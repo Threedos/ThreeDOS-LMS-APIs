@@ -3,6 +3,7 @@
 namespace App\Http\Requests\UserRequests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Enums\RolesEnum;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -11,10 +12,7 @@ class UpdateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        if ($this->user()->role->name === 'Head' || $this->user()->role->name === 'Instructor') {
-            return true;
-        }
-        return false;
+        return true;
     }
 
     /**

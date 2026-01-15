@@ -3,6 +3,7 @@ namespace App\Policies;
 
 use App\Models\User;
 use App\Models\TaskSubmission;
+use App\Enums\RolesEnum;
 
 class TaskSubmissionPolicy
 {
@@ -11,7 +12,7 @@ class TaskSubmissionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->role->name === "Head" || $user->role->name === "Instructor";
+        return $user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::Instructor->value;
     }
 
 
@@ -29,7 +30,7 @@ class TaskSubmissionPolicy
         return
             $submission->user_id === $user->id ||
             (
-                ($user->role->name === "Head" || $user->role->name === "Instructor") &&
+                ($user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::Instructor->value) &&
                 $submission->council_id === $user->council_id
             );
     }
@@ -40,7 +41,7 @@ class TaskSubmissionPolicy
     public function create(User $user): bool
     {
         // Delegate can submit task (create submission)
-        return ($user->role->name === 'Delegate' || $user->role->name === 'Instructor' || $user->role->name === 'Head') && $user->council_id !== null ;
+        return ($user->role->name === RolesEnum::Delegate->value || $user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) && $user->council_id !== null ;
     }
 
     /**
@@ -48,7 +49,7 @@ class TaskSubmissionPolicy
      */
     public function update(User $user, TaskSubmission $submission): bool
     {
-        return $submission->user_id === $user->id || (($user->role->name === "Head" || $user->role->name === "Instructor") && $submission->council_id === $user->council_id);
+        return $submission->user_id === $user->id || (($user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::Instructor->value) && $submission->council_id === $user->council_id);
     }
 
     /**
@@ -59,7 +60,7 @@ class TaskSubmissionPolicy
         return
             $submission->user_id === $user->id ||
             (
-                ($user->role->name === "Head" || $user->role->name === "Instructor") &&
+                ($user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::Instructor->value) &&
                 $submission->council_id === $user->council_id
             );
     }

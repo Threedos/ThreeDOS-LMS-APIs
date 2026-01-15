@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\CouncilSession;
 use App\Models\Session;
 use App\Models\User;
+use App\Enums\RolesEnum;
 use Illuminate\Auth\Access\Response;
 
 class SessionPolicy
@@ -30,7 +31,7 @@ class SessionPolicy
      */
     public function create(User $user): bool
     {
-        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+        if($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value){
             return true;
         }
         return false;
@@ -41,7 +42,7 @@ class SessionPolicy
      */
     public function update(User $user, CouncilSession $session): bool
     {
-        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+        if($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value){
             return true;
         }
         return false;
@@ -52,7 +53,7 @@ class SessionPolicy
      */
     public function delete(User $user, CouncilSession $session): bool
     {
-        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+        if($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value){
             return true;
         }
         return false;
@@ -63,7 +64,7 @@ class SessionPolicy
      */
     public function restore(User $user, CouncilSession $session): bool
     {
-        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+        if($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value){
             return true;
         }
         return false;
@@ -74,7 +75,7 @@ class SessionPolicy
      */
     public function forceDelete(User $user, CouncilSession $session): bool
     {
-        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+        if($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value){
             return true;
         }
         return false;

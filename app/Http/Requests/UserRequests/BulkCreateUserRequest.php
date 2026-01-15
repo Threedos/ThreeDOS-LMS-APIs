@@ -3,7 +3,7 @@
 namespace App\Http\Requests\UserRequests;
 
 use Illuminate\Foundation\Http\FormRequest;
-
+use App\Enums\RolesEnum;
 
 class BulkCreateUserRequest extends FormRequest
 {
@@ -12,7 +12,10 @@ class BulkCreateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+   if($this->user()->role->name === RolesEnum::Head || $this->user()->role->name === RolesEnum::Instructor) {
+            return true;
+        }
+        return false;
     }
 
     /**

@@ -5,7 +5,7 @@ namespace App\Policies;
 use App\Models\Council;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
-
+use App\Enums\RolesEnum;
 class CouncilPolicy
 {
     /**
@@ -34,7 +34,7 @@ class CouncilPolicy
         // Assuming the prompt implies Head/Instructor manage things.
         // Usually Council creation might be Super Admin or Head.
         // Let's stick to user request: "Head, Instructor, Delegate(which only view most of models)"
-        return $user->role->name === 'Instructor' || $user->role->name === 'Head';
+        return $user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value;
     }
 
     /**
@@ -42,7 +42,7 @@ class CouncilPolicy
      */
     public function update(User $user, Council $council): bool
     {
-        return ($user->role->name === 'Instructor' || $user->role->name === 'Head') && $user->council_id === $council->id;
+        return ($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) && $user->council_id === $council->id;
     }
 
     /**
@@ -50,7 +50,7 @@ class CouncilPolicy
      */
     public function delete(User $user, Council $council): bool
     {
-        return ($user->role->name === 'Instructor' || $user->role->name === 'Head') && $user->council_id === $council->id;
+        return ($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) && $user->council_id === $council->id;
     }
 
     /**
@@ -58,7 +58,7 @@ class CouncilPolicy
      */
     public function restore(User $user, Council $council): bool
     {
-        return ($user->role->name === 'Instructor' || $user->role->name === 'Head') && $user->council_id === $council->id;
+        return ($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) && $user->council_id === $council->id;
     }
 
     /**
@@ -66,6 +66,6 @@ class CouncilPolicy
      */
     public function forceDelete(User $user, Council $council): bool
     {
-        return ($user->role->name === 'Instructor' || $user->role->name === 'Head') && $user->council_id === $council->id;
+        return ($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) && $user->council_id === $council->id;
     }
 }

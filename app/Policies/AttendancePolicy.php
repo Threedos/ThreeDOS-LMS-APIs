@@ -5,7 +5,7 @@ namespace App\Policies;
 use App\Models\Attendance;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
-
+use App\Enums\RolesEnum;
 class AttendancePolicy
 {
     /**
@@ -29,7 +29,7 @@ class AttendancePolicy
      */
     public function create(User $user): bool
     {
-        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+        if($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value){
             return true;
         }
         return false;
@@ -40,7 +40,7 @@ class AttendancePolicy
      */
     public function update(User $user, Attendance $attendance): bool
     {
-        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+        if($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value){
             return true;
         }
         return false;
@@ -51,7 +51,7 @@ class AttendancePolicy
      */
     public function delete(User $user, Attendance $attendance): bool
     {
-        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+        if($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value){
             return true;
         }
         return false;
@@ -62,7 +62,7 @@ class AttendancePolicy
      */
     public function restore(User $user, Attendance $attendance): bool
     {
-        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+        if($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value){
             return true;
         }
         return false;
@@ -73,7 +73,7 @@ class AttendancePolicy
      */
     public function forceDelete(User $user, Attendance $attendance): bool
     {
-        if($user->role->name == 'Head' || $user->role->name == 'Instructor'){
+        if($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value){
             return true;
         }
         return false;

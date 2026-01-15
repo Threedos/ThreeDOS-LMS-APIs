@@ -5,7 +5,7 @@ namespace App\Policies;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
-
+use App\Enums\RolesEnum;
 class TaskPolicy
 {
     /**
@@ -16,7 +16,7 @@ class TaskPolicy
         // All roles (Head, Instructor, Delegate) can view tasks list if they are authenticated
         // Logic might need to be filtered by council in the controller/service, 
         // but policy-wise, they are allowed to 'viewAny'.
-        return in_array($user->role->name, ['Instructor', 'Head', 'Delegate']);
+        return in_array($user->role->name, [RolesEnum::Instructor->value, RolesEnum::Head->value, RolesEnum::Delegate->value]);
     }
 
     /**
@@ -34,7 +34,7 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role->name === 'Instructor' || $user->role->name === 'Head';
+        return $user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value;
     }
 
     /**
@@ -42,7 +42,7 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        return ($user->role->name === 'Instructor' || $user->role->name === 'Head') && $user->council_id === $task->council_id;
+        return ($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) && $user->council_id === $task->council_id;
     }
 
     /**
@@ -50,7 +50,7 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
-        return ($user->role->name === 'Instructor' || $user->role->name === 'Head') && $user->council_id === $task->council_id;
+        return ($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) && $user->council_id === $task->council_id;
     }
 
     /**
@@ -58,7 +58,7 @@ class TaskPolicy
      */
     public function restore(User $user, Task $task): bool
     {
-        return ($user->role->name === 'Instructor' || $user->role->name === 'Head') && $user->council_id === $task->council_id;
+        return ($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) && $user->council_id === $task->council_id;
     }
 
     /**
@@ -66,6 +66,6 @@ class TaskPolicy
      */
     public function forceDelete(User $user, Task $task): bool
     {
-        return ($user->role->name === 'Instructor' || $user->role->name === 'Head') && $user->council_id === $task->council_id;
+        return ($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) && $user->council_id === $task->council_id;
     }
 }
