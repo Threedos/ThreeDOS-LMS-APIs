@@ -32,7 +32,7 @@ Authenticate a user and retrieve an access token.
     "user": {
       "name": "User Name",
       "email": "user@example.com",
-      "role":"RoleName"},
+      "role":"RoleName",
       "council":"CouncilName"
     },
     "access_token": "eyJ0eX...",
