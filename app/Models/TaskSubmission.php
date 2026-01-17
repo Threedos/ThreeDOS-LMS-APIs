@@ -9,7 +9,7 @@ class TaskSubmission extends Model
 {
     //
     use HasUuids;
-    protected $table = 'tasksubmissions';
+    protected $table = 'task_submissions';
 
 
 

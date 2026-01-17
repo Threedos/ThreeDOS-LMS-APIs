@@ -16,7 +16,7 @@ class Task extends Model
         'description',
         'due_date',
         'status',
-        'CouncilSession_id',
+        'council_session_id',
         // 'council_id',
     ];
     //to be enhance why council_id when i have session id which is related to council_id

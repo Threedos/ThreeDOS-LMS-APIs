@@ -9,7 +9,7 @@ class CouncilSession extends Model
 {
     /** @use HasFactory<\Database\Factories\CouncilSessionFactory> */
     use HasFactory, HasUuids;
-    protected $table = 'CouncilSession';
+    protected $table = 'council_sessions';
     protected $keyType = 'string';
     // protected $primaryKey = 'id';
     public $incrementing = false;
@@ -21,6 +21,10 @@ class CouncilSession extends Model
         'council_id',
     ];
 
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'council_session_id', 'id');
+    }
     public function council()
     {
         return $this->belongsTo(Council::class);
