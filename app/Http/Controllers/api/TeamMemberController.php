@@ -4,17 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\TeamMembers;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 
 class TeamMemberController extends Controller
 {
+        use AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
-        $teamMembers = TeamMembers::all();
-        
+        $this->authorize('viewAny', TeamMembers::class);
+        return response()->json(
+            TeamMembers::all(),
+            200
+        );
     }
 
     /**
@@ -22,30 +28,44 @@ class TeamMemberController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $teamMember = TeamMembers::create($request->all());
-        return response()->json("Created Successfully",201);
+        $this->authorize('create', TeamMembers::class);
+        $teamMember = TeamMembers::create(
+            $request->only([
+                'team_id',
+                'user_id',
+                'rate',
+                'role',
+                'task',
+            ])
+        );
+
+        return response()->json($teamMember, 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(TeamMembers $teamMembers)
+    public function show(TeamMembers $teamMember)
     {
-        //
-        $teamMember = TeamMembers::findOrFail($teamMembers->id);
-        return response()->json($teamMember);
+        $this->authorize('view', TeamMembers::class);
+        return response()->json($teamMember, 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TeamMembers $teamMembers)
+    public function update(Request $request, TeamMembers $teamMember)
     {
-        //
-        $teamMember = TeamMembers::findOrFail($teamMembers->id);
-        $teamMember->update($request->all());
-        return response()->json("Updated Successfully",200);
+        $this->authorize('update', TeamMembers::class);
+        $teamMember->update(
+            $request->only([
+                'rate',
+                'role',
+                'task',
+            ])
+        );
+
+        return response()->json($teamMember, 200);
     }
 
     /**
@@ -53,8 +73,9 @@ class TeamMemberController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $this->authorize('delete', TeamMembers::class);
         TeamMembers::destroy($id);
-        return response()->json('Deleted Successfully',204);
+
+        return response()->json(null, 204);
     }
 }
