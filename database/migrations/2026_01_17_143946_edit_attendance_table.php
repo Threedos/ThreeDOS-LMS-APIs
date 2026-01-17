@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('attendances', function (Blueprint $table) {
             //
-            $table->foreign('council_session_id')->references('id')->on('councilSession')->cascadeOnDelete();
+            $table->foreign('council_session_id')->references('id')->on('CouncilSession')->cascadeOnDelete();
         });
     }
 
