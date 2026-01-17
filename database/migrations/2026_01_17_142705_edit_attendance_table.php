@@ -15,7 +15,7 @@ return new class extends Migration
             //
             $table->dropForeign(['session_id']);
             $table->dropColumn('session_id');
-            $table->foreignUuid('council_session_id')->constrained('council_sessions')->cascadeOnDelete();
+            $table->foreignUuid('council_session_id')->constrained('councilSession')->cascadeOnDelete();
         });
     }
 
