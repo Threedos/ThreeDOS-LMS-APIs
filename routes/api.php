@@ -32,7 +32,7 @@ Route::middleware(['auth:api', RateLimiting::class, 'throttle:60,1'])->group(fun
     Route::apiResource('users', UserController::class)->middleware('cache.response:3600');
     Route::apiResource('roles', RoleController::class)->middleware('cache.response:3600');
     Route::apiResource('tasks', TaskController::class)->middleware('cache.response:3600');
-
+    Route::get('me', [AuthController::class, 'me']);
 
     Route::apiResource('sessions', CouncilSessionController::class)->middleware('cache.response:3600');
     Route::apiResource('attendances', AttendanceController::class)->middleware('cache.response:3600');

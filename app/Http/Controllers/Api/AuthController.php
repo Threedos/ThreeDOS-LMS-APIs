@@ -107,7 +107,13 @@ class AuthController extends Controller
             ? $this->successResponse(null, 'Password reset successfully')
             : $this->errorResponse('Invalid token', 422);
     }
-
+    
+    public function me()
+    {
+        $user = auth()->user();
+        $user = new UserProfileResource($user);
+        return $this->successResponse($user, 'User retrieved successfully');
+    }
     // public function register(Request $request)
     // {
     //     $result = $this->authService->register($request->all());
