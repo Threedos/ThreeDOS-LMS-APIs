@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use SensitiveParameterValue;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Notifications\ResetPasswordNotification;
+use App\Models\TeamMember;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -91,6 +92,28 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Council::class);
     }
 
+        public function teams()
+    {
+        return $this->belongsToMany(
+            Team::class,
+            'team_members',   // pivot table
+            'user_id',
+            'team_id'
+        )->withPivot(['role', 'joined_at'])
+         ->withTimestamps();
+    }
+
+    public function teamMembers()
+    {
+        return $this->hasMany(TeamMembers::class);
+    }
+
+
+    public function attendance()
+    {
+
+        return $this->hasMany(Attendance::class);
+    }
 
 
     public function sendPasswordResetNotification($token)

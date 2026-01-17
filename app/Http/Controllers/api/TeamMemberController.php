@@ -13,6 +13,8 @@ class TeamMemberController extends Controller
     public function index()
     {
         //
+        $teamMembers = TeamMembers::all();
+        
     }
 
     /**
@@ -21,6 +23,8 @@ class TeamMemberController extends Controller
     public function store(Request $request)
     {
         //
+        $teamMember = TeamMembers::create($request->all());
+        return response()->json("Created Successfully",201);
     }
 
     /**
@@ -29,6 +33,8 @@ class TeamMemberController extends Controller
     public function show(TeamMembers $teamMembers)
     {
         //
+        $teamMember = TeamMembers::findOrFail($teamMembers->id);
+        return response()->json($teamMember);
     }
 
     /**
@@ -37,6 +43,9 @@ class TeamMemberController extends Controller
     public function update(Request $request, TeamMembers $teamMembers)
     {
         //
+        $teamMember = TeamMembers::findOrFail($teamMembers->id);
+        $teamMember->update($request->all());
+        return response()->json("Updated Successfully",200);
     }
 
     /**

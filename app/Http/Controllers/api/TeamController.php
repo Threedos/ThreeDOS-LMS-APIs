@@ -15,6 +15,9 @@ class TeamController extends Controller
     public function index()
     {
         //
+        $teams = Team::all();
+        $teams = TeamResource::collection($teams);
+        return response()->json($teams);
 
     }
 
@@ -46,6 +49,8 @@ class TeamController extends Controller
     public function update(Request $request, Team $team)
     {
         //
+        $team->update($request->all());
+        return response()->json("Updated Successfully",200);
     }
 
     /**

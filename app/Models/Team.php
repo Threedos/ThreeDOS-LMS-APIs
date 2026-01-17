@@ -23,6 +23,16 @@ class Team extends Model
         return $this->belongsTo(Council::class , 'council_id');
     }
 
+        public function users()
+    {
+        return $this->belongsToMany(
+            User::class,
+            'team_members',
+            'team_id',
+            'user_id'
+        )->withPivot(['role', 'joined_at'])
+         ->withTimestamps();
+    }
     public function team_members(){
         return $this->hasMany(TeamMembers::class , 'team_id');
     }

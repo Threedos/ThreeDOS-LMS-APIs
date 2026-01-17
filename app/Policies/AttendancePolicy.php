@@ -13,7 +13,11 @@ class AttendancePolicy
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return in_array($user->role->name, [
+            RolesEnum::Head->value,
+            RolesEnum::Instructor->value,
+            RolesEnum::Delegate->value
+        ]);
     }
 
     /**
@@ -21,7 +25,11 @@ class AttendancePolicy
      */
     public function view(User $user, Attendance $attendance): bool
     {
-        return true;
+        return in_array($user->role->name, [
+            RolesEnum::Head->value,
+            RolesEnum::Instructor->value,
+            RolesEnum::Delegate->value
+        ]);
     }
 
     /**
