@@ -16,7 +16,7 @@ class Attendance extends Model
     public $incrementing = false;
     protected $fillable = [
         'user_id',
-        'session_id',
+        'council_session_id',
         
         'status',
     ];
@@ -27,6 +27,6 @@ class Attendance extends Model
     }
     public function session()
     {
-        return $this->belongsTo(CouncilSession::class);
+        return $this->belongsTo(CouncilSession::class, 'session_id', 'id');
     }
 }
