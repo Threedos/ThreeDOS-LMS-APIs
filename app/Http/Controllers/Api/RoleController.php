@@ -24,10 +24,11 @@ class RoleController extends Controller
     public function index()
     {
         // Use Redis cache service
-        return response()->json(
+        return $this->successResponse(
             $this->cacheService->remember('roles:all', 3600, function () {
                 return $this->roleService->getAllRoles();
-            })
+            }),
+            'Success'
         );
     }
 
@@ -41,7 +42,7 @@ class RoleController extends Controller
             "name" => "required",
         ]);
         if ($validator->fails()) {
-            return response()->json($validator->errors(), 422);
+            return $this->validationErrorResponse($validator->errors(), 'Validation failed');
         }
         $role = $this->roleService->createRole([
             "name" => $request->name,
@@ -50,7 +51,7 @@ class RoleController extends Controller
         // Clear role cache after creating
         $this->cacheService->clearResourceCache('roles');
 
-        return response()->json($role, 201);
+        return $this->createdResponse($role, 'Success');
     }
 
     /**
@@ -59,10 +60,11 @@ class RoleController extends Controller
     public function show(string $id)
     {
         // Use Redis cache service
-        return response()->json(
+        return $this->successResponse(
             $this->cacheService->remember('role:' . $id, 3600, function () use ($id) {
                 return $this->roleService->getRoleById($id);
-            })
+            }),
+            'Success'
         );
     }
 
@@ -77,7 +79,7 @@ class RoleController extends Controller
         $this->cacheService->forget("role:{$id}");
         $this->cacheService->clearResourceCache('roles');
 
-        return response()->json(['message' => 'Role updated successfully']);
+        return $this->successResponse(null, 'Success');
     }
 
     /**
@@ -91,6 +93,6 @@ class RoleController extends Controller
         $this->cacheService->forget("role:{$id}");
         $this->cacheService->clearResourceCache('roles');
 
-        return response()->json(['message' => 'Role deleted successfully']);
+        return $this->successResponse(null, 'Success');
     }
 }

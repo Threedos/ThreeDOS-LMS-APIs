@@ -54,7 +54,7 @@ class ApiExceptionHandler
 
         // --- 3. Prepare JSON response ---
         $response = [
-            'status' => 'error',
+            'status' => 'failed',
             'message' => $message,
         ];
 

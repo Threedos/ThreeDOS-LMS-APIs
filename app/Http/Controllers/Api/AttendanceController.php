@@ -41,7 +41,10 @@ class AttendanceController extends Controller
             return $baseQuery->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex);
         });
 
-        return AttendanceResource::collection($data);
+        return $this->successResponse(
+            AttendanceResource::collection($data),
+            'Success'
+        );
     }
 
 
@@ -58,7 +61,7 @@ class AttendanceController extends Controller
         // Clear attendance cache after creating
         $this->cacheService->clearResourceCache('attendances');
 
-        return response()->json($attendance, 201);
+        return $this->createdResponse($attendance, 'Success');
     }
 
 
@@ -72,7 +75,7 @@ class AttendanceController extends Controller
         // Clear attendance cache after bulk import
         $this->cacheService->clearResourceCache('attendances');
 
-        return response()->json(['message' => 'Attendances imported successfully']);
+        return $this->successResponse(null, 'Success');
     }
 
     /**
@@ -83,10 +86,11 @@ class AttendanceController extends Controller
         $cacheKey = "attendance:{$id}";
 
         // Use Redis cache service
-        return response()->json(
+        return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
                 return Attendance::findOrFail($id);
-            })
+            }),
+            'Success'
         );
     }
 
@@ -104,7 +108,7 @@ class AttendanceController extends Controller
         $this->cacheService->forget("attendance:{$id}");
         $this->cacheService->clearResourceCache('attendances');
 
-        return response()->json($attendance);
+        return $this->successResponse($attendance, 'Success');
     }
 
     /**
@@ -120,6 +124,6 @@ class AttendanceController extends Controller
         $this->cacheService->forget("attendance:{$id}");
         $this->cacheService->clearResourceCache('attendances');
 
-        return response()->json(null, 204);
+        return $this->noContentResponse('Success');
     }
 }

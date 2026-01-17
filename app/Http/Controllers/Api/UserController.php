@@ -40,7 +40,7 @@ class UserController extends Controller
         // Clear all user cache after bulk import
         $this->cacheService->clearResourceCache('users');
 
-        return response()->json(['message' => 'Users imported successfully']);
+        return $this->successResponse(null, 'Users imported successfully');
     }
 
     /**
@@ -57,12 +57,13 @@ class UserController extends Controller
         $cacheKey = "users:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
 
         // Use Redis cache service
-        return response()->json(
+        return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
                 $usersPaginator = $this->userService->getAllUsers($request);
                 $usersCollection = new UserCollection($usersPaginator);
                 return $usersCollection->response()->getData(true);
-            })
+            }),
+            'Success'
         );
     }
 
@@ -77,7 +78,7 @@ class UserController extends Controller
         // Clear user list cache after creating a new user
         $this->cacheService->clearResourceCache('users');
 
-        return response()->json('User created successfully', 201);
+        return $this->createdResponse(null, 'Success');
     }
 
     /**
@@ -88,13 +89,14 @@ class UserController extends Controller
         $cacheKey = "user:{$id}";
 
         // Use Redis cache service with remember pattern
-        return response()->json(
+        return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
                 $userModel = $this->userService->getUserById($id);
                 $this->authorize('view', $userModel);
                 $resource = UserResource::make($userModel);
                 return $resource->response()->getData(true);
-            })
+            }),
+            'Success'
         );
     }
 
@@ -112,7 +114,7 @@ class UserController extends Controller
         $this->cacheService->forget("user:{$id}");
         $this->cacheService->clearResourceCache('users');
 
-        return response()->json(['message' => 'User updated successfully']);
+        return $this->successResponse(null, 'Success');
     }
 
     /**
@@ -129,6 +131,6 @@ class UserController extends Controller
         $this->cacheService->forget("user:{$id}");
         $this->cacheService->clearResourceCache('users');
 
-        return response()->json(['message' => 'User deleted successfully']);
+        return $this->successResponse(null, 'Success');
     }
 }

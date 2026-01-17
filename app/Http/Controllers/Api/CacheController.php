@@ -24,10 +24,7 @@ class CacheController extends Controller
     {
         $stats = $this->cacheService->getStats();
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $stats,
-        ]);
+        return $this->successResponse($stats, 'Cache statistics retrieved successfully');
     }
 
     /**
@@ -39,11 +36,10 @@ class CacheController extends Controller
     {
         $deleted = $this->cacheService->clearAllEndpointCache();
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Endpoint cache cleared',
-            'keys_deleted' => $deleted,
-        ]);
+        return $this->successResponse(
+            ['keys_deleted' => $deleted],
+            'Endpoint cache cleared'
+        );
     }
 
     /**
@@ -61,11 +57,10 @@ class CacheController extends Controller
         $resource = $request->input('resource');
         $deleted = $this->cacheService->clearResourceCache($resource);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => "Cache cleared for resource: {$resource}",
-            'keys_deleted' => $deleted,
-        ]);
+        return $this->successResponse(
+            ['keys_deleted' => $deleted],
+            "Cache cleared for resource: {$resource}"
+        );
     }
 
     /**
@@ -78,10 +73,9 @@ class CacheController extends Controller
     {
         $deleted = $this->cacheService->clearUserCache($userId);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => "Cache cleared for user: {$userId}",
-            'keys_deleted' => $deleted,
-        ]);
+        return $this->successResponse(
+            ['keys_deleted' => $deleted],
+            "Cache cleared for user: {$userId}"
+        );
     }
 }

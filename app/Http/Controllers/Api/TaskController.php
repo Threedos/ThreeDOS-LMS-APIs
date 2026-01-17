@@ -36,10 +36,11 @@ class TaskController extends Controller
         $cacheKey = "tasks:council_{$council_id}:page_{$pageIndex}:size_{$pageSize}:search_{$search}:filter_{$filter}";
 
         // Use Redis cache service
-        return response()->json(
+        return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
                 return $this->taskService->getAllTasks($request);
-            })
+            }),
+            'Success'
         );
     }
 
@@ -54,7 +55,7 @@ class TaskController extends Controller
         // Clear task cache after creating
         $this->cacheService->clearResourceCache('tasks');
 
-        return response()->json($task, 201);
+        return $this->createdResponse($task, 'Success');
     }
 
     /**
@@ -65,12 +66,13 @@ class TaskController extends Controller
         $cacheKey = "task:{$id}";
 
         // Use Redis cache service with remember pattern
-        return response()->json(
+        return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
                 $task = Task::findOrFail($id);
                 $this->authorize('view', $task);
                 return $this->taskService->getTaskById($id);
-            })
+            }),
+            'Success'
         );
     }
 
@@ -87,7 +89,7 @@ class TaskController extends Controller
         $this->cacheService->forget("task:{$id}");
         $this->cacheService->clearResourceCache('tasks');
 
-        return response()->json(['message' => 'Task updated successfully']);
+        return $this->successResponse(null, 'Success');
     }
 
     /**
@@ -103,6 +105,6 @@ class TaskController extends Controller
         $this->cacheService->forget("task:{$id}");
         $this->cacheService->clearResourceCache('tasks');
 
-        return response()->json(['message' => 'Task deleted successfully']);
+        return $this->successResponse(null, 'Success');
     }
 }

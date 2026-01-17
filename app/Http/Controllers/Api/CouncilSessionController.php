@@ -32,14 +32,15 @@ class CouncilSessionController extends Controller
         $cacheKey = "sessions:council_{$council_id}:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
 
         // Use Redis cache service
-        return response()->json(
+        return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($request, $council_id) {
                 $baseQuery = CouncilSession::where('council_id', $council_id)->withCount('attendance');
                 if ($request->search) {
                     $baseQuery = $baseQuery->where('title', 'like', "%{$request->search}%");
                 }
                 return $baseQuery->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex);
-            })
+            }),
+            'Success'
         );
     }
 
@@ -55,7 +56,7 @@ class CouncilSessionController extends Controller
         // Clear session cache after creating
         $this->cacheService->clearResourceCache('sessions');
 
-        return response()->json($session, 201);
+        return $this->createdResponse($session, 'Council session created successfully');
     }
 
     /**
@@ -66,10 +67,11 @@ class CouncilSessionController extends Controller
         $cacheKey = "session:{$id}";
 
         // Use Redis cache service
-        return response()->json(
+        return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
                 return CouncilSession::findOrFail($id)->withCount('attendance');
-            })
+            }),
+            'Success'
         );
 
     }
@@ -88,7 +90,7 @@ class CouncilSessionController extends Controller
         $this->cacheService->forget("session:{$id}");
         $this->cacheService->clearResourceCache('sessions');
 
-        return response()->json($session);
+        return $this->successResponse($session, 'Success');
     }
 
     /**
@@ -104,6 +106,6 @@ class CouncilSessionController extends Controller
         $this->cacheService->forget("session:{$id}");
         $this->cacheService->clearResourceCache('sessions');
 
-        return response()->json(null, 204);
+        return $this->noContentResponse('Success');
     }
 }

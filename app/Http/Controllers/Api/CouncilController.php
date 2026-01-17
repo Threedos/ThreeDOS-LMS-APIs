@@ -40,10 +40,11 @@ class CouncilController extends Controller
         $cacheKey = "councils:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
 
         // Use Redis cache service
-        return response()->json(
+        return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
                 return $this->councilService->getAllCouncils($request);
-            })
+            }),
+            'Councils retrieved successfully'
         );
     }
 
@@ -63,7 +64,7 @@ class CouncilController extends Controller
         // Clear council cache after creating
         $this->cacheService->clearResourceCache('councils');
 
-        return response()->json(['message' => 'Council created successfully'], 201);
+        return $this->createdResponse(null, 'Council created successfully');
     }
 
     /**
@@ -74,12 +75,13 @@ class CouncilController extends Controller
         $cacheKey = "council:{$id}";
 
         // Use Redis cache service with remember pattern
-        return response()->json(
+        return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
                 $council = Council::findOrFail($id);
                 $this->authorize('view', $council);
                 return $this->councilService->getCouncilById($id);
-            })
+            }),
+            'Council retrieved successfully'
         );
     }
 
@@ -96,7 +98,7 @@ class CouncilController extends Controller
         $this->cacheService->forget("council:{$id}");
         $this->cacheService->clearResourceCache('councils');
 
-        return response()->json(['message' => 'Council updated successfully']);
+        return $this->successResponse(null, 'Council updated successfully');
     }
 
     /**
@@ -112,6 +114,6 @@ class CouncilController extends Controller
         $this->cacheService->forget("council:{$id}");
         $this->cacheService->clearResourceCache('councils');
 
-        return response()->json(['message' => 'Council deleted successfully']);
+        return $this->successResponse(null, 'Council deleted successfully');
     }
 }

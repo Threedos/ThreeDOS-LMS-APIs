@@ -26,31 +26,32 @@ class TaskSubmissionController extends Controller
     //this is for Instructors & Heads
     public function index(TaskSubmissionPaginatedRequest $taskSubmissionPaginatedRequest)
     {
-          $user = $taskSubmissionPaginatedRequest->user();
-    $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
-    $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
+        $user = $taskSubmissionPaginatedRequest->user();
+        $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
+        $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
 
-    if ($user->role->name == 'Instructor' || $user->role->name == 'Head') {
-        // For Instructors & Heads
-        $this->authorize('viewAny', TaskSubmission::class);
-        $scope = 'council';
-        $scopeId = $user->council_id;
-        $serviceMethod = 'getAllTaskSubmissionsForCouncil';
-    } elseif($user->role->name == 'Delegate') {
-        // For normal Users
-        $this->authorize('viewOwn', TaskSubmission::class);
-        $scope = 'user';
-        $scopeId = $user->id;
-        $serviceMethod = 'getAllTaskSubmissionsForUser';
-    }
+        if ($user->role->name == 'Instructor' || $user->role->name == 'Head') {
+            // For Instructors & Heads
+            $this->authorize('viewAny', TaskSubmission::class);
+            $scope = 'council';
+            $scopeId = $user->council_id;
+            $serviceMethod = 'getAllTaskSubmissionsForCouncil';
+        } elseif ($user->role->name == 'Delegate') {
+            // For normal Users
+            $this->authorize('viewOwn', TaskSubmission::class);
+            $scope = 'user';
+            $scopeId = $user->id;
+            $serviceMethod = 'getAllTaskSubmissionsForUser';
+        }
 
-    $cacheKey = "task_submissions:{$scope}_{$scopeId}:page_{$pageIndex}:size_{$pageSize}";
+        $cacheKey = "task_submissions:{$scope}_{$scopeId}:page_{$pageIndex}:size_{$pageSize}";
 
-    return response()->json(
-        $this->cacheService->remember($cacheKey, 3600, function () use ($taskSubmissionPaginatedRequest, $serviceMethod) {
-            return $this->taskSubmissionService->$serviceMethod($taskSubmissionPaginatedRequest);
-        })
-    );
+        return $this->successResponse(
+            $this->cacheService->remember($cacheKey, 3600, function () use ($taskSubmissionPaginatedRequest, $serviceMethod) {
+                return $this->taskSubmissionService->$serviceMethod($taskSubmissionPaginatedRequest);
+            }),
+            'Success'
+        );
     }
 
     /**
@@ -59,15 +60,15 @@ class TaskSubmissionController extends Controller
     public function store(CreateTaskSubmissionRequest $request)
     {
         $this->authorize('create', TaskSubmission::class);
-        
-    
+
+
         $submission = $this->taskSubmissionService->createTaskSubmission($request->all());
 
         // Clear task submission cache after creating
         $this->cacheService->clearResourceCache('task_submissions');
         $this->cacheService->clearResourceCache('task-submissions');
 
-        return response()->json($submission, 201);
+        return $this->createdResponse($submission, 'Success');
     }
 
     /**
@@ -78,12 +79,13 @@ class TaskSubmissionController extends Controller
         $cacheKey = "task_submission:{$id}";
 
         // Use Redis cache service
-        return response()->json(
+        return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
                 $submission = TaskSubmission::findOrFail($id);
                 $this->authorize('view', $submission);
                 return $this->taskSubmissionService->getTaskSubmissionById($id);
-            })
+            }),
+            'Success'
         );
     }
 
@@ -101,7 +103,7 @@ class TaskSubmissionController extends Controller
         $this->cacheService->clearResourceCache('task_submissions');
         $this->cacheService->clearResourceCache('task-submissions');
 
-        return response()->json(['message' => 'TaskSubmission updated successfully']);
+        return $this->successResponse(null, 'Success');
     }
 
     /**
@@ -118,6 +120,6 @@ class TaskSubmissionController extends Controller
         $this->cacheService->clearResourceCache('task_submissions');
         $this->cacheService->clearResourceCache('task-submissions');
 
-        return response()->json(['message' => 'TaskSubmission deleted successfully']);
+        return $this->successResponse(null, 'Success');
     }
 }

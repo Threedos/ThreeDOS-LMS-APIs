@@ -17,9 +17,9 @@ class TeamMemberController extends Controller
     public function index()
     {
         $this->authorize('viewAny', TeamMember::class);
-        return response()->json(
+        return $this->successResponse(
             TeamMember::all(),
-            200
+            'Success'
         );
     }
 
@@ -43,10 +43,10 @@ class TeamMemberController extends Controller
         // Bulk insert
         TeamMember::insert($membersData);
 
-        return response()->json([
-            'message' => 'Team members created successfully',
-            'count' => count($membersData),
-        ], 201);
+        return $this->createdResponse(
+            ['count' => count($membersData)],
+            'Success'
+        );
     }
 
 
@@ -56,7 +56,7 @@ class TeamMemberController extends Controller
     public function show(TeamMember $teamMember)
     {
         $this->authorize('view', TeamMember::class);
-        return response()->json($teamMember, 200);
+        return $this->successResponse($teamMember, 'Success');
     }
 
     /**
@@ -73,7 +73,7 @@ class TeamMemberController extends Controller
             ])
         );
 
-        return response()->json($teamMember, 200);
+        return $this->successResponse($teamMember, 'Success');
     }
 
     /**
@@ -84,6 +84,6 @@ class TeamMemberController extends Controller
         $this->authorize('delete', TeamMember::class);
         TeamMember::destroy($id);
 
-        return response()->json(null, 204);
+        return $this->noContentResponse('Success');
     }
 }
