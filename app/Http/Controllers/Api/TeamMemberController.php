@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\TeamMember;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-
+use App\Http\Requests\TeamMemberRequest;
 class TeamMemberController extends Controller
 {
     use AuthorizesRequests;
@@ -29,18 +29,26 @@ class TeamMemberController extends Controller
     public function store(Request $request)
     {
         $this->authorize('create', TeamMember::class);
-        $teamMember = TeamMember::create(
-            $request->only([
-                'team_id',
-                'user_id',
-                'rate',
-                'role',
-                'task',
-            ])
-        );
 
-        return response()->json($teamMember, 201);
+        $validated = $request->validate(TeamMemberRequest::rules());
+
+        $membersData = $validated['members'];
+
+        // Add timestamps if using $table->timestamps()
+        foreach ($membersData as &$member) {
+            $member['created_at'] = now();
+            $member['updated_at'] = now();
+        }
+
+        // Bulk insert
+        TeamMember::insert($membersData);
+
+        return response()->json([
+            'message' => 'Team members created successfully',
+            'count' => count($membersData),
+        ], 201);
     }
+
 
     /**
      * Display the specified resource.
