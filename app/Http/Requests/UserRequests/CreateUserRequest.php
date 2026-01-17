@@ -12,7 +12,7 @@ class CreateUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        if($this->user()->role->name === RolesEnum::Head || $this->user()->role->name === RolesEnum::Instructor) {
+        if ($this->user()->role->name === RolesEnum::Head->value || $this->user()->role->name === RolesEnum::Instructor->value || $this->user()->role->name === RolesEnum::VicePresident->value) {
             return true;
         }
         return false;

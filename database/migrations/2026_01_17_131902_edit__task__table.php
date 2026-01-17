@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::table('tasks', function (Blueprint $table) {
             //
-            
-            $table->foreignUuid('CouncilSession_id')->nullable()->constrained('CouncilSession');
+            if (Schema::hasColumn('tasks', 'council_id')) {
+                $table->dropIndex('tasks_council_id_index');
+                $table->dropForeign(['council_id']);
+                $table->dropColumn('council_id');
+            }
         });
     }
 
@@ -23,12 +26,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        if(Schema::hasColumn('tasks', 'CouncilSession_id')) {
-            Schema::table('tasks', function (Blueprint $table) {
-                //
-                $table->dropForeign(['CouncilSession_id']);
-                // $table->dropColumn('CouncilSession_id');
-            });
-        }
+        Schema::table('tasks', function (Blueprint $table) {
+            //
+        });
     }
 };

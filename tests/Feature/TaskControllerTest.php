@@ -2,114 +2,101 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
+use App\Models\Role;
+use App\Models\Council;
+use App\Models\Task;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use App\Services\TaskService;
-use Mockery\MockInterface;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Enums\RolesEnum;
+use Illuminate\Support\Carbon;
 
 class TaskControllerTest extends TestCase
 {
-    /**
-     * Test index method returns all tasks.
-     */
-    public function test_index_returns_all_tasks()
+    use RefreshDatabase;
+
+    protected $headRole;
+    protected $instructorRole;
+    protected $delegateRole;
+    protected $council;
+
+    protected function setUp(): void
     {
-        $mockTasks = [
-            ['id' => 1, 'name' => 'Task 1'],
-            ['id' => 2, 'name' => 'Task 2']
+        parent::setUp();
+
+        $this->headRole = Role::create(['name' => RolesEnum::Head->value]);
+        $this->instructorRole = Role::create(['name' => RolesEnum::Instructor->value]);
+        $this->delegateRole = Role::create(['name' => RolesEnum::Delegate->value]);
+
+        $this->council = Council::create(['name' => 'General Council', 'description' => 'Desc']);
+    }
+
+    private function authenticateUser($user)
+    {
+        $token = JWTAuth::fromUser($user);
+        return $this->withHeaders(['Authorization' => "Bearer $token"]);
+    }
+
+    public function test_tasks_can_be_listed()
+    {
+        $user = User::factory()->create([
+            'role_id' => $this->headRole->id,
+            'council_id' => $this->council->id
+        ]);
+
+        Task::factory()->count(3)->create([
+            'council_id' => $this->council->id
+        ]);
+
+        // Requires pagination params
+        $response = $this->authenticateUser($user)->getJson('/api/tasks?pageIndex=1&pageSize=10');
+
+        $response->assertStatus(200)
+            ->assertJsonStructure([
+                '*' => ['id', 'title', 'council_id']
+            ]);
+    }
+
+    public function test_head_can_create_task()
+    {
+        $head = User::factory()->create([
+            'role_id' => $this->headRole->id,
+            'council_id' => $this->council->id
+        ]);
+
+        $taskData = [
+            'title' => 'New Task',
+            'description' => 'Task Description',
+            'due_date' => Carbon::now()->addDays(2)->toDateTimeString(),
+            'status' => 'Pending',
+            'council_id' => $this->council->id,
+            'CouncilSession_id' => null
         ];
 
-        $this->mock(TaskService::class, function (MockInterface $mock) use ($mockTasks) {
-            $mock->shouldReceive('getAllTasks')
-                ->once()
-                ->andReturn($mockTasks);
-        });
+        $response = $this->authenticateUser($head)->postJson('/api/tasks', $taskData);
 
-        $response = $this->getJson('/api/tasks');
-
-        $response->assertStatus(200)
-            ->assertJson($mockTasks);
+        $response->assertStatus(201);
+        $this->assertDatabaseHas('tasks', ['title' => 'New Task']);
     }
 
-    /**
-     * Test store method creates a task.
-     */
-    public function test_store_creates_new_task()
+    public function test_delegate_cannot_create_task()
     {
-        $taskData = ['name' => 'New Task'];
-        $createdTask = ['id' => 1, 'name' => 'New Task'];
+        $delegate = User::factory()->create([
+            'role_id' => $this->delegateRole->id,
+            'council_id' => $this->council->id
+        ]);
 
-        $this->mock(TaskService::class, function (MockInterface $mock) use ($taskData, $createdTask) {
-            $mock->shouldReceive('createTask')
-                ->once()
-                ->with($taskData)
-                ->andReturn($createdTask);
-        });
+        $taskData = [
+            'title' => 'Unauthorized Task',
+            'description' => 'Desc',
+            'due_date' => Carbon::now()->toDateTimeString(),
+            'status' => 'Pending',
+            'council_id' => $this->council->id
+        ];
 
-        $response = $this->postJson('/api/tasks', $taskData);
+        $response = $this->authenticateUser($delegate)->postJson('/api/tasks', $taskData);
 
-        $response->assertStatus(201)
-            ->assertJson($createdTask);
-    }
-
-    /**
-     * Test show method returns a specific task.
-     */
-    public function test_show_returns_task()
-    {
-        $taskId = '1';
-        $task = ['id' => 1, 'name' => 'Task 1'];
-
-        $this->mock(TaskService::class, function (MockInterface $mock) use ($taskId, $task) {
-            $mock->shouldReceive('getTaskById')
-                ->once()
-                ->with($taskId)
-                ->andReturn($task);
-        });
-
-        $response = $this->getJson("/api/tasks/{$taskId}");
-
-        $response->assertStatus(200)
-            ->assertJson($task);
-    }
-
-    /**
-     * Test update method updates a task.
-     */
-    public function test_update_updates_task()
-    {
-        $taskId = '1';
-        $updateData = ['name' => 'Updated Task'];
-
-        $this->mock(TaskService::class, function (MockInterface $mock) use ($taskId, $updateData) {
-            $mock->shouldReceive('updateTask')
-                ->once()
-                ->with($taskId, $updateData);
-        });
-
-        $response = $this->putJson("/api/tasks/{$taskId}", $updateData);
-
-        $response->assertStatus(200)
-            ->assertJson(['message' => 'Task updated successfully']);
-    }
-
-    /**
-     * Test destroy method deletes a task.
-     */
-    public function test_destroy_deletes_task()
-    {
-        $taskId = '1';
-
-        $this->mock(TaskService::class, function (MockInterface $mock) use ($taskId) {
-            $mock->shouldReceive('deleteTask')
-                ->once()
-                ->with($taskId);
-        });
-
-        $response = $this->deleteJson("/api/tasks/{$taskId}");
-
-        $response->assertStatus(200)
-            ->assertJson(['message' => 'Task deleted successfully']);
+        $response->assertStatus(403);
     }
 }

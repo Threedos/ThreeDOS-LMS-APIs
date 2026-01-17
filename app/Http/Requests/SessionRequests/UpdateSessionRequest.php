@@ -23,12 +23,12 @@ class UpdateSessionRequest extends FormRequest
     {
         return [
             //
-            'title' => 'required|string',
-            'date' => 'required|date',
+            'title' => 'sometimes|string',
+            'date' => 'sometimes|date',//sometimes for optional fields
             'description' => 'nullable|string',
             'material' => 'nullable|string',
-            'council_id' => 'required|exists:councils,id',
-            
+            'council_id' => 'sometimes|exists:councils,id',//sometimes for optional fields
+
         ];
     }
 }

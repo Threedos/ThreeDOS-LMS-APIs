@@ -88,8 +88,8 @@ class CouncilController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // $council = Council::findOrFail($id);
-        $this->authorize('update', Council::class);
+        $council = Council::findOrFail($id);
+        $this->authorize('update', $council);
         $this->councilService->updateCouncil($id, $request->all());
 
         // Clear specific council cache and council list cache
@@ -104,8 +104,8 @@ class CouncilController extends Controller
      */
     public function destroy(string $id)
     {
-        // $council = Council::findOrFail($id);
-        $this->authorize('delete', Council::class);
+        $council = Council::findOrFail($id);
+        $this->authorize('delete', $council);
         $this->councilService->deleteCouncil($id);
 
         // Clear specific council cache and council list cache

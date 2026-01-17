@@ -4,12 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Task extends Model
 {
     //
-    use HasUuids;
-       public $incrementing = false;
+    use HasUuids, HasFactory;
+    public $incrementing = false;
     public $keyType = 'string';
     protected $fillable = [
         'title',
@@ -17,11 +17,11 @@ class Task extends Model
         'due_date',
         'status',
         'CouncilSession_id',
-        'council_id',
+        // 'council_id',
     ];
-
+    //to be enhance why council_id when i have session id which is related to council_id
     public function council()
     {
-        return $this->belongsTo(Council::class);
+        return $this->belongsTo(CouncilSession::class);
     }
 }

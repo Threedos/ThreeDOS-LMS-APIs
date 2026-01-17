@@ -12,6 +12,10 @@ use App\Http\Controllers\Api\CouncilSessionController;
 use App\Http\Controllers\Api\AttendanceController;
 use App\Http\Controllers\Api\CacheController;
 use App\Http\Middleware\RateLimiting;
+use App\Http\Controllers\Api\TeamController;
+use App\Http\Controllers\Api\TeamMemberController;
+
+
 //Routes
 Route::get('/instance', function () {
     return response()->json(gethostname());
@@ -19,7 +23,7 @@ Route::get('/instance', function () {
 Route::post('login', [AuthController::class, 'login'])->name('login');
 // Route::post('register', [AuthController::class, 'register']);
 
-Route::middleware(['auth:api', RateLimiting::class,'throttle:60,1'])->group(function () {
+Route::middleware(['auth:api', RateLimiting::class, 'throttle:60,1'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
 
     // Apply cache middleware to resource routes (caches GET requests for 1 hour = 3600 seconds)
@@ -29,7 +33,7 @@ Route::middleware(['auth:api', RateLimiting::class,'throttle:60,1'])->group(func
     Route::apiResource('roles', RoleController::class)->middleware('cache.response:3600');
     Route::apiResource('tasks', TaskController::class)->middleware('cache.response:3600');
 
-    
+
     Route::apiResource('sessions', CouncilSessionController::class)->middleware('cache.response:3600');
     Route::apiResource('attendances', AttendanceController::class)->middleware('cache.response:3600');
     Route::post('attendances/bulk', [AttendanceController::class, 'bulkStore']);
@@ -38,7 +42,9 @@ Route::middleware(['auth:api', RateLimiting::class,'throttle:60,1'])->group(func
     })->middleware('cache.response:1800'); // Cache notifications for 30 minutes
 
     Route::apiResource('task-submissions', TaskSubmissionController::class)->middleware('cache.response:3600');
-  
+    Route::apiResource('teams', TeamController::class);
+    Route::apiResource('team-members', TeamMemberController::class);
+
 
     // Cache management routes
     Route::prefix('cache')->group(function () {

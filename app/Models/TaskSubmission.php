@@ -23,7 +23,7 @@ class TaskSubmission extends Model
         'status',
         'grade',
         'comment',
-        'council_id',
+        // 'council_id',
 
     ];
 

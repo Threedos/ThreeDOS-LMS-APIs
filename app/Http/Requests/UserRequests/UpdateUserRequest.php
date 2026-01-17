@@ -24,11 +24,11 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             //
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'password' => 'required|string|min:8',
-            'role_id' => 'required|exists:roles,id',
-            'council_id' => 'required|exists:councils,id',
+            'name' => 'sometimes|string|max:255',
+            'email' => 'sometimes|email|max:255',
+            'password' => 'sometimes|string|min:8',
+            'role_id' => 'sometimes|exists:roles,id',
+            'council_id' => 'sometimes|exists:councils,id',
             'access_token' => 'nullable|string|max:255',
             'revoked' => 'nullable|boolean',
         ];
