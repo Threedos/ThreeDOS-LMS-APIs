@@ -2,15 +2,15 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
-use App\Http\Controllers\api\RoleController;
-use App\Http\Controllers\api\AuthController;
-use App\Http\Controllers\api\UserController;
-use App\Http\Controllers\api\TaskController;
-use App\Http\Controllers\api\TaskSubmissionController;
-use App\Http\Controllers\api\CouncilController;
-use App\Http\Controllers\api\CouncilSessionController;
-use App\Http\Controllers\api\AttendanceController;
-use App\Http\Controllers\api\CacheController;
+use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\TaskSubmissionController;
+use App\Http\Controllers\Api\CouncilController;
+use App\Http\Controllers\Api\CouncilSessionController;
+use App\Http\Controllers\Api\AttendanceController;
+use App\Http\Controllers\Api\CacheController;
 use App\Http\Middleware\RateLimiting;
 //Routes
 Route::get('/instance', function () {

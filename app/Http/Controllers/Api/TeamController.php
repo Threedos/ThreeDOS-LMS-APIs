@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Team;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreTeamRequest;
@@ -28,8 +29,8 @@ class TeamController extends Controller
     {
         //
         $team = Team::create($request->all());
-        return response()->json("Created Successfully",201);
-        
+        return response()->json("Created Successfully", 201);
+
     }
 
     /**
@@ -50,7 +51,7 @@ class TeamController extends Controller
     {
         //
         $team->update($request->all());
-        return response()->json("Updated Successfully",200);
+        return response()->json("Updated Successfully", 200);
     }
 
     /**
@@ -60,6 +61,6 @@ class TeamController extends Controller
     {
         //
         Team::destroy($id);
-        return response()->json('Deleted Successfully',204);
+        return response()->json('Deleted Successfully', 204);
     }
 }

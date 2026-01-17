@@ -9,21 +9,22 @@ use Illuminate\Database\Eloquent\Model;
 class Team extends Model
 {
     /** @use HasFactory<\Database\Factories\TeamFactory> */
-    use HasFactory,HasUuids;
-    public $keyType ='string';
-    public $incrementing =false;
-    protected $fillable =[
-                'team_number',
-                'council_id',
-                'task_link'
-            ];
+    use HasFactory, HasUuids;
+    public $keyType = 'string';
+    public $incrementing = false;
+    protected $fillable = [
+        'team_number',
+        'council_id',
+        'task_link'
+    ];
 
 
-    public function council(){
-        return $this->belongsTo(Council::class , 'council_id');
+    public function council()
+    {
+        return $this->belongsTo(Council::class, 'council_id');
     }
 
-        public function users()
+    public function users()
     {
         return $this->belongsToMany(
             User::class,
@@ -31,9 +32,10 @@ class Team extends Model
             'team_id',
             'user_id'
         )->withPivot(['role', 'joined_at'])
-         ->withTimestamps();
+            ->withTimestamps();
     }
-    public function team_members(){
-        return $this->hasMany(TeamMembers::class , 'team_id');
+    public function teamMembers()
+    {
+        return $this->hasMany(TeamMember::class, 'team_id');
     }
 }

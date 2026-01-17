@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 class CouncilSession extends Model
 {
-    /** @use HasFactory<\Database\Factories\SessionFactory> */
-    use HasFactory,HasUuids;
+    /** @use HasFactory<\Database\Factories\CouncilSessionFactory> */
+    use HasFactory, HasUuids;
     protected $table = 'CouncilSession';
     protected $keyType = 'string';
     // protected $primaryKey = 'id';

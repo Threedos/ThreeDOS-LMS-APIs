@@ -32,7 +32,7 @@ class TeamPolicy
         }
 
         if ($user->role->name === RolesEnum::Delegate->value) {
-            return $team->team_members()->where('user_id', $user->id)->exists();
+            return $team->teamMembers()->where('user_id', $user->id)->exists();
         }
 
         return false;
@@ -56,7 +56,7 @@ class TeamPolicy
         }
 
         if ($user->role->name === RolesEnum::Delegate->value) {
-            return $team->team_members()
+            return $team->teamMembers()
                 ->where('user_id', $user->id)
                 ->whereIn('role', ['Leader', 'Co-Leader'])
                 ->exists();
@@ -74,7 +74,7 @@ class TeamPolicy
      */
     public function delete(User $user, Team $team): bool
     {
-        if(in_array($user->role->name, [RolesEnum::VicePresident->value])){
+        if (in_array($user->role->name, [RolesEnum::VicePresident->value])) {
             return true;
         }
         return in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value])

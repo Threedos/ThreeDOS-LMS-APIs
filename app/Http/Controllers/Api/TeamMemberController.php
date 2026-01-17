@@ -1,24 +1,24 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
-use App\Models\TeamMembers;
+use App\Http\Controllers\Controller;
+use App\Models\TeamMember;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-
 class TeamMemberController extends Controller
 {
-        use AuthorizesRequests;
+    use AuthorizesRequests;
 
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $this->authorize('viewAny', TeamMembers::class);
+        $this->authorize('viewAny', TeamMember::class);
         return response()->json(
-            TeamMembers::all(),
+            TeamMember::all(),
             200
         );
     }
@@ -28,8 +28,8 @@ class TeamMemberController extends Controller
      */
     public function store(Request $request)
     {
-        $this->authorize('create', TeamMembers::class);
-        $teamMember = TeamMembers::create(
+        $this->authorize('create', TeamMember::class);
+        $teamMember = TeamMember::create(
             $request->only([
                 'team_id',
                 'user_id',
@@ -45,18 +45,18 @@ class TeamMemberController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(TeamMembers $teamMember)
+    public function show(TeamMember $teamMember)
     {
-        $this->authorize('view', TeamMembers::class);
+        $this->authorize('view', TeamMember::class);
         return response()->json($teamMember, 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TeamMembers $teamMember)
+    public function update(Request $request, TeamMember $teamMember)
     {
-        $this->authorize('update', TeamMembers::class);
+        $this->authorize('update', TeamMember::class);
         $teamMember->update(
             $request->only([
                 'rate',
@@ -73,8 +73,8 @@ class TeamMemberController extends Controller
      */
     public function destroy(string $id)
     {
-        $this->authorize('delete', TeamMembers::class);
-        TeamMembers::destroy($id);
+        $this->authorize('delete', TeamMember::class);
+        TeamMember::destroy($id);
 
         return response()->json(null, 204);
     }

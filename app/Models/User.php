@@ -92,7 +92,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsTo(Council::class);
     }
 
-        public function teams()
+    public function teams()
     {
         return $this->belongsToMany(
             Team::class,
@@ -100,16 +100,16 @@ class User extends Authenticatable implements JWTSubject
             'user_id',
             'team_id'
         )->withPivot([
-        'rate',
-        'role',
-        'task'
-        ])
-         ->withTimestamps();
+                    'rate',
+                    'role',
+                    'task'
+                ])
+            ->withTimestamps();
     }
 
     public function teamMembers()
     {
-        return $this->hasMany(TeamMembers::class);
+        return $this->hasMany(TeamMember::class);
     }
 
 

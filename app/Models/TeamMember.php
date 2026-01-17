@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class TeamMembers extends Model
+class TeamMember extends Model
 {
-    /** @use HasFactory<\Database\Factories\TeamMembersFactory> */
+    /** @use HasFactory<\Database\Factories\TeamMemberFactory> */
     use HasFactory;
 
     protected $fillable = [
