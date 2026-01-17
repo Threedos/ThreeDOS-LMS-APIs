@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class TeamMember extends Model
 {
     /** @use HasFactory<\Database\Factories\TeamMemberFactory> */
-    use HasFactory;
+    use HasFactory; 
 
     protected $fillable = [
         'team_id',
