@@ -4,6 +4,7 @@ namespace App\Enums;
 
 enum RolesEnum: string
 {
+    case VicePresident='VicePresident';
     case Head = 'Head';
     case Instructor = 'Instructor';
     case Delegate = 'Delegate';

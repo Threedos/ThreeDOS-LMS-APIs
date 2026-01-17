@@ -29,7 +29,11 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        if (auth()->user()->role->name === RolesEnum::Instructor->value || auth()->user()->role->name === RolesEnum::Head->value) {
+        if (in_array($user->role->name, [
+            RolesEnum::Head->value,
+            RolesEnum::Instructor->value,
+            RolesEnum::VicePresident->value
+        ], true)) {
             return true;
         }
         return false;
@@ -43,6 +47,7 @@ class UserPolicy
         if (in_array($authUser->role->name, [
             RolesEnum::Head->value,
             RolesEnum::Instructor->value,
+            RolesEnum::VicePresident->value
         ], true)) {
             return true;
         }
@@ -58,7 +63,11 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        if (auth()->user()->role->name === RolesEnum::Instructor->value || auth()->user()->role->name === RolesEnum::Head->value) {
+        if (in_array($user->role->name, [
+            RolesEnum::Head->value,
+            RolesEnum::Instructor->value,
+            RolesEnum::VicePresident->value
+        ], true)) {
             return true;
         }
         return false;
@@ -69,7 +78,11 @@ class UserPolicy
      */
     public function restore(User $user, User $model): bool
     {
-        if (auth()->user()->role->name === RolesEnum::Instructor->value || auth()->user()->role->name === RolesEnum::Head->value) {
+        if (in_array($user->role->name, [
+            RolesEnum::Head->value,
+            RolesEnum::Instructor->value,
+            RolesEnum::VicePresident->value
+        ], true)) {
             return true;
         }
         return false;
@@ -80,7 +93,11 @@ class UserPolicy
      */
     public function forceDelete(User $user, User $model): bool
     {
-        if (auth()->user()->role->name === RolesEnum::Instructor->value || auth()->user()->role->name === RolesEnum::Head->value) {
+        if (in_array($user->role->name, [
+            RolesEnum::Head->value,
+            RolesEnum::Instructor->value,
+            RolesEnum::VicePresident->value
+        ], true)) {
             return true;
         }
         return false;

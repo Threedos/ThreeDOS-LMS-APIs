@@ -16,7 +16,8 @@ class AttendancePolicy
         return in_array($user->role->name, [
             RolesEnum::Head->value,
             RolesEnum::Instructor->value,
-            RolesEnum::Delegate->value
+            RolesEnum::Delegate->value,
+            RolesEnum::VicePresident->value
         ]);
     }
 
@@ -28,7 +29,8 @@ class AttendancePolicy
         return in_array($user->role->name, [
             RolesEnum::Head->value,
             RolesEnum::Instructor->value,
-            RolesEnum::Delegate->value
+            RolesEnum::Delegate->value,
+            RolesEnum::VicePresident->value
         ]);
     }
 
@@ -37,10 +39,12 @@ class AttendancePolicy
      */
     public function create(User $user): bool
     {
-        if($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value){
-            return true;
-        }
-        return false;
+        return in_array($user->role->name, [
+            RolesEnum::Head->value,
+            RolesEnum::Instructor->value,
+            RolesEnum::Delegate->value,
+            RolesEnum::VicePresident->value
+        ]);
     }
 
     /**
@@ -48,7 +52,7 @@ class AttendancePolicy
      */
     public function update(User $user, Attendance $attendance): bool
     {
-        if($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value){
+        if(($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value) || $user->role->name == RolesEnum::VicePresident->value){
             return true;
         }
         return false;
@@ -59,7 +63,7 @@ class AttendancePolicy
      */
     public function delete(User $user, Attendance $attendance): bool
     {
-        if($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value){
+        if(($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value) || $user->role->name == RolesEnum::VicePresident->value){
             return true;
         }
         return false;
@@ -70,7 +74,7 @@ class AttendancePolicy
      */
     public function restore(User $user, Attendance $attendance): bool
     {
-        if($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value){
+        if(($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value) || $user->role->name == RolesEnum::VicePresident->value){
             return true;
         }
         return false;
@@ -81,7 +85,7 @@ class AttendancePolicy
      */
     public function forceDelete(User $user, Attendance $attendance): bool
     {
-        if($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value){
+        if(($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value) || $user->role->name == RolesEnum::VicePresident->value){
             return true;
         }
         return false;

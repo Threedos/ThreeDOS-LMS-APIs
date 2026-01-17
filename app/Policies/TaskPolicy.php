@@ -34,7 +34,7 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value;
+        return $user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::VicePresident->value;
     }
 
     /**
@@ -42,7 +42,9 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        return ($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) && $user->council_id === $task->council_id;
+        return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) 
+        && $user->council_id === $task->council_id) 
+        || $user->role->name === RolesEnum::VicePresident->value;
     }
 
     /**
@@ -50,7 +52,9 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
-        return ($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) && $user->council_id === $task->council_id;
+        return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) 
+        && $user->council_id === $task->council_id) 
+        || $user->role->name === RolesEnum::VicePresident->value;
     }
 
     /**
@@ -58,7 +62,9 @@ class TaskPolicy
      */
     public function restore(User $user, Task $task): bool
     {
-        return ($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) && $user->council_id === $task->council_id;
+        return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) 
+        && $user->council_id === $task->council_id) 
+        || $user->role->name === RolesEnum::VicePresident->value;
     }
 
     /**
@@ -66,6 +72,8 @@ class TaskPolicy
      */
     public function forceDelete(User $user, Task $task): bool
     {
-        return ($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) && $user->council_id === $task->council_id;
+        return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) 
+        && $user->council_id === $task->council_id) 
+        || $user->role->name === RolesEnum::VicePresident->value;
     }
 }
