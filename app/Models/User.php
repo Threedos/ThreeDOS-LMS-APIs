@@ -99,7 +99,11 @@ class User extends Authenticatable implements JWTSubject
             'team_members',   // pivot table
             'user_id',
             'team_id'
-        )->withPivot(['role', 'joined_at'])
+        )->withPivot([
+        'rate',
+        'role',
+        'task'
+        ])
          ->withTimestamps();
     }
 
