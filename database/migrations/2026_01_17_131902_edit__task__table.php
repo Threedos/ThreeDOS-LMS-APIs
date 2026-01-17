@@ -15,14 +15,7 @@ return new class extends Migration
             //
               if (Schema::hasColumn('tasks', 'council_id')) {
 
-                // Drop FK FIRST
-                $table->dropForeign(['council_id']);
-
-                // Drop index ONLY if it exists
-                if (Schema::hasIndex('tasks', 'tasks_council_id_index')) {
-                    
-                $table->dropIndex(['council_id']);
-                }
+            
                 // Then drop column
                 $table->dropColumn('council_id');
             }
