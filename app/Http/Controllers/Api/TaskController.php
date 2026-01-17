@@ -40,7 +40,7 @@ class TaskController extends Controller
             $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
                 return $this->taskService->getAllTasks($request);
             }),
-            'Success'
+            'Tasks retrieved successfully'
         );
     }
 
@@ -55,7 +55,7 @@ class TaskController extends Controller
         // Clear task cache after creating
         $this->cacheService->clearResourceCache('tasks');
 
-        return $this->createdResponse($task, 'Success');
+        return $this->createdResponse($task, 'Task created successfully');
     }
 
     /**
@@ -72,7 +72,7 @@ class TaskController extends Controller
                 $this->authorize('view', $task);
                 return $this->taskService->getTaskById($id);
             }),
-            'Success'
+            'Task retrieved successfully'
         );
     }
 
@@ -89,7 +89,7 @@ class TaskController extends Controller
         $this->cacheService->forget("task:{$id}");
         $this->cacheService->clearResourceCache('tasks');
 
-        return $this->successResponse(null, 'Success');
+        return $this->successResponse(null, 'Task updated successfully');
     }
 
     /**
@@ -105,6 +105,6 @@ class TaskController extends Controller
         $this->cacheService->forget("task:{$id}");
         $this->cacheService->clearResourceCache('tasks');
 
-        return $this->successResponse(null, 'Success');
+        return $this->successResponse(null, 'Task deleted successfully');
     }
 }

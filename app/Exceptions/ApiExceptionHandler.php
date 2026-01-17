@@ -11,9 +11,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use App\Traits\ApiResponse;
 
 class ApiExceptionHandler
 {
+    use ApiResponse;
+
     public static function handle(Throwable $e, Request $request): \Illuminate\Http\JsonResponse
     {
         // --- 1. Determine status and message ---
@@ -51,17 +54,9 @@ class ApiExceptionHandler
             'input' => $request->except(['password', 'password_confirmation']),
             'user_id' => Auth::id(),
         ]);
-
-        // --- 3. Prepare JSON response ---
-        $response = [
-            'status' => 'failed',
-            'message' => $message,
-        ];
-
-        if ($errors) {
-            $response['errors'] = $errors;
-        }
-
-        return response()->json($response, $statusCode);
+        
+        // --- 3. Return error response using ApiResponse trait ---
+        $handler = new self();
+        return $handler->errorResponse($message, $statusCode, $errors);
     }
 }

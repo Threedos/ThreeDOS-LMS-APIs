@@ -98,7 +98,7 @@ class CouncilController extends Controller
         $this->cacheService->forget("council:{$id}");
         $this->cacheService->clearResourceCache('councils');
 
-        return $this->successResponse(null, 'Council updated successfully');
+        return $this->successResponse(null, 'Success');
     }
 
     /**
@@ -114,6 +114,6 @@ class CouncilController extends Controller
         $this->cacheService->forget("council:{$id}");
         $this->cacheService->clearResourceCache('councils');
 
-        return $this->successResponse(null, 'Council deleted successfully');
+        return $this->successResponse(null, 'Success');
     }
 }

@@ -50,7 +50,7 @@ class TaskSubmissionController extends Controller
             $this->cacheService->remember($cacheKey, 3600, function () use ($taskSubmissionPaginatedRequest, $serviceMethod) {
                 return $this->taskSubmissionService->$serviceMethod($taskSubmissionPaginatedRequest);
             }),
-            'Success'
+            'Submissions retrieved successfully'
         );
     }
 
@@ -68,7 +68,7 @@ class TaskSubmissionController extends Controller
         $this->cacheService->clearResourceCache('task_submissions');
         $this->cacheService->clearResourceCache('task-submissions');
 
-        return $this->createdResponse($submission, 'Success');
+        return $this->createdResponse($submission, 'Submission created successfully');
     }
 
     /**
@@ -85,7 +85,7 @@ class TaskSubmissionController extends Controller
                 $this->authorize('view', $submission);
                 return $this->taskSubmissionService->getTaskSubmissionById($id);
             }),
-            'Success'
+            'Submission retrieved successfully'
         );
     }
 
@@ -103,7 +103,7 @@ class TaskSubmissionController extends Controller
         $this->cacheService->clearResourceCache('task_submissions');
         $this->cacheService->clearResourceCache('task-submissions');
 
-        return $this->successResponse(null, 'Success');
+        return $this->successResponse(null, 'Submission updated successfully');
     }
 
     /**
@@ -120,6 +120,6 @@ class TaskSubmissionController extends Controller
         $this->cacheService->clearResourceCache('task_submissions');
         $this->cacheService->clearResourceCache('task-submissions');
 
-        return $this->successResponse(null, 'Success');
+        return $this->successResponse(null, 'Submission deleted successfully');
     }
 }

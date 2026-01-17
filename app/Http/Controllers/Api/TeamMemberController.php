@@ -19,7 +19,7 @@ class TeamMemberController extends Controller
         $this->authorize('viewAny', TeamMember::class);
         return $this->successResponse(
             TeamMember::all(),
-            'Success'
+            'Team members retrieved successfully'
         );
     }
 
@@ -45,7 +45,7 @@ class TeamMemberController extends Controller
 
         return $this->createdResponse(
             ['count' => count($membersData)],
-            'Success'
+            'Team members created successfully'
         );
     }
 
@@ -56,7 +56,7 @@ class TeamMemberController extends Controller
     public function show(TeamMember $teamMember)
     {
         $this->authorize('view', TeamMember::class);
-        return $this->successResponse($teamMember, 'Success');
+        return $this->successResponse($teamMember, 'Team member retrieved successfully');
     }
 
     /**
@@ -73,7 +73,7 @@ class TeamMemberController extends Controller
             ])
         );
 
-        return $this->successResponse($teamMember, 'Success');
+        return $this->successResponse($teamMember, 'Team member updated successfully');
     }
 
     /**
@@ -84,6 +84,6 @@ class TeamMemberController extends Controller
         $this->authorize('delete', TeamMember::class);
         TeamMember::destroy($id);
 
-        return $this->noContentResponse('Success');
+        return $this->noContentResponse('Team member deleted successfully');
     }
 }

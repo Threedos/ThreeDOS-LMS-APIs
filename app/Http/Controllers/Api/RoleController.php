@@ -28,7 +28,7 @@ class RoleController extends Controller
             $this->cacheService->remember('roles:all', 3600, function () {
                 return $this->roleService->getAllRoles();
             }),
-            'Success'
+            'Roles retrieved successfully'
         );
     }
 
@@ -51,7 +51,7 @@ class RoleController extends Controller
         // Clear role cache after creating
         $this->cacheService->clearResourceCache('roles');
 
-        return $this->createdResponse($role, 'Success');
+        return $this->createdResponse($role, 'Role created successfully');
     }
 
     /**
@@ -64,7 +64,7 @@ class RoleController extends Controller
             $this->cacheService->remember('role:' . $id, 3600, function () use ($id) {
                 return $this->roleService->getRoleById($id);
             }),
-            'Success'
+            'Role retrieved successfully'
         );
     }
 
@@ -79,7 +79,7 @@ class RoleController extends Controller
         $this->cacheService->forget("role:{$id}");
         $this->cacheService->clearResourceCache('roles');
 
-        return $this->successResponse(null, 'Success');
+        return $this->successResponse(null, 'Role updated successfully');
     }
 
     /**
@@ -93,6 +93,6 @@ class RoleController extends Controller
         $this->cacheService->forget("role:{$id}");
         $this->cacheService->clearResourceCache('roles');
 
-        return $this->successResponse(null, 'Success');
+        return $this->successResponse(null, 'Role deleted successfully');
     }
 }

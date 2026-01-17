@@ -30,7 +30,7 @@ class TeamController extends Controller
         //
         $team = Team::create($request->all());
 
-        return $this->createdResponse(['id' => $team->id], 'Success');
+        return $this->createdResponse(['id' => $team->id], 'Team created successfully');
 
     }
 
@@ -42,7 +42,7 @@ class TeamController extends Controller
         //
         $team = Team::findOrFail($id);
         $team = new TeamResource($team);
-        return $this->successResponse($team, 'Success');
+        return $this->successResponse($team, 'Team retrieved successfully');
     }
 
     /**
@@ -52,7 +52,7 @@ class TeamController extends Controller
     {
         //
         $team->update($request->all());
-        return $this->successResponse(null, 'Success');
+        return $this->successResponse(null, 'Team updated successfully');
     }
 
     /**
@@ -62,6 +62,6 @@ class TeamController extends Controller
     {
         //
         Team::destroy($id);
-        return $this->noContentResponse('Success');
+        return $this->noContentResponse('Team deleted successfully');
     }
 }

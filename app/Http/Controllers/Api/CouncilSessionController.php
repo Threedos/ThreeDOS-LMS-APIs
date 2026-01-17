@@ -40,7 +40,7 @@ class CouncilSessionController extends Controller
                 }
                 return $baseQuery->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex);
             }),
-            'Success'
+            'Sessions retrieved successfully'
         );
     }
 
@@ -71,7 +71,7 @@ class CouncilSessionController extends Controller
             $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
                 return CouncilSession::findOrFail($id)->withCount('attendance');
             }),
-            'Success'
+            'Session retrieved successfully'
         );
 
     }
@@ -90,7 +90,7 @@ class CouncilSessionController extends Controller
         $this->cacheService->forget("session:{$id}");
         $this->cacheService->clearResourceCache('sessions');
 
-        return $this->successResponse($session, 'Success');
+        return $this->successResponse($session, 'Session updated successfully');
     }
 
     /**
@@ -106,6 +106,6 @@ class CouncilSessionController extends Controller
         $this->cacheService->forget("session:{$id}");
         $this->cacheService->clearResourceCache('sessions');
 
-        return $this->noContentResponse('Success');
+        return $this->noContentResponse('Session deleted successfully');
     }
 }

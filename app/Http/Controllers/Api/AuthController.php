@@ -44,7 +44,7 @@ class AuthController extends Controller
             'user' => $user,
             'access_token' => $token,
             'expires_in' => JWTAuth::factory()->getTTL() * 60,
-        ], 'Success');
+        ], 'Login successfully');
     }
 
     // Revoke token manually
@@ -56,7 +56,7 @@ class AuthController extends Controller
             'access_token' => null
         ]);
 
-        return $this->successResponse(null, 'Success');
+        return $this->successResponse(null, 'Logout successfully');
     }
 
     public function forgetPassword(Request $request)
@@ -71,8 +71,8 @@ class AuthController extends Controller
 
         // Do NOT reveal if email exists (security best practice)
         return $status === Password::RESET_LINK_SENT
-            ? $this->successResponse(null, 'Reset link sent to email')
-            : $this->successResponse(null, 'Reset link sent to email');
+            ? $this->successResponse(null, 'Success')
+            : $this->successResponse(null, 'Success');
     }
 
 
@@ -104,7 +104,7 @@ class AuthController extends Controller
         );
 
         return $status === Password::PASSWORD_RESET
-            ? $this->successResponse(null, 'Success')
+            ? $this->successResponse(null, 'Password reset successfully')
             : $this->errorResponse('Invalid token', 422);
     }
 
