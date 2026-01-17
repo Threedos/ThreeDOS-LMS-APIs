@@ -30,7 +30,7 @@ class TeamController extends Controller
         //
         $team = Team::create($request->all());
         
-        return response()->json("Created Successfully", 201);
+        return response()->json( $team->id, 201);
 
     }
 

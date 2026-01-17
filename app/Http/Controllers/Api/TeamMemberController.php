@@ -26,11 +26,11 @@ class TeamMemberController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(TeamMemberRequest $request)
     {
         $this->authorize('create', TeamMember::class);
 
-        $validated = $request->validate(TeamMemberRequest::rules());
+        $validated = $request->validated();
 
         $membersData = $validated['members'];
 
