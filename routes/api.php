@@ -22,6 +22,7 @@ Route::get('/instance', function () {
 });
 Route::post('login', [AuthController::class, 'login'])->name('login');
 // Route::post('register', [AuthController::class, 'register']);
+Route::post('forget-password', [AuthController::class, 'forgetPassword']);
 
 Route::middleware(['auth:api', RateLimiting::class, 'throttle:60,1'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);

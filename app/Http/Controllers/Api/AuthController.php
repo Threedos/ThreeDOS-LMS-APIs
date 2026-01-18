@@ -64,7 +64,11 @@ class AuthController extends Controller
         $request->validate([
             'email' => 'required|email',
         ]);
-
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return $this->errorResponse('User not found', 404);
+        }
+        
         $status = Password::sendResetLink(
             $request->only('email')
         );
@@ -72,7 +76,7 @@ class AuthController extends Controller
         // Do NOT reveal if email exists (security best practice)
         return $status === Password::RESET_LINK_SENT
             ? $this->successResponse(null, 'Success')
-            : $this->successResponse(null, 'Success');
+            : $this->errorResponse('Failed to send reset link', 422);
     }
 
 
