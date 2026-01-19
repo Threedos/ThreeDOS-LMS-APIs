@@ -26,6 +26,6 @@ class Attendance extends Model
     }
     public function council_session()
     {
-        return $this->belongsTo(CouncilSession::class, 'session_id', 'id');
+        return $this->belongsTo(CouncilSession::class, 'council_session_id', 'id');
     }
 }
