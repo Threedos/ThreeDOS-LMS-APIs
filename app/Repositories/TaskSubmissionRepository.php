@@ -13,20 +13,27 @@ class TaskSubmissionRepository implements TaskSubmissionRepositoryInterface
 {
 
 
-    private function baseQuery($taskSubmissionPaginatedRequest)
-    {
+private function baseQuery($request)
+{
+    $search = $request->search ?? null;
+    $council_id = auth()->user()->council_id ?? null;
 
-        $search = $taskSubmissionPaginatedRequest->search ?? null;
-        $filter = auth()->user()->council_id ?? null;
-        $query = TaskSubmission::query();
-        if ($search) {
-            $query->where('title', 'like', "%{$search}%");
-        }
-        if ($filter) {
-            $query->where('council_id', '=', $filter);
-        }
-        return $query;
+    $query = TaskSubmission::query();
+
+    if ($search) {
+        $query->where('title', 'like', "%{$search}%"); // optional
     }
+
+    if ($council_id) {
+        $query->whereHas('task.council_session', function ($q) use ($council_id) {
+            $q->where('council_id', $council_id);
+        });
+    }
+    $query->with(['task.council_session.council', 'user']);
+
+    return $query;
+}
+
     public function getAllTaskSubmissionsForUser($taskSubmissionPaginatedRequest)
     {
         $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;

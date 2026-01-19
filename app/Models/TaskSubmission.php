@@ -37,8 +37,8 @@ class TaskSubmission extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function council()
-    {
-        return $this->belongsTo(Council::class);
-    }
+    // public function council()
+    // {
+    //     return $this->belongsTo(Council::class);
+    // }
 }
