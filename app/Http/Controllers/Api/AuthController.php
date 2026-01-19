@@ -55,7 +55,9 @@ class AuthController extends Controller
         $user = auth()->user();
         $user->update([
             'revoked' => true,
-            'access_token' => null
+            'access_token' => null,
+            'last_active' => now(),
+            'status' => 'inactive',
         ]);
 
         return $this->successResponse(null, 'Logout successfully');
