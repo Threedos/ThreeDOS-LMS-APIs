@@ -38,6 +38,8 @@ class AuthController extends Controller
         $user->update([
             'access_token' => $token,
             'revoked' => false,
+            'last_active' => now(),
+            'status' => 'active',
         ]);
         $user = new UserProfileResource($user);
         return $this->successResponse([
