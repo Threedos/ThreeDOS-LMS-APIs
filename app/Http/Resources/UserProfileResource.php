@@ -19,7 +19,9 @@ class UserProfileResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'role' => $this->role->name,
-            'council' => $this->council->name
+            'council' => $this->council->name,
+            'status' => $this->status,
+            'last_active' => $this->last_active,
         ];
     }
 }
