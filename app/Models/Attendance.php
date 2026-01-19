@@ -24,7 +24,7 @@ class Attendance extends Model
     {
         return $this->belongsTo(User::class);
     }
-    public function session()
+    public function council_session()
     {
         return $this->belongsTo(CouncilSession::class, 'session_id', 'id');
     }
