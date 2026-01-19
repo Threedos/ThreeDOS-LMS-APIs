@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\TaskRequests\TaskPaginatedRequest;
 use App\Services\CacheService;
+use App\Http\Resources\TaskCollection;
 class TaskController extends Controller
 {
     use AuthorizesRequests;
@@ -38,7 +39,8 @@ class TaskController extends Controller
         // Use Redis cache service
         return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-                return $this->taskService->getAllTasks($request);
+                $tasks = $this->taskService->getAllTasks($request);
+                return new TaskCollection($tasks);
             }),
             'Tasks retrieved successfully'
         );

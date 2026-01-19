@@ -20,8 +20,10 @@ class TaskRepository implements TaskRepositoryInterface
         if ($filter) {
             $query->where('council_id', '=', $filter);
         }
-        $query->skip(($pageIndex - 1) * $pageSize)->take($pageSize);
-        return $query->get();
+       // $query->skip(($pageIndex - 1) * $pageSize)->take($pageSize);
+        
+
+        return $query->paginate($pageSize, ['*'], 'page', $pageIndex);
     }
 
     public function getTaskById($taskId)
