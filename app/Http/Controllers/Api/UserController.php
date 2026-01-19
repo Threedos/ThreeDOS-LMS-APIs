@@ -53,7 +53,7 @@ class UserController extends Controller
         $pageIndex = $request->input('pageIndex', 1);
         $pageSize = $request->input('pageSize', 10);
         $search = $request->input('search', '');
-
+        
         $cacheKey = "users:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
 
         // Use Redis cache service

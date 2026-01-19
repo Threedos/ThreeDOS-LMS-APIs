@@ -20,7 +20,7 @@ class Task extends Model
         // 'council_id',
     ];
     //to be enhance why council_id when i have session id which is related to council_id
-    public function council()
+    public function council_session()
     {
         return $this->belongsTo(CouncilSession::class);
     }
