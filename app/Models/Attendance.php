@@ -17,7 +17,6 @@ class Attendance extends Model
     protected $fillable = [
         'user_id',
         'council_session_id',
-        
         'status',
     ];
 

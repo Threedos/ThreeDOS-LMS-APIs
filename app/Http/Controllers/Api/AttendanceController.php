@@ -26,27 +26,34 @@ class AttendanceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(PaginatedAttendanceRequest $request)
-    {
-        $council_id = $request->user()->council_id;
-        $pageIndex = $request->pageIndex;
-        $pageSize = $request->pageSize;
+  public function index(PaginatedAttendanceRequest $request)
+{
+    $council_id = $request->user()->council_id;
+    $pageIndex = $request->pageIndex ?? 1;
+    $pageSize = $request->pageSize ?? 20;
 
-        $cacheKey = "attendances:council_{$council_id}:page_{$pageIndex}:size_{$pageSize}";
+    // Cache key per council + page + size
+    $cacheKey = "attendances:council_{$council_id}:page_{$pageIndex}:size_{$pageSize}";
 
-        // Use Redis cache service
-        $data = $this->cacheService->remember($cacheKey, 3600, function () use ($request, $council_id) {
-            $baseQuery = Attendance::query();
-            $baseQuery = $baseQuery->where('council_id', $council_id);
-            return $baseQuery->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex);
-        });
+    // Use Redis cache service
+    $data = $this->cacheService->remember($cacheKey, 3600, function () use ($council_id, $pageIndex, $pageSize) {
+        $query = Attendance::query()
+            // Only attendances whose session belongs to this council
+            ->whereHas('council_session', function ($q) use ($council_id) {
+                $q->where('council_id', $council_id);
+            })
+            // Eager-load session and council for convenience
+            ->with(['council_session.council']);
 
-        return $this->successResponse(
-            AttendanceResource::collection($data),
-            'Success'
-        );
-    }
+        // Paginate results
+        return $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
+    });
 
+    return $this->successResponse(
+        AttendanceResource::collection($data),
+        'Success'
+    );
+}
 
 
     /**
