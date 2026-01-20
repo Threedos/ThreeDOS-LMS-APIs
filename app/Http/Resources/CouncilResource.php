@@ -18,9 +18,9 @@ class CouncilResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'head' => new UserResource(
-                $this->whenLoaded('Head')
-            ),
+            'head' => $this->whenLoaded('Head', function () {
+    return $this->head?->name;
+}),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
