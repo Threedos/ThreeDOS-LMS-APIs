@@ -10,7 +10,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Models\Council;
 use Illuminate\Support\Facades\Cache;
 use App\Services\CacheService;
-
+use App\Http\Resources\CouncilResource;
 
 class CouncilController extends Controller
 {
@@ -42,7 +42,7 @@ class CouncilController extends Controller
         // Use Redis cache service
         return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-                return $this->councilService->getAllCouncils($request);
+                return new councilResource($this->councilService->getAllCouncils($request));
             }),
             'Councils retrieved successfully'
         );
