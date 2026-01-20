@@ -24,8 +24,7 @@ class SessionResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'attendance' => AttendanceResource::collection($this->whenLoaded('attendance')),
-            'next_page_url' => $this->nextPageUrl(),
-            'prev_page_url' => $this->prevPageUrl(),
+            
             'total' => $this->total(),
             'per_page' => $this->perPage(),
             'current_page' => $this->currentPage(),
