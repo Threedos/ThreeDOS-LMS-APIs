@@ -44,6 +44,7 @@ class AuthController extends Controller
         // $user = new UserProfileResource($user);
         return $this->successResponse([
             'user_name' => $user->name,
+            'role' => $user->role->name,
             'access_token' => $token,
             'expires_in' => JWTAuth::factory()->getTTL() * 60,
         ], 'Login successfully');
