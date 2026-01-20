@@ -19,7 +19,7 @@ class CouncilResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'head' => new UserResource(
-                $this->whenLoaded('head')
+                $this->whenLoaded('Head')
             ),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

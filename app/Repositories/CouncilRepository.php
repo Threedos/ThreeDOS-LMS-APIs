@@ -12,9 +12,9 @@ class CouncilRepository implements CouncilRepositoryInterface
     {
         $query = Council::query()
         ->with([
-            'users' => function ($q) {
+            'Head' => function ($q) {
                 $q->whereHas('role', function ($roleQuery) {
-                    $roleQuery->where('name', 'head');
+                    $roleQuery->where('name', 'Head');
                 });
             }
         ]);

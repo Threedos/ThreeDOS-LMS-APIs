@@ -29,7 +29,7 @@ class Council extends Model
         return $this->hasMany(User::class, 'council_id');
     }
 
-    public function head()
+    public function Head()
     {
   return $this->hasOne(User::class)
         ->whereHas('role', function ($q) {
