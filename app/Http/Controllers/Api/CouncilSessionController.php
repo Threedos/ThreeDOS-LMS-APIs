@@ -10,7 +10,7 @@ use App\Http\Requests\SessionRequests\PaginatedSessionRequest;
 use App\Http\Controllers\Controller;
 use App\Services\CacheService;
 use App\Models\Attendance;
-
+use App\Http\Resources\SessionCollection;
 class CouncilSessionController extends Controller
 {
     protected $cacheService;
@@ -34,15 +34,17 @@ class CouncilSessionController extends Controller
 
         // Use Redis cache service
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($request, $council_id) {
-                $baseQuery = CouncilSession::where('council_id', $council_id)->withCount('attendance');
-                if ($request->search) {
-                    $baseQuery = $baseQuery->where('title', 'like', "%{$request->search}%");
-                }
-                return SessionResource::collection($baseQuery->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex));
-            }),
-            'Sessions retrieved successfully'
-        );
+        $this->cacheService->remember($cacheKey, 3600, function () use ($request, $council_id) {
+            $paginated = CouncilSession::where('council_id', $council_id)
+                ->withCount('attendance')
+                ->when($request->search, fn($q) => $q->where('title', 'like', "%{$request->search}%"))
+                ->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex);
+
+            return new SessionCollection($paginated);
+        }),
+        'Sessions retrieved successfully'
+    );
+
     }
 
 
