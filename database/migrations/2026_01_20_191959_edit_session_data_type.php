@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('council_session', function (Blueprint $table) {
+        Schema::table('council_sessions', function (Blueprint $table) {
             //
             $table->datetime('date')->change();
         });
@@ -22,7 +22,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('council_session', function (Blueprint $table) {
+        Schema::table('council_sessions', function (Blueprint $table) {
             //
         });
     }
