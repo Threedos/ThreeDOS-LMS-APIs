@@ -10,12 +10,20 @@ class CouncilRepository implements CouncilRepositoryInterface
 {
     public function getAllCouncils(AllCouncilRequest $request)
     {
-        $Query = Council::query();
+        $query = Council::query()
+        ->with([
+            'users' => function ($q) {
+                $q->whereHas('role', function ($roleQuery) {
+                    $roleQuery->where('name', 'head');
+                });
+            }
+        ]);
 
-if ($request->search) {
-            $Query->where('name', 'like', '%' . $request->search . '%');
-        }
-        return $Query->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex);
+    if ($request->search) {
+        $query->where('name', 'like', '%' . $request->search . '%');
+    }
+
+        return $query->get();
     }
 
     public function getCouncilById($councilId)

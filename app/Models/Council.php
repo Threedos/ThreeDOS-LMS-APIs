@@ -15,7 +15,7 @@ class Council extends Model
     protected $fillable = [
         'name',
         'description',
-        // 'head_id',
+      
     ];
 
     public function tasks()
@@ -28,8 +28,5 @@ class Council extends Model
         return $this->hasMany(User::class, 'council_id');
     }
 
-    // public function head()
-    // {
-    //     return $this->belongsTo(User::class, 'head_id');
-    // }
+  
 }
