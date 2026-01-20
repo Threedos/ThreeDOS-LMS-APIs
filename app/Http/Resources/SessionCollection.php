@@ -21,8 +21,8 @@ class SessionCollection extends ResourceCollection
                 'per_page' => $this->perPage(),
                 'current_page' => $this->currentPage(),
                 'last_page' => $this->lastPage(),
-                'next_page_url' => $this->nextPageUrl(),
-                'prev_page_url' => $this->prevPageUrl(),
+                // 'next_page_url' => $this->nextPageUrl(),
+                // 'prev_page_url' => $this->prevPageUrl(),
             ],
         ];
     }
