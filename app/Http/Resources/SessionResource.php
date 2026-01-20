@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-
+use App\Http\Resources\AttendanceResource;
 class SessionResource extends JsonResource
 {
     /**
@@ -23,6 +23,7 @@ class SessionResource extends JsonResource
             'council' => $this->council->name,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'attendance' => AttendanceResource::collection($this->whenLoaded('attendance')),
         ];
     }
 }

@@ -10,6 +10,7 @@ use App\Http\Requests\SessionRequests\PaginatedSessionRequest;
 use App\Http\Controllers\Controller;
 use App\Services\CacheService;
 use App\Models\Attendance;
+
 class CouncilSessionController extends Controller
 {
     protected $cacheService;
@@ -38,7 +39,7 @@ class CouncilSessionController extends Controller
                 if ($request->search) {
                     $baseQuery = $baseQuery->where('title', 'like', "%{$request->search}%");
                 }
-                return $baseQuery->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex);
+                return SessionResource::collection($baseQuery->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex));
             }),
             'Sessions retrieved successfully'
         );
