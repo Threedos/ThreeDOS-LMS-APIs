@@ -15,14 +15,14 @@ class TaskCollection extends ResourceCollection
     public function toArray(Request $request): array
     {
         return [
-            'data' => $this->collection,
-           
+            'data' => TaskResource::collection($this->collection),
+            'pagination' => [
                 'total' => $this->total(),
                 'count' => $this->count(),
                 'per_page' => $this->perPage(),
                 'current_page' => $this->currentPage(),
                 'last_page' => $this->lastPage(),
-            
+            ],
         ];
     }
 }
