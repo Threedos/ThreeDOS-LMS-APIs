@@ -13,6 +13,7 @@ class Council extends Model
     public $incrementing = false;
     public $keyType = 'string';
     protected $fillable = [
+    
         'name',
         'description',
       

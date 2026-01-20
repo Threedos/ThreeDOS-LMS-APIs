@@ -42,7 +42,7 @@ class CouncilController extends Controller
         // Use Redis cache service
         return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-                return new councilResource($this->councilService->getAllCouncils($request));
+                return  CouncilResource::collection($this->councilService->getAllCouncils($request));
             }),
             'Councils retrieved successfully'
         );
