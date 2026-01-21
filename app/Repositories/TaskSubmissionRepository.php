@@ -38,7 +38,7 @@ private function baseQuery($request)
     {
         $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
         $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
-        $query = $this->baseQuery($taskSubmissionPaginatedRequest);
+        $query = $this->baseQuery($taskSubmissionPaginatedRequest)->orderBy('created_at', 'desc');
        $paginator = $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
 return $paginator;
 
@@ -49,7 +49,7 @@ return $paginator;
     {
         $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
         $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
-        $query = $this->baseQuery($taskSubmissionPaginatedRequest);
+        $query = $this->baseQuery($taskSubmissionPaginatedRequest)->orderBy('created_at', 'desc');
       $paginator = $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
 return $paginator;
 

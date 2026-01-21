@@ -13,6 +13,7 @@ class CouncilSessionRepository implements CouncilSessionRepositoryInterface
         return CouncilSession::where('council_id', $council_id)
             ->withCount('attendance')
             ->when($request->search, fn($q) => $q->where('title', 'like', "%{$request->search}%"))
+            ->orderBy('created_at', 'desc')
             ->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex);
     }
 

@@ -19,7 +19,8 @@ class AttendanceRepository implements AttendanceRepositoryInterface
             ->whereHas('council_session', function ($q) use ($council_id) {
                 $q->where('council_id', $council_id);
             })
-            ->with(['council_session.council']);
+            ->with(['council_session.council'])
+            ->orderBy('created_at', 'desc');
 
         return $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
     }

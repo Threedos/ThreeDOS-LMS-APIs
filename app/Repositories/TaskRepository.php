@@ -20,8 +20,7 @@ class TaskRepository implements TaskRepositoryInterface
         if ($filter) {
             $query->where('council_id', '=', $filter);
         }
-        
-
+        $query->orderBy('created_at', 'desc');
         return $query->paginate($pageSize, ['*'], 'page', $pageIndex);
     }
 

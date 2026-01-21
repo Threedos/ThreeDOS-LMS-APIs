@@ -20,7 +20,8 @@ class CouncilRepository implements CouncilRepositoryInterface
         ]);
 
     if ($request->search) {
-        $query->where('name', 'like', '%' . $request->search . '%');
+        $query->where('name', 'like', '%' . $request->search . '%')
+        ->orderBy('created_at', 'desc');
     }
 
         return $query->get();

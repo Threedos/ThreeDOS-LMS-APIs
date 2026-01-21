@@ -23,6 +23,7 @@ class UserRepository implements UserRepositoryInterface
         if ($sort) {
             $query->orderBy($sort);
         }
+        $query->orderBy('created_at', 'desc');
         // Laravel pagination (LengthAwarePaginator)
         return $query->paginate($pageSize, ['*'], 'page', $pageIndex);
     }

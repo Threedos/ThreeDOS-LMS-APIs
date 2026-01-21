@@ -9,7 +9,7 @@ class TeamMemberRepository implements TeamMemberRepositoryInterface
 {
     public function getAllTeamMembers()
     {
-        return TeamMember::all();
+        return TeamMember::all()->orderBy('created_at', 'desc');
     }
 
     public function getTeamMemberById($id)
