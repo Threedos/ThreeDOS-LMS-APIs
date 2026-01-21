@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreign('council_id')
                 ->references('id')
                 ->on('councils')
-                ->cascadeOnDelete();
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
         });
     }
 
