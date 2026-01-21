@@ -13,6 +13,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\AttendanceRequests\BulkCreateAttendanceRequest;
 use App\Imports\AttendanceImport;
+use App\Http\Resources\AttendanceCollection;
 class AttendanceController extends Controller
 {
     use AuthorizesRequests;
@@ -50,7 +51,7 @@ class AttendanceController extends Controller
     });
 
     return $this->successResponse(
-        AttendanceResource::collection($data),
+        new AttendanceCollection($data),
         'Success'
     );
 }
