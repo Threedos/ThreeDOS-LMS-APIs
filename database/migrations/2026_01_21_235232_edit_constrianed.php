@@ -13,14 +13,10 @@ return new class extends Migration
     {
         Schema::table('council_sessions', function (Blueprint $table) {
             //
-                // 1. Drop FK only
-        $table->dropForeign(['council_id']);
-
-        // 2. Re-add FK on the EXISTING column
-        $table->foreign('council_id')
-              ->references('id')
-              ->on('councils')
-              ->cascadeOnDelete();
+            $table->foreign('council_id')
+                ->references('id')
+                ->on('councils')
+                ->cascadeOnDelete();
         });
     }
 
