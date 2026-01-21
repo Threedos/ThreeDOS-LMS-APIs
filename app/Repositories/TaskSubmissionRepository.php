@@ -49,8 +49,8 @@ private function baseQuery($request)
         $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
         $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
         $query = $this->baseQuery($taskSubmissionPaginatedRequest);
-        $query->skip(($pageIndex - 1) * $pageSize)->take($pageSize);
-        return $query->get();
+        $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
+        return $query;
     }
 
     public function getTaskSubmissionById($submissionId)
