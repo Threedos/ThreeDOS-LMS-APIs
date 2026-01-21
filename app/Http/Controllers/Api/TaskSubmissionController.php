@@ -11,6 +11,7 @@ use App\Http\Requests\TaskSubmissionRequests\TaskSubmissionPaginatedRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Services\CacheService;
 use App\Http\Requests\taskSubmissionRequests\CreateTaskSubmissionRequest;
+use App\Http\Resources\TaskSubmissionCollection;
 class TaskSubmissionController extends Controller
 {
     use AuthorizesRequests;
@@ -48,7 +49,7 @@ class TaskSubmissionController extends Controller
 
         return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($taskSubmissionPaginatedRequest, $serviceMethod) {
-                return $this->taskSubmissionService->$serviceMethod($taskSubmissionPaginatedRequest);
+                return new TaskSubmissionCollection($this->taskSubmissionService->$serviceMethod($taskSubmissionPaginatedRequest));
             }),
             'Submissions retrieved successfully'
         );
