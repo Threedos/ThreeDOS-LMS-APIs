@@ -15,7 +15,7 @@ class UserRepository implements UserRepositoryInterface
         $search = $request->search;
         $sort = $request->sort;
         $query = User::query()->select('id', 'name', 'email', 'role_id', 'council_id')
-        // ->with('role', 'council')
+            // ->with('role', 'council')
         ;
         if ($search) {
             $query->where('name', 'like', "%{$search}%");
@@ -48,4 +48,10 @@ class UserRepository implements UserRepositoryInterface
     {
         User::destroy($userId);
     }
+
+    public function bulkCreateUsers($file)
+    {
+        \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\UsersImport, $file);
+    }
+
 }

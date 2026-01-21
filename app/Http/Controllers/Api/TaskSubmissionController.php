@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Api;
 
-
 use App\Http\Controllers\Controller;
 use App\Models\TaskSubmission;
 use App\Services\TaskSubmissionService;
@@ -12,6 +11,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Services\CacheService;
 use App\Http\Requests\taskSubmissionRequests\CreateTaskSubmissionRequest;
 use App\Http\Resources\TaskSubmissionCollection;
+
 class TaskSubmissionController extends Controller
 {
     use AuthorizesRequests;
@@ -24,62 +24,38 @@ class TaskSubmissionController extends Controller
         $this->cacheService = $cacheService;
     }
 
-    //this is for Instructors & Heads
-    public function index(TaskSubmissionPaginatedRequest $taskSubmissionPaginatedRequest)
+    public function index(TaskSubmissionPaginatedRequest $request)
     {
-        $user = $taskSubmissionPaginatedRequest->user();
-        $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
-        $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
+        $user = $request->user();
+        $scope = ($user->role->name == 'Instructor' || $user->role->name == 'Head') ? 'council' : 'user';
+        $scopeId = ($scope == 'council') ? $user->council_id : $user->id;
 
-        if ($user->role->name == 'Instructor' || $user->role->name == 'Head') {
-            // For Instructors & Heads
-            $this->authorize('viewAny', TaskSubmission::class);
-            $scope = 'council';
-            $scopeId = $user->council_id;
-            $serviceMethod = 'getAllTaskSubmissionsForCouncil';
-        } elseif ($user->role->name == 'Delegate') {
-            // For normal Users
-            $this->authorize('viewOwn', TaskSubmission::class);
-            $scope = 'user';
-            $scopeId = $user->id;
-            $serviceMethod = 'getAllTaskSubmissionsForUser';
-        }
-
+        $pageIndex = $request->pageIndex ?? 1;
+        $pageSize = $request->pageSize ?? 10;
         $cacheKey = "task_submissions:{$scope}_{$scopeId}:page_{$pageIndex}:size_{$pageSize}";
 
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($taskSubmissionPaginatedRequest, $serviceMethod) {
-                return new TaskSubmissionCollection($this->taskSubmissionService->$serviceMethod($taskSubmissionPaginatedRequest));
+            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
+                return new TaskSubmissionCollection($this->taskSubmissionService->getPaginatedSubmissions($request));
             }),
             'Submissions retrieved successfully'
         );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(CreateTaskSubmissionRequest $request)
     {
         $this->authorize('create', TaskSubmission::class);
-
-
         $submission = $this->taskSubmissionService->createTaskSubmission($request->all());
 
-        // Clear task submission cache after creating
-        $this->cacheService->clearResourceCache('task_submissions');
         $this->cacheService->clearResourceCache('task-submissions');
 
         return $this->createdResponse($submission, 'Submission created successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $cacheKey = "task_submission:{$id}";
 
-        // Use Redis cache service
         return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
                 $submission = TaskSubmission::findOrFail($id);
@@ -90,35 +66,25 @@ class TaskSubmissionController extends Controller
         );
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $submission = TaskSubmission::findOrFail($id);
         $this->authorize('update', $submission);
         $this->taskSubmissionService->updateTaskSubmission($id, $request->all());
 
-        // Clear specific submission cache and submission list cache
         $this->cacheService->forget("task_submission:{$id}");
-        $this->cacheService->clearResourceCache('task_submissions');
         $this->cacheService->clearResourceCache('task-submissions');
 
         return $this->successResponse(null, 'Submission updated successfully');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $submission = TaskSubmission::findOrFail($id);
         $this->authorize('delete', $submission);
         $this->taskSubmissionService->deleteTaskSubmission($id);
 
-        // Clear specific submission cache and submission list cache
         $this->cacheService->forget("task_submission:{$id}");
-        $this->cacheService->clearResourceCache('task_submissions');
         $this->cacheService->clearResourceCache('task-submissions');
 
         return $this->successResponse(null, 'Submission deleted successfully');

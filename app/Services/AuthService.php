@@ -3,66 +3,71 @@
 namespace App\Services;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+
 class AuthService
 {
     public function login(array $credentials)
     {
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            $token = $user->createToken('auth-token')->plainTextToken;
-            return ['token' => $token, 'user' => $user];
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
+            return null;
         }
 
-        return null;
-    }
+        $token = JWTAuth::fromUser($user);
 
-    public function register(array $data)
-    {
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'role_id' => $data['role_id'] ?? null,
-            'council_id' => $data['council_id'] ?? null,
+        $user->update([
+            'access_token' => $token,
+            'revoked' => false,
+            'last_active' => now(),
+            'status' => 'active',
         ]);
 
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        return ['token' => $token, 'user' => $user];
+        return [
+            'user' => $user,
+            'access_token' => $token,
+            'expires_in' => JWTAuth::factory()->getTTL() * 60,
+        ];
     }
 
     public function logout($user)
     {
-        $user->currentAccessToken()->delete();
+        if ($user) {
+            $user->update([
+                'revoked' => true,
+                'access_token' => null,
+                'last_active' => now(),
+                'status' => 'inactive',
+            ]);
+        }
     }
 
-
-
-    public function SendVerificationEmail(User $user){
-        $user->currentAccessToken()->delete();
-        $user->currentAccessToken()->create([
-            'name' => 'auth-token',
-            'token' => Str::random(60),
-        ]);
-
-
-    }
-
-    public function VerifyEmail($email, $token){
+    public function forgetPassword(string $email)
+    {
         $user = User::where('email', $email)->first();
         if (!$user) {
-            return false;
+            return 'USER_NOT_FOUND';
         }
 
-        if($token != $user->email_verification_token){
-            return false;
-        }
+        return Password::sendResetLink(['email' => $email]);
+    }
 
-        $user->email_verified_at = now();
-        $user->save();
-        return true;
+    public function resetPassword(array $data)
+    {
+        return Password::reset(
+            $data,
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password),
+                    'remember_token' => Str::random(60),
+                    'access_token' => null,
+                    'revoked' => true,
+                ])->save();
+            }
+        );
     }
 }

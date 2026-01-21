@@ -7,19 +7,24 @@ use App\Models\Team;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreTeamRequest;
 use App\Http\Resources\TeamResource;
+use App\Services\TeamService;
 
 class TeamController extends Controller
 {
+    protected $teamService;
+
+    public function __construct(TeamService $teamService)
+    {
+        $this->teamService = $teamService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
-        $teams = Team::all();
-        $teams = TeamResource::collection($teams);
-        return $this->successResponse($teams, 'Teams retrieved successfully');
-
+        $teams = $this->teamService->getAllTeams();
+        return $this->successResponse(TeamResource::collection($teams), 'Teams retrieved successfully');
     }
 
     /**
@@ -27,11 +32,8 @@ class TeamController extends Controller
      */
     public function store(StoreTeamRequest $request)
     {
-        //
-        $team = Team::create($request->all());
-
+        $team = $this->teamService->createTeam($request->validated());
         return $this->createdResponse(['id' => $team->id], 'Team created successfully');
-
     }
 
     /**
@@ -39,19 +41,16 @@ class TeamController extends Controller
      */
     public function show(string $id)
     {
-        //
-        $team = Team::findOrFail($id);
-        $team = new TeamResource($team);
-        return $this->successResponse($team, 'Team retrieved successfully');
+        $team = $this->teamService->getTeamById($id);
+        return $this->successResponse(new TeamResource($team), 'Team retrieved successfully');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Team $team)
+    public function update(Request $request, string $id)
     {
-        //
-        $team->update($request->all());
+        $this->teamService->updateTeam($id, $request->all());
         return $this->successResponse(null, 'Team updated successfully');
     }
 
@@ -60,8 +59,7 @@ class TeamController extends Controller
      */
     public function destroy(string $id)
     {
-        //
-        Team::destroy($id);
+        $this->teamService->deleteTeam($id);
         return $this->noContentResponse('Team deleted successfully');
     }
 }

@@ -17,15 +17,17 @@ class TaskSubmissionService
         $this->taskSubmissionRepository = $taskSubmissionRepository;
     }
 
-    public function getAllTaskSubmissionsForUser(TaskSubmissionPaginatedRequest $taskSubmissionPaginatedRequest)
+    public function getPaginatedSubmissions(TaskSubmissionPaginatedRequest $request)
     {
-        return $this->taskSubmissionRepository->getAllTaskSubmissionsForUser($taskSubmissionPaginatedRequest->all());
+        $user = $request->user();
+        if ($user->role->name == 'Instructor' || $user->role->name == 'Head') {
+            return $this->taskSubmissionRepository->getAllTaskSubmissionsForCouncil($request->all());
+        } elseif ($user->role->name == 'Delegate') {
+            return $this->taskSubmissionRepository->getAllTaskSubmissionsForUser($request->all());
+        }
+        return collect();
     }
 
-    public function getAllTaskSubmissionsForCouncil(TaskSubmissionPaginatedRequest $taskSubmissionPaginatedRequest)
-    {
-        return $this->taskSubmissionRepository->getAllTaskSubmissionsForCouncil($taskSubmissionPaginatedRequest->all());
-    }
 
     public function getTaskSubmissionById($submissionId)
     {
@@ -47,10 +49,10 @@ class TaskSubmissionService
         }
 
         $data = [
-            'user_id'    => $user->id,
-            'task_id'    => $submissionDetails['task_id'],
-            'file'       => $filePath,
-            'status'     => TaskStatusEnum::SUBMITTED->value,
+            'user_id' => $user->id,
+            'task_id' => $submissionDetails['task_id'],
+            'file' => $filePath,
+            'status' => TaskStatusEnum::SUBMITTED->value,
         ];
 
         return $this->taskSubmissionRepository->createTaskSubmission($data);
@@ -61,23 +63,23 @@ class TaskSubmissionService
     {
         $submission = $this->taskSubmissionRepository
             ->updateTaskSubmission($submissionId, $submissionDetails);
-        if($submissionDetails['status'] == 'graded') {
-        // Resolve recipient correctly
-        $delegate = $submission->user;
+        if ($submissionDetails['status'] == 'graded') {
+            // Resolve recipient correctly
+            $delegate = $submission->user;
 
-        // Notify the instructor
-        $delegate->notify(
-            new EventNotification(
-                'Task Updated',
-                'A submission was updated',
-                [
-                   'task' => $submission->task->name,
-                ]
-            )
-        );
-    }
+            // Notify the instructor
+            $delegate->notify(
+                new EventNotification(
+                    'Task Updated',
+                    'A submission was updated',
+                    [
+                        'task' => $submission->task->name,
+                    ]
+                )
+            );
+        }
 
-return $submission;
+        return $submission;
     }
 
     public function deleteTaskSubmission($submissionId)

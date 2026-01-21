@@ -7,9 +7,17 @@ use App\Models\TeamMember;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\TeamMemberRequest;
+use App\Services\TeamMemberService;
+
 class TeamMemberController extends Controller
 {
     use AuthorizesRequests;
+    protected $teamMemberService;
+
+    public function __construct(TeamMemberService $teamMemberService)
+    {
+        $this->teamMemberService = $teamMemberService;
+    }
 
     /**
      * Display a listing of the resource.
@@ -17,10 +25,8 @@ class TeamMemberController extends Controller
     public function index()
     {
         $this->authorize('viewAny', TeamMember::class);
-        return $this->successResponse(
-            TeamMember::all(),
-            'Team members retrieved successfully'
-        );
+        $members = $this->teamMemberService->getAllTeamMembers();
+        return $this->successResponse($members, 'Team members retrieved successfully');
     }
 
     /**
@@ -29,51 +35,33 @@ class TeamMemberController extends Controller
     public function store(TeamMemberRequest $request)
     {
         $this->authorize('create', TeamMember::class);
-
         $validated = $request->validated();
-
-        $membersData = $validated['members'];
-
-        // Add timestamps if using $table->timestamps()
-        foreach ($membersData as &$member) {
-            $member['created_at'] = now();
-            $member['updated_at'] = now();
-        }
-
-        // Bulk insert
-        TeamMember::insert($membersData);
+        $this->teamMemberService->bulkCreateTeamMembers($validated['members']);
 
         return $this->createdResponse(
-            ['count' => count($membersData)],
+            ['count' => count($validated['members'])],
             'Team members created successfully'
         );
     }
 
-
     /**
      * Display the specified resource.
      */
-    public function show(TeamMember $teamMember)
+    public function show(string $id)
     {
         $this->authorize('view', TeamMember::class);
-        return $this->successResponse($teamMember, 'Team member retrieved successfully');
+        $member = $this->teamMemberService->getTeamMemberById($id);
+        return $this->successResponse($member, 'Team member retrieved successfully');
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TeamMember $teamMember)
+    public function update(Request $request, string $id)
     {
         $this->authorize('update', TeamMember::class);
-        $teamMember->update(
-            $request->only([
-                'rate',
-                'role',
-                'task',
-            ])
-        );
-
-        return $this->successResponse($teamMember, 'Team member updated successfully');
+        $member = $this->teamMemberService->updateTeamMember($id, $request->only(['rate', 'role', 'task']));
+        return $this->successResponse($member, 'Team member updated successfully');
     }
 
     /**
@@ -82,7 +70,7 @@ class TeamMemberController extends Controller
     public function destroy(string $id)
     {
         $this->authorize('delete', TeamMember::class);
-        TeamMember::destroy($id);
+        $this->teamMemberService->deleteTeamMember($id);
 
         return $this->noContentResponse('Team member deleted successfully');
     }

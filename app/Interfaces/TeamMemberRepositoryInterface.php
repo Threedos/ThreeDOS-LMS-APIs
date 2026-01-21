@@ -1,0 +1,12 @@
+<?php
+
+namespace App\Interfaces;
+
+interface TeamMemberRepositoryInterface
+{
+    public function getAllTeamMembers();
+    public function getTeamMemberById($id);
+    public function bulkCreateTeamMembers(array $members);
+    public function updateTeamMember($id, array $details);
+    public function deleteTeamMember($id);
+}

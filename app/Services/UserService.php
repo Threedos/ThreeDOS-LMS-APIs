@@ -38,4 +38,10 @@ class UserService
     {
         return $this->userRepository->deleteUser($userId);
     }
+
+    public function bulkCreateUsers($file)
+    {
+        return $this->userRepository->bulkCreateUsers($file);
+    }
+
 }
