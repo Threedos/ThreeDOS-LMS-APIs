@@ -39,8 +39,8 @@ private function baseQuery($request)
         $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
         $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
         $query = $this->baseQuery($taskSubmissionPaginatedRequest);
-        $query->where('user_id', '=', auth()->user()->id)->skip(($pageIndex - 1) * $pageSize)->take($pageSize);
-        return $query->get();
+        $query->where('user_id', '=', auth()->user()->id);
+        return $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
     }
 
 
