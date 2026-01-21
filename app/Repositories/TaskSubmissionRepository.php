@@ -39,8 +39,9 @@ private function baseQuery($request)
         $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
         $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
         $query = $this->baseQuery($taskSubmissionPaginatedRequest);
-        $query->where('user_id', '=', auth()->user()->id);
-        return $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
+       $paginator = $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
+return $paginator;
+
     }
 
 
@@ -49,8 +50,9 @@ private function baseQuery($request)
         $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
         $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
         $query = $this->baseQuery($taskSubmissionPaginatedRequest);
-        $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
-        return $query;
+      $paginator = $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
+return $paginator;
+
     }
 
     public function getTaskSubmissionById($submissionId)
