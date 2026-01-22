@@ -83,7 +83,7 @@ class CacheResponse
         return sprintf(
             'endpoint_cache:user:%s:uri:%s:query:%s',
             $userId,
-            md5($uri),
+            $uri,
             md5($queryString)
         );
     }

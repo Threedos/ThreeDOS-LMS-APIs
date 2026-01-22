@@ -30,7 +30,6 @@ class CouncilController extends Controller
      */
     public function index(AllCouncilRequest $request)
     {
-        // return response()->json("hello");
         $this->authorize('viewAny', Council::class);
 
         $pageIndex = $request->input('pageIndex');
@@ -57,8 +56,6 @@ class CouncilController extends Controller
         $council = $this->councilService->createCouncil([
             'name' => $request->name,
             'description' => $request->description,
-            // 'head_id' => $request->head_id,
-            // 'instructor_id' => $request->instructor_id,
         ]);
 
         // Clear council cache after creating

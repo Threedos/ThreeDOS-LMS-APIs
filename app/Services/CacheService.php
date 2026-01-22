@@ -111,11 +111,16 @@ class CacheService
      */
     public function clearUserCache(?string $userId = null): int
     {
-        $pattern = $userId
-            ? "user:{$userId}*"
-            : "user:*";
+        $patterns = $userId
+            ? ["user:{$userId}", "user:{$userId}:*", "endpoint_cache:user:{$userId}:*"]
+            : ["user:*", "endpoint_cache:*"];
 
-        return $this->forgetByPattern($pattern);
+        $totalDeleted = 0;
+        foreach ($patterns as $pattern) {
+            $totalDeleted += $this->forgetByPattern($pattern);
+        }
+
+        return $totalDeleted;
     }
 
     /**
@@ -126,9 +131,13 @@ class CacheService
      */
     public function clearResourceCache(string $resource): int
     {
+        // Special case for singular/plural mapping if needed, 
+        // but here we just use the resource name as provided.
         $patterns = [
             "endpoint_cache:*:uri:*{$resource}*",
             "{$resource}:*",
+            // Also match singular if resource is plural
+            rtrim($resource, 's') . ":*",
         ];
 
         $totalDeleted = 0;
