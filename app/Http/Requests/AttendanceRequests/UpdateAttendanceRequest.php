@@ -24,7 +24,7 @@ class UpdateAttendanceRequest extends FormRequest
         return [
             //
             'user_id' => 'required|exists:users,id',
-            'session_id' => 'required|exists:sessions,id',
+            'council_session_id' => 'required|exists:council_sessions,id',
             'status' => 'required|in:present,absent,late',
         ];
     }
