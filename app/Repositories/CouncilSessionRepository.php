@@ -10,7 +10,7 @@ class CouncilSessionRepository implements CouncilSessionRepositoryInterface
     public function getAllSessions($request)
     {
         $council_id = $request->user()->council_id;
-        if ($council_id === null && $request->user()->role === 'VicePresident') {
+        if ($council_id === null && $request->user()->role->name === 'VicePresident') {
             return CouncilSession::withCount('attendance')
                 ->when($request->search, fn($q) => $q->where('title', 'like', "%{$request->search}%"))
                 ->orderBy('created_at', 'desc')

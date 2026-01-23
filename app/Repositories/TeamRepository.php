@@ -9,7 +9,12 @@ class TeamRepository implements TeamRepositoryInterface
 {
     public function getAllTeams()
     {
-        return Team::orderBy('created_at', 'desc')->get();
+        $council_id = auth()->user()->council_id;
+        if ($council_id === null && auth()->user()->role->name === 'VicePresident') {
+            return Team::orderBy('created_at', 'desc')->get();
+        }
+
+        return Team::where('council_id', $council_id)->orderBy('created_at', 'desc')->get();
     }
 
     public function getTeamById($id)
