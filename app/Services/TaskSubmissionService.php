@@ -37,21 +37,21 @@ class TaskSubmissionService
     {
         $user = auth()->user();
 
-        if (!($submissionDetails['file'] instanceof \Illuminate\Http\UploadedFile)) {
-            throw new \InvalidArgumentException('Invalid file upload');
-        }
+        // if (!($submissionDetails['file'] instanceof \Illuminate\Http\UploadedFile)) {
+        //     throw new \InvalidArgumentException('Invalid file upload');
+        // }
 
-        $filePath = Storage::disk('s3')
-            ->putFile('task-submissions', $submissionDetails['file']);
+        // $filePath = Storage::disk('s3')
+        //     ->putFile('task-submissions', $submissionDetails['file']);
 
-        if (!$filePath) {
-            throw new \RuntimeException('Failed to upload file to S3');
-        }
+        // if (!$filePath) {
+        //     throw new \RuntimeException('Failed to upload file to S3');
+        // }
 
         $data = [
             'user_id' => $user->id,
             'task_id' => $submissionDetails['task_id'],
-            'file' => $filePath,
+            'file' => $submissionDetails['file'],
             'status' => TaskStatusEnum::SUBMITTED->value,
         ];
 
