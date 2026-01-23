@@ -54,8 +54,9 @@ class TaskController extends Controller
         $this->authorize('create', Task::class);
         $task = $this->taskService->createTask($request->all());
 
-        // Clear task cache after creating
+        // Clear task cache and submissions after creating
         $this->cacheService->clearResourceCache('tasks');
+        $this->cacheService->clearResourceCache('task-submissions');
 
         return $this->createdResponse($task, 'Task created successfully');
     }
@@ -87,9 +88,10 @@ class TaskController extends Controller
         $this->authorize('update', $task);
         $this->taskService->updateTask($id, $request->all());
 
-        // Clear specific task cache and task list cache
+        // Clear specific task cache, task list cache and submissions
         $this->cacheService->forget("task:{$id}");
         $this->cacheService->clearResourceCache('tasks');
+        $this->cacheService->clearResourceCache('task-submissions');
 
         return $this->successResponse(null, 'Task updated successfully');
     }
@@ -103,9 +105,10 @@ class TaskController extends Controller
         $this->authorize('delete', $task);
         $this->taskService->deleteTask($id);
 
-        // Clear specific task cache and task list cache
+        // Clear specific task cache, task list cache and submissions
         $this->cacheService->forget("task:{$id}");
         $this->cacheService->clearResourceCache('tasks');
+        $this->cacheService->clearResourceCache('task-submissions');
 
         return $this->successResponse(null, 'Task deleted successfully');
     }

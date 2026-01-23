@@ -48,7 +48,10 @@ class CouncilSessionController extends Controller
     {
         $session = $this->sessionService->createSession($request->validated());
 
+        // Clear session cache and dependent resource caches
         $this->cacheService->clearResourceCache('sessions');
+        $this->cacheService->clearResourceCache('tasks');
+        $this->cacheService->clearResourceCache('task-submissions');
 
         return $this->createdResponse($session, 'Council session created successfully');
     }
@@ -75,8 +78,11 @@ class CouncilSessionController extends Controller
     {
         $session = $this->sessionService->updateSession($id, $request->validated());
 
+        // Clear specific session cache, session list cache and dependencies
         $this->cacheService->forget("session:{$id}");
         $this->cacheService->clearResourceCache('sessions');
+        $this->cacheService->clearResourceCache('tasks');
+        $this->cacheService->clearResourceCache('task-submissions');
 
         return $this->successResponse($session, 'Session updated successfully');
     }
@@ -88,8 +94,11 @@ class CouncilSessionController extends Controller
     {
         $this->sessionService->deleteSession($id);
 
+        // Clear specific session cache, session list cache and dependencies
         $this->cacheService->forget("session:{$id}");
         $this->cacheService->clearResourceCache('sessions');
+        $this->cacheService->clearResourceCache('tasks');
+        $this->cacheService->clearResourceCache('task-submissions');
 
         return $this->noContentResponse('Session deleted successfully');
     }

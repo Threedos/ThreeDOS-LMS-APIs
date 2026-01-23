@@ -41,7 +41,7 @@ class CouncilController extends Controller
         // Use Redis cache service
         return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-                return  CouncilResource::collection($this->councilService->getAllCouncils($request));
+                return CouncilResource::collection($this->councilService->getAllCouncils($request));
             }),
             'Councils retrieved successfully'
         );
@@ -58,8 +58,11 @@ class CouncilController extends Controller
             'description' => $request->description,
         ]);
 
-        // Clear council cache after creating
+        // Clear council cache and dependencies after creating
         $this->cacheService->clearResourceCache('councils');
+        $this->cacheService->clearResourceCache('tasks');
+        $this->cacheService->clearResourceCache('teams');
+        $this->cacheService->clearResourceCache('sessions');
 
         return $this->createdResponse(null, 'Council created successfully');
     }
@@ -91,9 +94,12 @@ class CouncilController extends Controller
         $this->authorize('update', $council);
         $this->councilService->updateCouncil($id, $request->all());
 
-        // Clear specific council cache and council list cache
+        // Clear specific council cache, council list cache and dependencies
         $this->cacheService->forget("council:{$id}");
         $this->cacheService->clearResourceCache('councils');
+        $this->cacheService->clearResourceCache('tasks');
+        $this->cacheService->clearResourceCache('teams');
+        $this->cacheService->clearResourceCache('sessions');
 
         return $this->successResponse(null, 'Success');
     }
@@ -107,9 +113,12 @@ class CouncilController extends Controller
         $this->authorize('delete', $council);
         $this->councilService->deleteCouncil($id);
 
-        // Clear specific council cache and council list cache
+        // Clear specific council cache, council list cache and dependencies
         $this->cacheService->forget("council:{$id}");
         $this->cacheService->clearResourceCache('councils');
+        $this->cacheService->clearResourceCache('tasks');
+        $this->cacheService->clearResourceCache('teams');
+        $this->cacheService->clearResourceCache('sessions');
 
         return $this->successResponse(null, 'Success');
     }

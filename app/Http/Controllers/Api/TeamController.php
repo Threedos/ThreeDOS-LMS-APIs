@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Team;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\StoreTeamRequest;
 use App\Http\Resources\TeamResource;
 use App\Services\TeamService;
@@ -12,6 +13,7 @@ use App\Services\CacheService;
 
 class TeamController extends Controller
 {
+    use AuthorizesRequests;
     protected $teamService;
     protected $cacheService;
 
@@ -26,6 +28,7 @@ class TeamController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Team::class);
         $cacheKey = "teams:all";
         return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () {
@@ -41,6 +44,7 @@ class TeamController extends Controller
      */
     public function store(StoreTeamRequest $request)
     {
+        $this->authorize('create', Team::class);
         $team = $this->teamService->createTeam($request->validated());
 
         // Clear team cache
@@ -58,6 +62,7 @@ class TeamController extends Controller
         return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
                 $team = $this->teamService->getTeamById($id);
+                $this->authorize('view', $team);
                 return new TeamResource($team);
             }),
             'Team retrieved successfully'
@@ -69,6 +74,8 @@ class TeamController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $team = Team::findOrFail($id);
+        $this->authorize('update', $team);
         $this->teamService->updateTeam($id, $request->all());
 
         // Clear team cache
@@ -83,6 +90,8 @@ class TeamController extends Controller
      */
     public function destroy(string $id)
     {
+        $team = Team::findOrFail($id);
+        $this->authorize('delete', $team);
         $this->teamService->deleteTeam($id);
 
         // Clear team cache

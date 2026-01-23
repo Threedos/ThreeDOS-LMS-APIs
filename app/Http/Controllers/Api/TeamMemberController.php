@@ -45,8 +45,9 @@ class TeamMemberController extends Controller
         $this->authorize('create', TeamMember::class);
         $this->teamMemberService->createTeamMember($request->all());
 
-        // Clear team members cache
+        // Clear team and team members cache
         $this->cacheService->clearResourceCache('team-members');
+        $this->cacheService->clearResourceCache('teams');
 
         return $this->createdResponse(
             null,
@@ -59,8 +60,9 @@ class TeamMemberController extends Controller
         $validated = $request->validated();
         $this->teamMemberService->bulkCreateTeamMembers($validated['members']);
 
-        // Clear team members cache
+        // Clear team and team members cache
         $this->cacheService->clearResourceCache('team-members');
+        $this->cacheService->clearResourceCache('teams');
 
         return $this->createdResponse(
             ['count' => count($validated['members'])],
@@ -91,9 +93,10 @@ class TeamMemberController extends Controller
         $this->authorize('update', TeamMember::class);
         $member = $this->teamMemberService->updateTeamMember($id, $request->only(['rate', 'role', 'task']));
 
-        // Clear team member cache
+        // Clear team and team member cache
         $this->cacheService->forget("team-member:{$id}");
         $this->cacheService->clearResourceCache('team-members');
+        $this->cacheService->clearResourceCache('teams');
 
         return $this->successResponse($member, 'Team member updated successfully');
     }
@@ -106,9 +109,10 @@ class TeamMemberController extends Controller
         $this->authorize('delete', TeamMember::class);
         $this->teamMemberService->deleteTeamMember($id);
 
-        // Clear team member cache
+        // Clear team and team member cache
         $this->cacheService->forget("team-member:{$id}");
         $this->cacheService->clearResourceCache('team-members');
+        $this->cacheService->clearResourceCache('teams');
 
         return $this->noContentResponse('Team member deleted successfully');
     }
