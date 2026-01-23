@@ -17,7 +17,9 @@ class AttendanceResource extends JsonResource
         return [
             'id' => $this->id,
             'student' => $this->user->name,
+            'student_id' => $this->user->id,
             'session' => $this->council_session->title,
+            'session_id' => $this->council_session->id,
             'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
