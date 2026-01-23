@@ -14,7 +14,7 @@ class TeamRepository implements TeamRepositoryInterface
 
     public function getTeamById($id)
     {
-        return Team::with('teamMembers.users:id,name,email')->findOrFail($id);
+        return Team::with('teamMembers.user:id,name,email')->findOrFail($id);
     }
 
     public function createTeam(array $details)
