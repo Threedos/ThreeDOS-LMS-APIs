@@ -63,21 +63,7 @@ class TaskSubmissionService
     {
         $submission = $this->taskSubmissionRepository
             ->updateTaskSubmission($submissionId, $submissionDetails);
-        if ($submissionDetails['status'] == 'graded') {
-            // Resolve recipient correctly
-            $delegate = $submission->user;
-
-            // Notify the instructor
-            $delegate->notify(
-                new EventNotification(
-                    'Task Updated',
-                    'A submission was updated',
-                    [
-                        'task' => $submission->task->name,
-                    ]
-                )
-            );
-        }
+   
 
         return $submission;
     }
