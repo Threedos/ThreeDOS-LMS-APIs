@@ -32,14 +32,28 @@ class UserRepository implements UserRepositoryInterface
         $search = $request->search;
         $sort = $request->sort;
         $role_id = $request->role_id;
-
+        $user= auth()->user();
         $query = User::query()->select('id', 'name', 'email', 'role_id', 'council_id')
             // ->with('role', 'council')
         ;
         if($request->filter =='council'){
-            $council_id = auth()->user()->council_id;
+            $council_id = $user->council_id;
             $query->where('council_id', $council_id);
         }
+
+        if($user->role->name == 'Delegate'){
+            $query->where('council_id', $user->council_id);
+        }
+
+        if($user->role->name == 'Instructor' || $user->role->name == 'Head'){
+            $query->where('council_id', $user->council_id);
+        }
+
+        if($user->role->name == 'VicePresident'){
+            $query->where('council_id', null);
+        }
+        
+        
         if ($search) {
             $query->where('name', 'like', "%{$search}%");
         }
