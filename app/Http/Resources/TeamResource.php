@@ -18,8 +18,10 @@ class TeamResource extends JsonResource
             'id' => $this->id,
             'team_number' => $this->team_number,
             'council_name' => $this->council->name,
+            'task_link' => $this->task_link,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+            'team_members' => TeamMemberResource::collection($this->teamMembers),
         ];
     }
 }
