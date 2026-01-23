@@ -23,7 +23,7 @@ class PaginatedRequest extends FormRequest
     {
         return [
             //
-            'pageIndex' => 'required|integer',
+            'pageIndex' => 'nullable|integer',
             'pageSize' => 'nullable|integer',
             'search' => 'nullable|string',
             'sort' => 'nullable|string',
