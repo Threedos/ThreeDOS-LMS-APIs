@@ -22,7 +22,10 @@ class TeamMemberService
     {
         return $this->teamMemberRepository->getTeamMemberById($id);
     }
-
+    public function createTeamMember(array $details)
+    {
+        return $this->teamMemberRepository->createTeamMember($details);
+    }
     public function bulkCreateTeamMembers(array $members)
     {
         return $this->teamMemberRepository->bulkCreateTeamMembers($members);

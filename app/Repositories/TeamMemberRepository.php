@@ -16,7 +16,10 @@ class TeamMemberRepository implements TeamMemberRepositoryInterface
     {
         return TeamMember::findOrFail($id);
     }
-
+    public function createTeamMember(array $details)
+    {
+        return TeamMember::create($details);    
+    }
     public function bulkCreateTeamMembers(array $members)
     {
         foreach ($members as &$member) {

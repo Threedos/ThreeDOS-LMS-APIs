@@ -45,7 +45,7 @@ Route::middleware(['auth:api', RateLimiting::class, 'throttle:60,1'])->group(fun
     Route::apiResource('task-submissions', TaskSubmissionController::class)->middleware('cache.response:3600');
     Route::apiResource('teams', TeamController::class);
     Route::apiResource('team-members', TeamMemberController::class);
-
+    Route::post('team-members/bulk', [TeamMemberController::class, 'storeBulk']);
 
     // Cache management routes
     Route::prefix('cache')->group(function () {
