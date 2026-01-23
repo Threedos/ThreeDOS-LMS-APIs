@@ -29,15 +29,19 @@ class TaskSubmissionController extends Controller
         $user = $request->user();
         $scope = ($user->role->name == 'Instructor' || $user->role->name == 'Head') ? 'council' : 'user';
         $scopeId = ($scope == 'council') ? $user->council_id : $user->id;
-        
-        $pageIndex = $request->pageIndex ?? 1;
-        $pageSize = $request->pageSize ?? 10;
+
+$pageIndex = $taskSubmissionPaginatedRequest['pageIndex'] ?? 1;
+$pageSize  = $taskSubmissionPaginatedRequest['pageSize'] ?? 10;
+
         $cacheKey = "task_submissions:{$scope}_{$scopeId}:page_{$pageIndex}:size_{$pageSize}";
 
         return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-                return new TaskSubmissionCollection($this->taskSubmissionService->getPaginatedSubmissions($request));
-            }),
+return new TaskSubmissionCollection(
+    $this->taskSubmissionService->getPaginatedSubmissions(
+        $request->validated()
+    )
+);            }),
             'Submissions retrieved successfully'
         );
     }
