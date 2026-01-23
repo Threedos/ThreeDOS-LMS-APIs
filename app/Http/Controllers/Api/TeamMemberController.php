@@ -8,15 +8,18 @@ use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\TeamMemberRequest;
 use App\Services\TeamMemberService;
+use App\Services\CacheService;
 
 class TeamMemberController extends Controller
 {
     use AuthorizesRequests;
     protected $teamMemberService;
+    protected $cacheService;
 
-    public function __construct(TeamMemberService $teamMemberService)
+    public function __construct(TeamMemberService $teamMemberService, CacheService $cacheService)
     {
         $this->teamMemberService = $teamMemberService;
+        $this->cacheService = $cacheService;
     }
 
     /**
@@ -25,8 +28,13 @@ class TeamMemberController extends Controller
     public function index()
     {
         $this->authorize('viewAny', TeamMember::class);
-        $members = $this->teamMemberService->getAllTeamMembers();
-        return $this->successResponse($members, 'Team members retrieved successfully');
+        $cacheKey = "team-members:all";
+        return $this->successResponse(
+            $this->cacheService->remember($cacheKey, 3600, function () {
+                return $this->teamMemberService->getAllTeamMembers();
+            }),
+            'Team members retrieved successfully'
+        );
     }
 
     /**
@@ -37,6 +45,9 @@ class TeamMemberController extends Controller
         $this->authorize('create', TeamMember::class);
         $validated = $request->validated();
         $this->teamMemberService->bulkCreateTeamMembers($validated['members']);
+
+        // Clear team members cache
+        $this->cacheService->clearResourceCache('team-members');
 
         return $this->createdResponse(
             ['count' => count($validated['members'])],
@@ -50,8 +61,13 @@ class TeamMemberController extends Controller
     public function show(string $id)
     {
         $this->authorize('view', TeamMember::class);
-        $member = $this->teamMemberService->getTeamMemberById($id);
-        return $this->successResponse($member, 'Team member retrieved successfully');
+        $cacheKey = "team-member:{$id}";
+        return $this->successResponse(
+            $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
+                return $this->teamMemberService->getTeamMemberById($id);
+            }),
+            'Team member retrieved successfully'
+        );
     }
 
     /**
@@ -61,6 +77,11 @@ class TeamMemberController extends Controller
     {
         $this->authorize('update', TeamMember::class);
         $member = $this->teamMemberService->updateTeamMember($id, $request->only(['rate', 'role', 'task']));
+
+        // Clear team member cache
+        $this->cacheService->forget("team-member:{$id}");
+        $this->cacheService->clearResourceCache('team-members');
+
         return $this->successResponse($member, 'Team member updated successfully');
     }
 
@@ -71,6 +92,10 @@ class TeamMemberController extends Controller
     {
         $this->authorize('delete', TeamMember::class);
         $this->teamMemberService->deleteTeamMember($id);
+
+        // Clear team member cache
+        $this->cacheService->forget("team-member:{$id}");
+        $this->cacheService->clearResourceCache('team-members');
 
         return $this->noContentResponse('Team member deleted successfully');
     }

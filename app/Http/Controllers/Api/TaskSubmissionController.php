@@ -30,10 +30,16 @@ class TaskSubmissionController extends Controller
         $scope = ($user->role->name == 'Instructor' || $user->role->name == 'Head') ? 'council' : 'user';
         $scopeId = ($scope == 'council') ? $user->council_id : $user->id;
 
-$pageIndex = $taskSubmissionPaginatedRequest['pageIndex'] ?? 1;
-$pageSize  = $taskSubmissionPaginatedRequest['pageSize'] ?? 10;
+        $pageIndex = $request->input('pageIndex', 1);
+        $pageSize = $request->input('pageSize', 10);
+        $search = $request->input('search', '');
+        $filter = $request->input('filter', '');
+        $sort = $request->input('sort', '');
+        $task_id = $request->input('task_id', '');
+        $user_id = $request->input('user_id', '');
+        $status = $request->input('status', '');
 
-        $cacheKey = "task_submissions:{$scope}_{$scopeId}:page_{$pageIndex}:size_{$pageSize}";
+        $cacheKey = "task_submissions:{$scope}_{$scopeId}:page_{$pageIndex}:size_{$pageSize}:search_{$search}:filter_{$filter}:sort_{$sort}:task_{$task_id}:user_{$user_id}:status_{$status}";
 
         return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($request) {

@@ -8,14 +8,17 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreTeamRequest;
 use App\Http\Resources\TeamResource;
 use App\Services\TeamService;
+use App\Services\CacheService;
 
 class TeamController extends Controller
 {
     protected $teamService;
+    protected $cacheService;
 
-    public function __construct(TeamService $teamService)
+    public function __construct(TeamService $teamService, CacheService $cacheService)
     {
         $this->teamService = $teamService;
+        $this->cacheService = $cacheService;
     }
 
     /**
@@ -23,8 +26,14 @@ class TeamController extends Controller
      */
     public function index()
     {
-        $teams = $this->teamService->getAllTeams();
-        return $this->successResponse(TeamResource::collection($teams), 'Teams retrieved successfully');
+        $cacheKey = "teams:all";
+        return $this->successResponse(
+            $this->cacheService->remember($cacheKey, 3600, function () {
+                $teams = $this->teamService->getAllTeams();
+                return TeamResource::collection($teams);
+            }),
+            'Teams retrieved successfully'
+        );
     }
 
     /**
@@ -33,6 +42,10 @@ class TeamController extends Controller
     public function store(StoreTeamRequest $request)
     {
         $team = $this->teamService->createTeam($request->validated());
+
+        // Clear team cache
+        $this->cacheService->clearResourceCache('teams');
+
         return $this->createdResponse(['id' => $team->id], 'Team created successfully');
     }
 
@@ -41,8 +54,14 @@ class TeamController extends Controller
      */
     public function show(string $id)
     {
-        $team = $this->teamService->getTeamById($id);
-        return $this->successResponse(new TeamResource($team), 'Team retrieved successfully');
+        $cacheKey = "team:{$id}";
+        return $this->successResponse(
+            $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
+                $team = $this->teamService->getTeamById($id);
+                return new TeamResource($team);
+            }),
+            'Team retrieved successfully'
+        );
     }
 
     /**
@@ -51,6 +70,11 @@ class TeamController extends Controller
     public function update(Request $request, string $id)
     {
         $this->teamService->updateTeam($id, $request->all());
+
+        // Clear team cache
+        $this->cacheService->forget("team:{$id}");
+        $this->cacheService->clearResourceCache('teams');
+
         return $this->successResponse(null, 'Team updated successfully');
     }
 
@@ -60,6 +84,11 @@ class TeamController extends Controller
     public function destroy(string $id)
     {
         $this->teamService->deleteTeam($id);
+
+        // Clear team cache
+        $this->cacheService->forget("team:{$id}");
+        $this->cacheService->clearResourceCache('teams');
+
         return $this->noContentResponse('Team deleted successfully');
     }
 }

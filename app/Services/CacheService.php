@@ -131,13 +131,17 @@ class CacheService
      */
     public function clearResourceCache(string $resource): int
     {
-        // Special case for singular/plural mapping if needed, 
-        // but here we just use the resource name as provided.
+        $resourceUnderscore = str_replace('-', '_', $resource);
+        $resourceHyphen = str_replace('_', '-', $resource);
+        
         $patterns = [
             "endpoint_cache:*:uri:*{$resource}*",
-            "{$resource}:*",
-            // Also match singular if resource is plural
-            rtrim($resource, 's') . ":*",
+            "endpoint_cache:*:uri:*{$resourceUnderscore}*",
+            "endpoint_cache:*:uri:*{$resourceHyphen}*",
+            "{$resourceUnderscore}:*",
+            "{$resourceHyphen}:*",
+            rtrim($resourceUnderscore, 's') . ":*",
+            rtrim($resourceHyphen, 's') . ":*",
         ];
 
         $totalDeleted = 0;
