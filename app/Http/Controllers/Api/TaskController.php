@@ -8,8 +8,10 @@ use App\Services\TaskService;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Http\Requests\TaskRequests\TaskPaginatedRequest;
+use App\Http\Requests\TaskRequests\TaskStoreRequest;
 use App\Services\CacheService;
 use App\Http\Resources\TaskCollection;
+
 class TaskController extends Controller
 {
     use AuthorizesRequests;
@@ -49,7 +51,7 @@ class TaskController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(TaskStoreRequest $request)
     {
         $this->authorize('create', Task::class);
         $task = $this->taskService->createTask($request->all());

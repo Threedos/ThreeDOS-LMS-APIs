@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\AttendanceRequests;
+namespace App\Http\Requests\TaskRequests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreAttendanceRequest extends FormRequest
+class TaskStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -13,8 +13,7 @@ class StoreAttendanceRequest extends FormRequest
     {
         return ((auth()->user()->role->name === 'Head' || auth()->user()->role->name === 'Instructor' )
         && auth()->user()->council_id === $this->council_session_id->council_id) 
-        || auth()->user()->role->name === 'VicePresident';
-    }
+        || auth()->user()->role->name === 'VicePresident';    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -25,10 +24,6 @@ class StoreAttendanceRequest extends FormRequest
     {
         return [
             //
-            'user_id' => 'required|exists:users,id',
-            'council_session_id' => 'required|exists:council_sessions,id',
-            'status' => 'required|in:present,absent,late',
-
         ];
     }
 }

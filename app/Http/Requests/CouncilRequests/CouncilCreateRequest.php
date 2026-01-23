@@ -11,7 +11,7 @@ class CouncilCreateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        if ($this->user()->role->name === 'Head' || $this->user()->role->name === 'Instructor') {
+        if ($this->user()->role->name === 'Head' || $this->user()->role->name === 'Instructor' || $this->user()->role->name === 'VicePresident') {
             return true;
         }
         return false;
