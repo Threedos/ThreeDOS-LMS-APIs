@@ -3,18 +3,30 @@
 namespace App\Http\Requests\AttendanceRequests;
 
 use Illuminate\Foundation\Http\FormRequest;
+    use App\Models\CouncilSession;
 
 class StoreAttendanceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
-    {
-        return ((auth()->user()->role->name === 'Head' || auth()->user()->role->name === 'Instructor' )
-        && auth()->user()->council_id === $this->council_session_id->council_id) 
-        || auth()->user()->role->name === 'VicePresident';
+
+public function authorize(): bool
+{
+    $user = auth()->user();
+
+    if ($user->role->name === 'VicePresident') {
+        return true;
     }
+
+    if (!in_array($user->role->name, ['Head', 'Instructor'], true)) {
+        return false;
+    }
+
+    $session = CouncilSession::find($this->council_session_id);
+
+    return $session && $session->council_id === $user->council_id;
+}
 
     /**
      * Get the validation rules that apply to the request.
