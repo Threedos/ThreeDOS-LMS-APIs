@@ -6,10 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\TeamMember;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use App\Http\Requests\TeamMemberRequest;
+use App\Http\Requests\BulkTeamMemberRequest;
 use App\Services\TeamMemberService;
 use App\Services\CacheService;
-
+use App\Http\Requests\TeamMemberRequest;
 class TeamMemberController extends Controller
 {
     use AuthorizesRequests;
@@ -40,11 +40,10 @@ class TeamMemberController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(TeamMemberRequest $request)
     {
         $this->authorize('create', TeamMember::class);
-        $validated = $request->validated();
-        $this->teamMemberService->createTeamMember($validated);
+        $this->teamMemberService->createTeamMember($request->all());
 
         // Clear team members cache
         $this->cacheService->clearResourceCache('team-members');
@@ -54,7 +53,7 @@ class TeamMemberController extends Controller
             'Team member created successfully'
         );
     }
-    public function storeBulk(TeamMemberRequest $request)
+    public function storeBulk(BulkTeamMemberRequest $request)
     {
         $this->authorize('create', TeamMember::class);
         $validated = $request->validated();
