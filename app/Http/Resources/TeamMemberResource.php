@@ -18,6 +18,8 @@ class TeamMemberResource extends JsonResource
             'id' => $this->id,
             'team_id' => $this->team_id,
             'user_id' => $this->user_id,
+            'name' => $this->user?->name, // <-- include user's name safely
+            'email' => $this->user?->email, // <-- include user's email safely
             'rate' => $this->rate,
             'role' => $this->role,
             'task' => $this->task,
