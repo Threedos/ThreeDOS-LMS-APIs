@@ -10,8 +10,10 @@ class UserRepository implements UserRepositoryInterface
 {
     public function getAllUsers($request)
     {
-        if($request->role_id){
-            return User::where('role_id', $request->role_id)->get();
+        if($request->role){
+            return User::whereHas('role', function ($query) use ($request) {
+                $query->where('name', $request->role);
+            })->get();
         }
         return User::all();
     }

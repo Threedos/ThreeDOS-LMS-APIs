@@ -27,7 +27,7 @@ class PaginatedRequest extends FormRequest
             'pageSize' => 'nullable|integer',
             'search' => 'nullable|string',
             'sort' => 'nullable|string',
-            'role_id' => 'nullable|integer',
+            'role' => 'nullable|string',
 
         ];
     }

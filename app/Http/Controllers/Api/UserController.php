@@ -55,7 +55,7 @@ class UserController extends Controller
         $pageSize = $request->input('pageSize', 10);
         $search = $request->input('search', '');
         $cacheKey = "users:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
-        if($request->role_id){
+        if($request->role){
             return $this->successResponse(
                 $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
                     return $this->userService->getAllUsers($request);
