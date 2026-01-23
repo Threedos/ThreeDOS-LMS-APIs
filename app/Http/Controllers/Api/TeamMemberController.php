@@ -50,7 +50,7 @@ class TeamMemberController extends Controller
         $this->cacheService->clearResourceCache('team-members');
 
         return $this->createdResponse(
-            $this->teamMemberService->getTeamMemberById($this->teamMemberService->createTeamMember($validated)->id),
+            null,
             'Team member created successfully'
         );
     }
