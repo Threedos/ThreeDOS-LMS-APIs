@@ -11,9 +11,12 @@ class AttendanceRepository implements AttendanceRepositoryInterface
 {
     public function getAllAttendances($request)
     {
-        $council_id = $request->user()->council_id;
+        $user = $request->user();
+        $role = $user->role->name;
+        $council_id = $user->council_id;
+
         $pageIndex = $request->pageIndex ?? 1;
-        $pageSize = $request->pageSize ?? 20;
+        $pageSize  = $request->pageSize ?? 20;
 
         $query = Attendance::query()
             ->whereHas('council_session', function ($q) use ($council_id) {
@@ -22,8 +25,17 @@ class AttendanceRepository implements AttendanceRepositoryInterface
             ->with(['council_session.council'])
             ->orderBy('created_at', 'desc');
 
+        // Delegate → only his attendance
+        if ($role === 'Delegate') {
+            $query->where('user_id', $user->id);
+        }
+        
+        // Instructor / Head / VicePresident → full council attendance
+        // (no extra condition needed)
+
         return $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
-    }
+}
+
 
     public function getAttendanceById($id)
     {
