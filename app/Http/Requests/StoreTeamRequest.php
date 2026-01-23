@@ -11,7 +11,8 @@ class StoreTeamRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return (auth()->user()->role->name === 'Head' || auth()->user()->role->name === 'Instructor' 
+        || auth()->user()->role->name === 'VicePresident') && auth()->user()->council_id === $this->council_id;
     }
 
     /**
