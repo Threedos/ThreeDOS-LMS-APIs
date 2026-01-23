@@ -39,15 +39,18 @@ private function baseQuery($request)
         $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
         $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
         $query = $this->baseQuery($taskSubmissionPaginatedRequest)->orderBy('created_at', 'desc');
-        if($taskSubmissionPaginatedRequest->task_id){
-            $query->where('task_id', $taskSubmissionPaginatedRequest->task_id);
-        }
-        if($taskSubmissionPaginatedRequest->user_id){
-            $query->where('user_id', $taskSubmissionPaginatedRequest->user_id);
-        }
-        if($taskSubmissionPaginatedRequest->status){
-            $query->where('status', $taskSubmissionPaginatedRequest->status);
-        }
+   if (!empty($taskSubmissionPaginatedRequest['task_id'])) {
+    $query->where('task_id', $taskSubmissionPaginatedRequest['task_id']);
+}
+
+if (!empty($taskSubmissionPaginatedRequest['user_id'])) {
+    $query->where('user_id', $taskSubmissionPaginatedRequest['user_id']);
+}
+
+if (!empty($taskSubmissionPaginatedRequest['status'])) {
+    $query->where('status', $taskSubmissionPaginatedRequest['status']);
+}
+
        $paginator = $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
 return $paginator;
 
@@ -59,15 +62,18 @@ return $paginator;
         $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
         $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
         $query = $this->baseQuery($taskSubmissionPaginatedRequest)->orderBy('created_at', 'desc');
-        if($taskSubmissionPaginatedRequest->task_id){
-            $query->where('task_id', $taskSubmissionPaginatedRequest->task_id);
-        }
-        if($taskSubmissionPaginatedRequest->user_id){
-            $query->where('user_id', $taskSubmissionPaginatedRequest->user_id);
-        }
-        if($taskSubmissionPaginatedRequest->status){
-            $query->where('status', $taskSubmissionPaginatedRequest->status);
-        }
+ if (!empty($taskSubmissionPaginatedRequest['task_id'])) {
+    $query->where('task_id', $taskSubmissionPaginatedRequest['task_id']);
+}
+
+if (!empty($taskSubmissionPaginatedRequest['user_id'])) {
+    $query->where('user_id', $taskSubmissionPaginatedRequest['user_id']);
+}
+
+if (!empty($taskSubmissionPaginatedRequest['status'])) {
+    $query->where('status', $taskSubmissionPaginatedRequest['status']);
+}
+
       $paginator = $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
 return $paginator;
 
