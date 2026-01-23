@@ -23,11 +23,14 @@ class TaskSubmissionPaginatedRequest extends FormRequest
     {
         return [
             //
-            'pageIndex' => 'required|integer',
-            'pageSize' => 'required|integer',
+            'pageIndex' => 'nullable|integer',
+            'pageSize' => 'nullable|integer',
             'search' => 'string|nullable',
             'filter' => 'string|nullable',
             'sort' => 'string|nullable',
+            'task_id' => 'nullable|exists:tasks,id',
+            'user_id' => 'nullable|exists:users,id',
+            'status' => 'nullable|string',
         ];
     }
 }

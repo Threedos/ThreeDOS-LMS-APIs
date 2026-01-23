@@ -29,7 +29,7 @@ class TaskSubmissionController extends Controller
         $user = $request->user();
         $scope = ($user->role->name == 'Instructor' || $user->role->name == 'Head') ? 'council' : 'user';
         $scopeId = ($scope == 'council') ? $user->council_id : $user->id;
-
+        
         $pageIndex = $request->pageIndex ?? 1;
         $pageSize = $request->pageSize ?? 10;
         $cacheKey = "task_submissions:{$scope}_{$scopeId}:page_{$pageIndex}:size_{$pageSize}";
