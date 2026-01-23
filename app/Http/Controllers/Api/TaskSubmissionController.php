@@ -58,7 +58,7 @@ $pageSize  = $taskSubmissionPaginatedRequest['pageSize'] ?? 10;
         $cacheKey = "task_submission:{$id}";
 
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
+            $this->cacheService->remember($cacheKey, 60, function () use ($id) {
                 $submission = TaskSubmission::findOrFail($id);
                 $this->authorize('view', $submission);
                 return $this->taskSubmissionService->getTaskSubmissionById($id);
