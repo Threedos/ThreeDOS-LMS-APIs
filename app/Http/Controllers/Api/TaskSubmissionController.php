@@ -37,11 +37,8 @@ $pageSize  = $taskSubmissionPaginatedRequest['pageSize'] ?? 10;
 
         return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-return new TaskSubmissionCollection(
-    $this->taskSubmissionService->getPaginatedSubmissions(
-        $request->validated()
-    )
-);            }),
+                return new TaskSubmissionCollection($this->taskSubmissionService->getPaginatedSubmissions($request));
+            }),
             'Submissions retrieved successfully'
         );
     }

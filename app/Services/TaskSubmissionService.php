@@ -25,7 +25,7 @@ class TaskSubmissionService
         } elseif ($user->role->name == 'Delegate') {
             return $this->taskSubmissionRepository->getAllTaskSubmissionsForUser($request->all());
         }
-        return collect();
+        // return collect();
     }
 
 
