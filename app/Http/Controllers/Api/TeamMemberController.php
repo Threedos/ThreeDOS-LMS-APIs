@@ -104,16 +104,21 @@ class TeamMemberController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        $this->authorize('delete', TeamMember::class);
-        $this->teamMemberService->deleteTeamMember($id);
+ public function destroy(string $id)
+{
+    $teamMember = TeamMember::findOrFail($id);
 
-        // Clear team and team member cache
-        $this->cacheService->forget("team-member:{$id}");
-        $this->cacheService->clearResourceCache('team-members');
-        $this->cacheService->clearResourceCache('teams');
+    // Pass the model instance, not the class
+    $this->authorize('delete', $teamMember);
 
-        return $this->noContentResponse('Team member deleted successfully');
-    }
+    $this->teamMemberService->deleteTeamMember($id);
+
+    // Clear team and team member cache
+    $this->cacheService->forget("team-member:{$id}");
+    $this->cacheService->clearResourceCache('team-members');
+    $this->cacheService->clearResourceCache('teams');
+
+    return $this->noContentResponse('Team member deleted successfully');
+}
+
 }
