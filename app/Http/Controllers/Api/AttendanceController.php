@@ -37,7 +37,12 @@ class AttendanceController extends Controller
         $cacheKey = "attendances:council_{$council_id}:page_{$pageIndex}:size_{$pageSize}";
 
         $data = $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-            return $this->attendanceService->getAllAttendances($request);
+            $filters = [
+                'user' => $request->user(),
+                'pageIndex' => $request->pageIndex ?? 1,
+                'pageSize' => $request->pageSize ?? 20,
+            ];
+            return $this->attendanceService->getAllAttendances($filters);
         });
 
         return $this->successResponse(

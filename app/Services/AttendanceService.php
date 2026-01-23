@@ -13,10 +13,9 @@ class AttendanceService
         $this->attendanceRepository = $attendanceRepository;
     }
 
-    public function getAllAttendances($request)
+    public function getAllAttendances(array $filters)
     {
-            return $this->attendanceRepository->getAllAttendances($request->all());
-     
+        return $this->attendanceRepository->getAllAttendances($filters);
     }
 
     public function getAttendanceById($id)

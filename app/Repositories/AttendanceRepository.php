@@ -9,14 +9,14 @@ use App\Imports\AttendanceImport;
 
 class AttendanceRepository implements AttendanceRepositoryInterface
 {
-    public function getAllAttendances($request)
+    public function getAllAttendances(array $filters)
     {
-        $user = $request->user();
+        $user = $filters['user'];
         $role = $user->role->name;
         $council_id = $user->council_id;
 
-        $pageIndex = $request->pageIndex ?? 1;
-        $pageSize  = $request->pageSize ?? 20;
+        $pageIndex = $filters['pageIndex'] ?? 1;
+        $pageSize = $filters['pageSize'] ?? 20;
 
         $query = Attendance::query()
             ->whereHas('council_session', function ($q) use ($council_id) {
@@ -29,12 +29,12 @@ class AttendanceRepository implements AttendanceRepositoryInterface
         if ($role === 'Delegate') {
             $query->where('user_id', $user->id);
         }
-        
+
         // Instructor / Head / VicePresident → full council attendance
         // (no extra condition needed)
 
         return $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
-}
+    }
 
 
     public function getAttendanceById($id)
