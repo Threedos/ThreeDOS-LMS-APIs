@@ -10,11 +10,15 @@ class UserRepository implements UserRepositoryInterface
 {
     public function getAllUsers($request)
     {
+        $council_id = auth()->user()->council_id;
+
         if($request->role){
-            return User::whereHas('role', function ($query) use ($request) {
+
+            return User::where('council_id', $council_id)->whereHas('role', function ($query) use ($request) {
                 $query->where('name', $request->role);
             })->get();
         }
+        
         return User::all();
     }
     public function getAllUsersPaginated($request)
@@ -24,7 +28,9 @@ class UserRepository implements UserRepositoryInterface
         $search = $request->search;
         $sort = $request->sort;
         $role_id = $request->role_id;
+        $council_id = auth()->user()->council_id;
         $query = User::query()->select('id', 'name', 'email', 'role_id', 'council_id')
+        ->where('council_id', $council_id)
             // ->with('role', 'council')
         ;
         if ($search) {

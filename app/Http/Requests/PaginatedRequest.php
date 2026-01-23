@@ -28,7 +28,7 @@ class PaginatedRequest extends FormRequest
             'search' => 'nullable|string',
             'sort' => 'nullable|string',
             'role' => 'nullable|string',
-
+            
         ];
     }
 }
