@@ -10,10 +10,18 @@ class UserRepository implements UserRepositoryInterface
 {
     public function getAllUsers($request)
     {
+        if($request->role_id){
+            return User::where('role_id', $request->role_id)->get();
+        }
+        return User::all();
+    }
+    public function getAllUsersPaginated($request)
+    {
         $pageIndex = $request->pageIndex ?? 1;
         $pageSize = $request->pageSize ?? 10;
         $search = $request->search;
         $sort = $request->sort;
+        $role_id = $request->role_id;
         $query = User::query()->select('id', 'name', 'email', 'role_id', 'council_id')
             // ->with('role', 'council')
         ;
@@ -22,6 +30,9 @@ class UserRepository implements UserRepositoryInterface
         }
         if ($sort) {
             $query->orderBy($sort);
+        }
+        if ($role_id) {
+            $query->where('role_id', $role_id);
         }
         $query->orderBy('created_at', 'desc');
         // Laravel pagination (LengthAwarePaginator)

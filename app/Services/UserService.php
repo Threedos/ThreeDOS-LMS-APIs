@@ -14,6 +14,11 @@ class UserService
         $this->userRepository = $userRepository;
     }
 
+    public function getAllUsersPaginated($request)
+    {
+        return $this->userRepository->getAllUsersPaginated($request);
+    }
+    
     public function getAllUsers($request)
     {
         return $this->userRepository->getAllUsers($request);
