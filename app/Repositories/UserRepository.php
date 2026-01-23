@@ -50,6 +50,18 @@ class UserRepository implements UserRepositoryInterface
             $query->where('role_id', $role_id);
         }
         $query->orderBy('created_at', 'desc');
+        $query
+    ->join('roles', 'roles.id', '=', 'users.role_id')
+    ->orderByRaw("
+        CASE roles.name
+            WHEN 'VicePresident' THEN 4
+            WHEN 'Head' THEN 3
+            WHEN 'Instructor' THEN 2
+            ELSE 1
+        END DESC
+    ")
+    ->select('users.*');
+
         // Laravel pagination (LengthAwarePaginator)
         return $query->paginate($pageSize, ['*'], 'page', $pageIndex);
     }
