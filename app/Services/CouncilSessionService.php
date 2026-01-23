@@ -13,9 +13,9 @@ class CouncilSessionService
         $this->sessionRepository = $sessionRepository;
     }
 
-    public function getAllSessions($request)
+    public function getAllSessions(array $filters)
     {
-        return $this->sessionRepository->getAllSessions($request);
+        return $this->sessionRepository->getAllSessions($filters);
     }
 
     public function getSessionById($id)

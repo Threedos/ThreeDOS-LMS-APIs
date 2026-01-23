@@ -35,7 +35,14 @@ class CouncilSessionController extends Controller
 
         return $this->successResponse(
             $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-                return new SessionCollection($this->sessionService->getAllSessions($request));
+                $filters = [
+                    'council_id' => $request->user()->council_id,
+                    'role' => $request->user()->role->name,
+                    'search' => $request->search,
+                    'pageIndex' => $request->pageIndex,
+                    'pageSize' => $request->pageSize,
+                ];
+                return new SessionCollection($this->sessionService->getAllSessions($filters));
             }),
             'Sessions retrieved successfully'
         );

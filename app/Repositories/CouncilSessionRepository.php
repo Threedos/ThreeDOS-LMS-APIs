@@ -7,20 +7,21 @@ use App\Models\CouncilSession;
 
 class CouncilSessionRepository implements CouncilSessionRepositoryInterface
 {
-    public function getAllSessions($request)
+    public function getAllSessions(array $filters)
     {
-        $council_id = $request->user()->council_id;
-        if ($council_id === null && $request->user()->role->name === 'VicePresident') {
+        $council_id = $filters['council_id'];
+
+        if ($council_id === null && $filters['role'] === 'VicePresident') {
             return CouncilSession::withCount('attendance')
-                ->when($request->search, fn($q) => $q->where('title', 'like', "%{$request->search}%"))
+                ->when($filters['search'], fn($q) => $q->where('title', 'like', "%{$filters['search']}%"))
                 ->orderBy('created_at', 'desc')
-                ->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex);
+                ->paginate($filters['pageSize'], ['*'], 'pageIndex', $filters['pageIndex']);
         }
         return CouncilSession::where('council_id', $council_id)
             ->withCount('attendance')
-            ->when($request->search, fn($q) => $q->where('title', 'like', "%{$request->search}%"))
+            ->when($filters['search'], fn($q) => $q->where('title', 'like', "%{$filters['search']}%"))
             ->orderBy('created_at', 'desc')
-            ->paginate($request->pageSize, ['*'], 'pageIndex', $request->pageIndex);
+            ->paginate($filters['pageSize'], ['*'], 'pageIndex', $filters['pageIndex']);
     }
 
     public function getSessionById($id)
