@@ -9,7 +9,7 @@ class TeamRepository implements TeamRepositoryInterface
 {
     public function getAllTeams()
     {
-        return Team::all()->orderBy('created_at', 'desc');
+        return Team::orderBy('created_at', 'desc')->get();
     }
 
     public function getTeamById($id)
