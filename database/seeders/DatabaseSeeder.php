@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
 
 
                // Roles (run once)
+        $vicePresidentRole = Role::firstOrCreate(['name' => 'VicePresident']);
         $headRole = Role::firstOrCreate(['name' => 'Head']);
         $instructorRole = Role::firstOrCreate(['name' => 'Instructor']);
         $delegateRole = Role::firstOrCreate(['name' => 'Delegate']);
@@ -35,12 +36,30 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Frontend Development Council'
             ,'description' => 'Frontend Development Council']
         );
+        $marketingCouncil = Council::firstOrCreate(
+            ['name' => 'Marketing Council'
+            ,'description' => 'Marketing Council']
+        );
+        
 
-
-
+        $vicePresidentUser = User::firstOrCreate([
+            'name' => 'VicePresident',
+            'email' => fake()->email(),
+            'password' => Hash::make('password'),
+            'role_id' => $vicePresidentRole->id,
+            // 'council_id' => $backendCouncil->id,
+        ]);
        
-        User::firstOrCreate([
-            'name' => 'Mohamed Tarek',
+        $delegateUser = User::firstOrCreate([
+            'name' => 'Delegate',
+            'email' => fake()->email(),
+            'password' => Hash::make('password'),
+            'role_id' => $delegateRole->id,
+            'council_id' => $frontendCouncil->id,
+        ]);
+        
+        $headUser = User::firstOrCreate([
+            'name' => 'Mohamed Tarek Badr',
             'email' => fake()->email(),
             'password' => Hash::make('password'),
             'role_id' => $headRole->id,
