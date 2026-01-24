@@ -18,6 +18,13 @@ class CouncilRepository implements CouncilRepositoryInterface
                 });
             }
         ]);
+        $user= auth()->user();
+        if($user->role->name == 'Delegate' || $user->role->name == 'Instructor' || $user->role->name == 'Head' ){
+            $query->where('council_id', $user->council_id);
+        }elseif($user->role->name == 'VicePresident'){
+            $query->where('council_id', null);
+        }
+        
 
     if ($request->search) {
         $query->where('name', 'like', '%' . $request->search . '%')
