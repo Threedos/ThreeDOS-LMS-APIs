@@ -20,12 +20,17 @@ class TaskSubmissionService
     public function getPaginatedSubmissions(TaskSubmissionPaginatedRequest $request)
     {
         $user = $request->user();
+        $filters = $request->all(); // Start with request inputs
+
+        // Add auth-context
+        $filters['council_id'] = $user->council_id;
+
         if ($user->role->name == 'Instructor' || $user->role->name == 'Head') {
-            return $this->taskSubmissionRepository->getAllTaskSubmissionsForCouncil($request->all());
+            return $this->taskSubmissionRepository->getAllTaskSubmissionsForCouncil($filters);
         } elseif ($user->role->name == 'Delegate') {
-            return $this->taskSubmissionRepository->getAllTaskSubmissionsForUser($request->all());
+            return $this->taskSubmissionRepository->getAllTaskSubmissionsForUser($filters);
         }
-        // return collect();
+        return collect();
     }
 
 
@@ -63,7 +68,7 @@ class TaskSubmissionService
     {
         $submission = $this->taskSubmissionRepository
             ->updateTaskSubmission($submissionId, $submissionDetails);
-   
+
 
         return $submission;
     }

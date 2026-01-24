@@ -15,7 +15,13 @@ class TeamService
 
     public function getAllTeams()
     {
-        return $this->teamRepository->getAllTeams();
+        $user = auth()->user();
+        $filters = [
+            'council_id' => $user->council_id,
+            'is_vice_president' => $user->role->name === 'VicePresident',
+        ];
+
+        return $this->teamRepository->getAllTeams($filters);
     }
 
     public function getTeamById($id)

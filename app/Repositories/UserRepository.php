@@ -8,52 +8,37 @@ use App\Http\Requests\PaginatedRequest;
 
 class UserRepository implements UserRepositoryInterface
 {
-    public function getAllUsers($request)
+    public function getAllUsers(array $filters)
     {
-        $query=User::query();
-        if($request->filter =='council'){
-            $council_id = auth()->user()->council_id;
-            $query->where('council_id', $council_id);
+        $query = User::query();
+
+        if (isset($filters['council_id'])) {
+            $query->where('council_id', $filters['council_id']);
         }
 
-        if($request->role){
-
-            return $query->where('council_id', $council_id)->whereHas('role', function ($query) use ($request) {
-                $query->where('name', $request->role);
+        if (!empty($filters['role'])) {
+            return $query->whereHas('role', function ($query) use ($filters) {
+                $query->where('name', $filters['role']);
             })->get();
         }
-        
-        return $query->all();
+
+        return $query->get();
     }
-    public function getAllUsersPaginated($request)
+
+    public function getAllUsersPaginated(array $filters)
     {
-        $pageIndex = $request->pageIndex ?? 1;
-        $pageSize = $request->pageSize ?? 10;
-        $search = $request->search;
-        $sort = $request->sort;
-        $role_id = $request->role_id;
-        $user= auth()->user();
-        $query = User::query()->select('id', 'name', 'email', 'role_id', 'council_id')
-            // ->with('role', 'council')
-        ;
-        if($request->filter =='council'){
-            $council_id = $user->council_id;
-            $query->where('council_id', $council_id);
+        $pageIndex = $filters['pageIndex'] ?? 1;
+        $pageSize = $filters['pageSize'] ?? 10;
+        $search = $filters['search'] ?? null;
+        $sort = $filters['sort'] ?? null;
+        $role_id = $filters['role_id'] ?? null;
+
+        $query = User::query()->select('id', 'name', 'email', 'role_id', 'council_id');
+
+        if (array_key_exists('council_id', $filters)) {
+            $query->where('council_id', $filters['council_id']);
         }
 
-        if($user->role->name == 'Delegate'){
-            $query->where('council_id', $user->council_id);
-        }
-
-        if($user->role->name == 'Instructor' || $user->role->name == 'Head'){
-            $query->where('council_id', $user->council_id);
-        }
-
-        if($user->role->name == 'VicePresident'){
-            $query->where('council_id', null);
-        }
-        
-        
         if ($search) {
             $query->where('name', 'like', "%{$search}%");
         }
@@ -65,8 +50,8 @@ class UserRepository implements UserRepositoryInterface
         }
         $query->orderBy('created_at', 'desc');
         $query
-    ->join('roles', 'roles.id', '=', 'users.role_id')
-    ->orderByRaw("
+            ->join('roles', 'roles.id', '=', 'users.role_id')
+            ->orderByRaw("
         CASE roles.name
             WHEN 'VicePresident' THEN 4
             WHEN 'Head' THEN 3
@@ -74,7 +59,7 @@ class UserRepository implements UserRepositoryInterface
             ELSE 1
         END DESC
     ")
-    ->select('users.*');
+            ->select('users.*');
 
         // Laravel pagination (LengthAwarePaginator)
         return $query->paginate($pageSize, ['*'], 'page', $pageIndex);

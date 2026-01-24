@@ -4,8 +4,8 @@ namespace App\Interfaces;
 
 interface UserRepositoryInterface
 {
-    public function getAllUsersPaginated($request);
-    public function getAllUsers($request);
+    public function getAllUsersPaginated(array $filters);
+    public function getAllUsers(array $filters);
     public function getUserById($userId);
     public function createUser(array $userDetails);
     public function updateUser($userId, array $newDetails);

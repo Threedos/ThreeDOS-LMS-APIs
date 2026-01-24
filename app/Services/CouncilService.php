@@ -15,7 +15,18 @@ class CouncilService
 
     public function getAllCouncils(AllCouncilRequest $request)
     {
-        return $this->councilRepository->getAllCouncils($request);
+        $user = $request->user();
+        $filters = [
+            'search' => $request->search,
+        ];
+
+        if (in_array($user->role->name, ['Delegate', 'Instructor', 'Head'])) {
+            $filters['id'] = $user->council_id;
+        } elseif ($user->role->name == 'VicePresident') {
+            $filters['id'] = null;
+        }
+
+        return $this->councilRepository->getAllCouncils($filters);
     }
 
     public function getCouncilById($councilId)
@@ -25,16 +36,34 @@ class CouncilService
 
     public function createCouncil(array $councilDetails)
     {
-        return $this->councilRepository->createCouncil($councilDetails);
+        $user = auth()->user();
+        if($user->role->name == 'VicePresident' || $user->role->name == 'Head'){
+            return $this->councilRepository->createCouncil($councilDetails);
+        }
+        return response()->json([
+            'message' => 'You are not authorized to create this council',
+        ], 403);
     }
 
     public function updateCouncil($councilId, array $councilDetails)
     {
-        return $this->councilRepository->updateCouncil($councilId, $councilDetails);
+        $user = auth()->user();
+        if($user->role->name == 'VicePresident' || ($user->role->name == 'Head' && $user->council_id == $councilId)){
+            return $this->councilRepository->updateCouncil($councilId, $councilDetails);
+        }
+        return response()->json([
+            'message' => 'You are not authorized to update this council',
+        ], 403);
     }
 
     public function deleteCouncil($councilId)
     {
-        return $this->councilRepository->deleteCouncil($councilId);
+        $user = auth()->user();
+        if($user->role->name == 'VicePresident' || ($user->role->name == 'Head' && $user->council_id == $councilId)){
+            return $this->councilRepository->deleteCouncil($councilId);
+        }
+        return response()->json([
+            'message' => 'You are not authorized to delete this council',
+        ], 403);
     }
 }

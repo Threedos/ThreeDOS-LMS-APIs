@@ -15,7 +15,8 @@ class TeamMemberService
 
     public function getAllTeamMembers()
     {
-        return $this->teamMemberRepository->getAllTeamMembers();
+        $filters = []; // Add filters if needed
+        return $this->teamMemberRepository->getAllTeamMembers($filters);
     }
 
     public function getTeamMemberById($id)

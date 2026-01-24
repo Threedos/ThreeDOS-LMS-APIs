@@ -7,9 +7,9 @@ use App\Models\TeamMember;
 
 class TeamMemberRepository implements TeamMemberRepositoryInterface
 {
-    public function getAllTeamMembers()
+    public function getAllTeamMembers(array $filters)
     {
-        return TeamMember::all()->orderBy('created_at', 'desc');
+        return TeamMember::orderBy('created_at', 'desc')->get(); // Filters can be applied here
     }
 
     public function getTeamMemberById($id)
@@ -18,7 +18,7 @@ class TeamMemberRepository implements TeamMemberRepositoryInterface
     }
     public function createTeamMember(array $details)
     {
-        return TeamMember::create($details);    
+        return TeamMember::create($details);
     }
     public function bulkCreateTeamMembers(array $members)
     {

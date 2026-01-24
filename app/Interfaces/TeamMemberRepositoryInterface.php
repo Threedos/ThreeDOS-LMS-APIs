@@ -4,7 +4,7 @@ namespace App\Interfaces;
 
 interface TeamMemberRepositoryInterface
 {
-    public function getAllTeamMembers();
+    public function getAllTeamMembers(array $filters);
     public function getTeamMemberById($id);
     public function createTeamMember(array $details);
     public function bulkCreateTeamMembers(array $members);

@@ -7,13 +7,14 @@ use App\Models\Task;
 
 class TaskRepository implements TaskRepositoryInterface
 {
-    public function getAllTasks($request)
+    public function getAllTasks(array $filters)
     {
-        $pageIndex = $request->pageIndex ?? 1;
-        $pageSize = $request->pageSize ?? 10;
-        $search = $request->search;
-        $filter = $request->filter;
+        $pageIndex = $filters['pageIndex'] ?? 1;
+        $pageSize = $filters['pageSize'] ?? 10;
+        $search = $filters['search'] ?? null;
+        $filter = $filters['filter'] ?? null;
         $query = Task::query();
+
         if ($search) {
             $query->where('title', 'like', "%{$search}%");
         }

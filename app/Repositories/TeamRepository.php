@@ -7,10 +7,12 @@ use App\Models\Team;
 
 class TeamRepository implements TeamRepositoryInterface
 {
-    public function getAllTeams()
+    public function getAllTeams(array $filters)
     {
-        $council_id = auth()->user()->council_id;
-        if ($council_id === null && auth()->user()->role->name === 'VicePresident') {
+        $council_id = $filters['council_id'] ?? null;
+        $is_vice_president = $filters['is_vice_president'] ?? false;
+
+        if ($council_id === null && $is_vice_president) {
             return Team::orderBy('created_at', 'desc')->get();
         }
 

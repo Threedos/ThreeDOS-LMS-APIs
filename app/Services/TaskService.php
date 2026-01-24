@@ -15,7 +15,13 @@ class TaskService
 
     public function getAllTasks(TaskPaginatedRequest $request)
     {
-        return $this->taskRepository->getAllTasks($request);
+        $filters = [
+            'pageIndex' => $request->pageIndex,
+            'pageSize' => $request->pageSize,
+            'search' => $request->search,
+            'filter' => $request->filter,
+        ];
+        return $this->taskRepository->getAllTasks($filters);
     }
 
     public function getTaskById($taskId)

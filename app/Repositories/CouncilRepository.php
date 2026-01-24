@@ -8,28 +8,25 @@ use App\Models\Council;
 
 class CouncilRepository implements CouncilRepositoryInterface
 {
-    public function getAllCouncils(AllCouncilRequest $request)
+    public function getAllCouncils(array $filters)
     {
         $query = Council::query()
-        ->with([
-            'Head' => function ($q) {
-                $q->whereHas('role', function ($roleQuery) {
-                    $roleQuery->where('name', 'Head');
-                });
-            }
-        ]);
-        $user= auth()->user();
-        if($user->role->name == 'Delegate' || $user->role->name == 'Instructor' || $user->role->name == 'Head' ){
-            $query->where('id', $user->council_id);
-        }elseif($user->role->name == 'VicePresident'){
-            $query->where('id', null);
-        }
-        
+            ->with([
+                'Head' => function ($q) {
+                    $q->whereHas('role', function ($roleQuery) {
+                        $roleQuery->where('name', 'Head');
+                    });
+                }
+            ]);
 
-    if ($request->search) {
-        $query->where('name', 'like', '%' . $request->search . '%')
-        ->orderBy('created_at', 'desc');
-    }
+        if (array_key_exists('id', $filters)) {
+            $query->where('id', $filters['id']);
+        }
+
+        if (!empty($filters['search'])) {
+            $query->where('name', 'like', '%' . $filters['search'] . '%')
+                ->orderBy('created_at', 'desc');
+        }
 
         return $query->get();
     }

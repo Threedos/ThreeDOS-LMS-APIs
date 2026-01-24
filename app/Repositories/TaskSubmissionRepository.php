@@ -13,70 +13,70 @@ class TaskSubmissionRepository implements TaskSubmissionRepositoryInterface
 {
 
 
-private function baseQuery($request)
-{
-    $search = $request->search ?? null;
-    $council_id = auth()->user()->council_id ?? null;
-
-    $query = TaskSubmission::query();
-
-    if ($search) {
-        $query->where('title', 'like', "%{$search}%"); // optional
-    }
-
-    if ($council_id) {
-        $query->whereHas('task.council_session', function ($q) use ($council_id) {
-            $q->where('council_id', $council_id);
-        });
-    }
-    $query->with(['task.council_session.council', 'user']);
-
-    return $query;
-}
-
-    public function getAllTaskSubmissionsForUser($taskSubmissionPaginatedRequest)
+    private function baseQuery($filters)
     {
-        $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
-        $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
-        $query = $this->baseQuery($taskSubmissionPaginatedRequest)->orderBy('created_at', 'desc');
-   if (!empty($taskSubmissionPaginatedRequest['task_id'])) {
-    $query->where('task_id', $taskSubmissionPaginatedRequest['task_id']);
-}
+        $search = $filters['search'] ?? null;
+        $council_id = $filters['council_id'] ?? null;
 
-if (!empty($taskSubmissionPaginatedRequest['user_id'])) {
-    $query->where('user_id', $taskSubmissionPaginatedRequest['user_id']);
-}
+        $query = TaskSubmission::query();
 
-if (!empty($taskSubmissionPaginatedRequest['status'])) {
-    $query->where('status', $taskSubmissionPaginatedRequest['status']);
-}
+        if ($search) {
+            $query->where('title', 'like', "%{$search}%"); // optional
+        }
 
-       $paginator = $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
-return $paginator;
+        if ($council_id) {
+            $query->whereHas('task.council_session', function ($q) use ($council_id) {
+                $q->where('council_id', $council_id);
+            });
+        }
+        $query->with(['task.council_session.council', 'user']);
 
+        return $query;
+    }
+
+    public function getAllTaskSubmissionsForUser(array $filters)
+    {
+        $pageIndex = $filters['pageIndex'] ?? 1;
+        $pageSize = $filters['pageSize'] ?? 10;
+        $query = $this->baseQuery($filters)->orderBy('created_at', 'desc');
+
+        if (!empty($filters['task_id'])) {
+            $query->where('task_id', $filters['task_id']);
+        }
+
+        if (!empty($filters['user_id'])) {
+            $query->where('user_id', $filters['user_id']);
+        }
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        $paginator = $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
+        return $paginator;
     }
 
 
-    public function getAllTaskSubmissionsForCouncil($taskSubmissionPaginatedRequest)
+    public function getAllTaskSubmissionsForCouncil(array $filters)
     {
-        $pageIndex = $taskSubmissionPaginatedRequest->pageIndex ?? 1;
-        $pageSize = $taskSubmissionPaginatedRequest->pageSize ?? 10;
-        $query = $this->baseQuery($taskSubmissionPaginatedRequest)->orderBy('created_at', 'desc');
- if (!empty($taskSubmissionPaginatedRequest['task_id'])) {
-    $query->where('task_id', $taskSubmissionPaginatedRequest['task_id']);
-}
+        $pageIndex = $filters['pageIndex'] ?? 1;
+        $pageSize = $filters['pageSize'] ?? 10;
+        $query = $this->baseQuery($filters)->orderBy('created_at', 'desc');
 
-if (!empty($taskSubmissionPaginatedRequest['user_id'])) {
-    $query->where('user_id', $taskSubmissionPaginatedRequest['user_id']);
-}
+        if (!empty($filters['task_id'])) {
+            $query->where('task_id', $filters['task_id']);
+        }
 
-if (!empty($taskSubmissionPaginatedRequest['status'])) {
-    $query->where('status', $taskSubmissionPaginatedRequest['status']);
-}
+        if (!empty($filters['user_id'])) {
+            $query->where('user_id', $filters['user_id']);
+        }
 
-      $paginator = $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
-return $paginator;
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
 
+        $paginator = $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
+        return $paginator;
     }
 
     public function getTaskSubmissionById($submissionId)
