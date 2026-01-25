@@ -1,8 +1,7 @@
-# Base image
-FROM php:8.4-apache
+FROM php:8.4-fpm
 
-# Install system dependencies
 RUN apt-get update && apt-get install -y \
+    bash \
     git \
     unzip \
     zip \
@@ -10,36 +9,22 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    libpq-dev \
+    libicu-dev \
+    curl \
+    supervisor \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install \
-        pdo \
-        pdo_mysql \
-        gd \
-        zip \
+    && docker-php-ext-install pdo pdo_mysql gd zip intl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Redis extension
-RUN pecl install redis \
-    && docker-php-ext-enable redis
+RUN pecl install redis && docker-php-ext-enable redis
 
-# Install Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /var/www/html
 
-# Copy project files
-COPY . .
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Install PHP dependencies
-RUN composer install --no-interaction --optimize-autoloader
-
-# Expose Laravel port
-EXPOSE 8000
-
-# Entrypoint
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["php-fpm"]
