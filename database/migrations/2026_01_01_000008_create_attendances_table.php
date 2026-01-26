@@ -9,7 +9,8 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up(): void
-    {
+    {   
+        if (!Schema::hasTable('attendances')) {
         Schema::create('attendances', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('user_id')->constrained('users');
@@ -18,12 +19,15 @@ return new class extends Migration {
             $table->timestamps();
         });
     }
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
-    {
-        Schema::dropIfExists('attendances');
+    {   
+        if (Schema::hasTable('attendances')) {
+            Schema::dropIfExists('attendances');
+        }
     }
 };

@@ -10,6 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        if (!Schema::hasTable('task_submissions')) {
         Schema::create('task_submissions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('task_id')->constrained('tasks')->cascadeOnDelete();
@@ -21,12 +22,15 @@ return new class extends Migration {
             $table->timestamps();
         });
     }
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
-    {
-        Schema::dropIfExists('task_submissions');
+    {   
+        if (Schema::hasTable('task_submissions')) {
+            Schema::dropIfExists('task_submissions');
+        }
     }
 };

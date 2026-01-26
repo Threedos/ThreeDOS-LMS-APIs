@@ -11,9 +11,8 @@ done
 
 echo "MySQL is ready."
 
-# Run migrations safely
-echo "Running migrations..."
-php artisan migrate --force || echo "Migrations already run"
+# Migrate fresh
+php artisan migrate:fresh --seed || echo "Failed to migrate fresh"
 
 # Clear and cache configs
 echo "Optimizing application..."

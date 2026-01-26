@@ -10,12 +10,14 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('councils', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('name');
-            $table->string('description');
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('councils')) {
+            Schema::create('councils', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->string('name');
+                $table->string('description');
+                $table->timestamps();
+            });
+        }
     }
 
     /**
@@ -23,6 +25,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('councils');
+        if (Schema::hasTable('councils')) {
+            Schema::dropIfExists('councils');
+        }
     }
 };

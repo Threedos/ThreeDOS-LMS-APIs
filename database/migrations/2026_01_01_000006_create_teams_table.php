@@ -10,6 +10,7 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        if (!Schema::hasTable('teams')) {
         Schema::create('teams', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('team_number');
@@ -18,12 +19,15 @@ return new class extends Migration {
             $table->timestamps();
         });
     }
+    }
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('teams');
+        if (Schema::hasTable('teams')) {
+            Schema::dropIfExists('teams');
+        }
     }
 };

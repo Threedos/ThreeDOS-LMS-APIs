@@ -9,7 +9,8 @@ return new class extends Migration {
      * Run the migrations.
      */
     public function up(): void
-    {
+    {   
+        if (!Schema::hasTable('tasks')) {
         Schema::create('tasks', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('title');
@@ -22,6 +23,7 @@ return new class extends Migration {
             // I'll stick to nullable. 
             $table->timestamps();
         });
+        }
     }
 
     /**
@@ -29,6 +31,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('tasks');
+        if (Schema::hasTable('tasks')) {
+            Schema::dropIfExists('tasks');
+        }
     }
 };

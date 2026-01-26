@@ -10,11 +10,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+        if (!Schema::hasTable('users')) {
+            Schema::create('users', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->string('name');
+                $table->string('email')->unique();
+                $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->text('access_token')->nullable();
             $table->boolean('revoked')->default(false);
@@ -29,13 +30,17 @@ return new class extends Migration {
             $table->timestamp('last_active')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('inactive');
         });
+        }
 
+        if (!Schema::hasTable('password_reset_tokens')) {
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
+        }
 
+        if (!Schema::hasTable('sessions')) {
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignUuid('user_id')->nullable()->index();
@@ -44,6 +49,7 @@ return new class extends Migration {
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
+        }
     }
 
     /**
@@ -51,8 +57,16 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('sessions');
+        if (Schema::hasTable('users')) {
+            Schema::dropIfExists('users');
+        }
+
+        if (Schema::hasTable('password_reset_tokens')) {
+            Schema::dropIfExists('password_reset_tokens');
+        }
+
+        if (Schema::hasTable('sessions')) {
+            Schema::dropIfExists('sessions');
+        }
     }
 };
