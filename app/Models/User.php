@@ -79,7 +79,7 @@ class User extends Authenticatable implements JWTSubject
             'role_id' => $this->role_id,
             'name' => $this->name,
             'email' => $this->email,
-            'council_id' => $this->council_id,
+            'council_id' => $this->council_id ?? null,
         ];
     }
 

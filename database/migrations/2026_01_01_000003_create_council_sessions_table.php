@@ -5,27 +5,25 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         if (!Schema::hasTable('council_sessions')) {
-        Schema::create('council_sessions', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('title');
-            $table->datetime('date');
-            $table->text('description')->nullable();
-            $table->string('material')->nullable();
-            $table->foreignUuid('council_id')->constrained('councils')->nullOnDelete()->cascadeOnUpdate()->nullable();
-            $table->timestamps();
-        });
-    }
+            Schema::create('council_sessions', function (Blueprint $table) {
+                $table->uuid('id')->primary();
+                $table->string('name');
+                $table->text('description')->nullable();
+
+                $table->foreignUuid('council_id')
+                      ->nullable()
+                      ->constrained('councils')
+                      ->nullOnDelete()
+                      ->cascadeOnUpdate();
+
+                $table->timestamps();
+            });
+        }
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         if (Schema::hasTable('council_sessions')) {
