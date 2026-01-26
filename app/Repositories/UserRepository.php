@@ -167,7 +167,7 @@ class UserRepository implements UserRepositoryInterface
                 'completion_rate' => $taskCompletionRate,
             ],
             'recent_submissions' => $recentSubmissions,
-            'last_active' => $user->last_active,
+            'joined_at' => $user->created_at,
         ];
     }
 }
