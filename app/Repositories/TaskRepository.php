@@ -19,7 +19,9 @@ class TaskRepository implements TaskRepositoryInterface
             $query->where('title', 'like', "%{$search}%");
         }
         if ($filter) {
-            $query->where('council_id', '=', $filter);
+            $query->whereHas('councilSession.council', function ($q) use ($filter) {
+                $q->where('id', $filter);
+            });
         }
         $query->orderBy('created_at', 'desc');
         return $query->paginate($pageSize, ['*'], 'page', $pageIndex);
