@@ -5,7 +5,7 @@ echo "=========================================="
 echo "Starting Laravel Application on Railway"
 echo "=========================================="
 
-# Railway provides PORT env variable, default to 80 if not set
+# Railway provides PORT env variable, default to 80
 PORT=${PORT:-80}
 
 echo "Configuring Apache to listen on port ${PORT}..."
@@ -13,17 +13,15 @@ echo "Configuring Apache to listen on port ${PORT}..."
 # Update Apache ports configuration
 cat > /etc/apache2/ports.conf << EOF
 Listen ${PORT}
-
 <IfModule ssl_module>
     Listen 443
 </IfModule>
-
 <IfModule mod_gnutls.c>
     Listen 443
 </IfModule>
 EOF
 
-# Update default site configuration with Laravel-specific settings
+# Update default site configuration
 cat > /etc/apache2/sites-available/000-default.conf << EOF
 <VirtualHost *:${PORT}>
     ServerAdmin webmaster@localhost
@@ -52,7 +50,6 @@ if [ -n "$DB_HOST" ]; then
         attempt=$((attempt + 1))
         if [ $attempt -ge $max_attempts ]; then
             echo "⚠ Could not connect to database after $max_attempts attempts"
-            echo "Continuing without database migrations..."
             break
         fi
         echo "⏳ Database not ready, waiting... (attempt $attempt/$max_attempts)"
@@ -61,14 +58,8 @@ if [ -n "$DB_HOST" ]; then
     
     if [ $attempt -lt $max_attempts ]; then
         echo "✓ Database is ready"
-        
-        # Run migrations
-        echo "Running database migrations..."
+        echo "Running migrations..."
         php artisan migrate --force || echo "⚠ Migrations failed or already applied"
-        
-        # Uncomment below if you want to run seeders in production
-        # echo "Seeding database..."
-        # php artisan db:seed --force || echo "⚠ Seeding failed or already done"
     fi
 else
     echo "ℹ No database configured (DB_HOST not set)"
@@ -87,7 +78,6 @@ php artisan route:cache
 php artisan view:cache
 
 # Create storage link if it doesn't exist
-echo "Creating storage link..."
 php artisan storage:link 2>/dev/null || echo "ℹ Storage link already exists"
 
 # Display Laravel version
