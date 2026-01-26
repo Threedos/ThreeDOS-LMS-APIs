@@ -35,7 +35,7 @@ class CouncilController extends Controller
         $pageIndex = $request->input('pageIndex');
         $pageSize = $request->input('pageSize');
         $search = $request->input('search', '');
-        
+
         // $cacheKey = "councils:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
 
         // Use Redis cache service

@@ -19,7 +19,7 @@ class CouncilRepository implements CouncilRepositoryInterface
                 }
             ]);
 
-        if (array_key_exists('id', $filters)) {
+        if (!empty($filters['id'])) {
             $query->where('id', $filters['id']);
         }
 

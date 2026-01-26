@@ -22,7 +22,7 @@ class CouncilService
 
         if (in_array($user->role->name, ['Delegate', 'Instructor', 'Head'])) {
             $filters['id'] = $user->council_id;
-        } elseif ($user->role->name == 'VicePresident') {
+        } elseif ($user->role->name == 'VicePresident' || $user->role->name == 'President') {
             $filters['id'] = null;
         }
 
