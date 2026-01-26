@@ -113,10 +113,16 @@ class UserController extends Controller
      */
     public function dashboard()
     {
-        
-        $this->authorize('view', auth()->user());
-        $dashboardData = $this->userService->getDashboardData();
-        return $this->successResponse($dashboardData, 'Dashboard data retrieved successfully');
+        $id = auth()->user()->id;
+        $cacheKey = "dashboard:{$id}";
+        return $this->successResponse(
+            $this->cacheService->remember($cacheKey, 3600, function () {
+                $this->authorize('view', auth()->user());
+                $dashboardData = $this->userService->getDashboardData();
+                return $dashboardData;
+            }),
+            'Dashboard data retrieved successfully'
+        );
     }
 
     /**
