@@ -1,4 +1,4 @@
-# Base image with Apache and PHP 8.4
+# Base image with PHP 8.4 and Apache
 FROM php:8.4-apache
 
 # Install system dependencies
@@ -10,7 +10,6 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    libpq-dev \
     libicu-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_mysql gd zip intl \
@@ -32,15 +31,12 @@ WORKDIR /var/www/html
 # Copy project files
 COPY . .
 
-# Install PHP dependencies (production mode)
+# Install PHP dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-# Set proper permissions for Laravel
+# Set Laravel permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
-
-# Expose port 80 (Railway will use $PORT)
-EXPOSE 80
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/
@@ -48,3 +44,6 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Set entrypoint
 ENTRYPOINT ["docker-entrypoint.sh"]
+
+# Expose 80 (Railway maps $PORT automatically)
+EXPOSE 80
