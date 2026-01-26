@@ -16,7 +16,13 @@ class TaskPolicy
         // All roles (Head, Instructor, Delegate) can view tasks list if they are authenticated
         // Logic might need to be filtered by council in the controller/service, 
         // but policy-wise, they are allowed to 'viewAny'.
-        return in_array($user->role->name, [RolesEnum::Instructor->value, RolesEnum::Head->value, RolesEnum::Delegate->value]);
+        return in_array($user->role->name, [
+            RolesEnum::Instructor->value, 
+            RolesEnum::Head->value, 
+            RolesEnum::Delegate->value, 
+            RolesEnum::VicePresident->value,
+            RolesEnum::President->value
+        ]);
     }
 
     /**
@@ -34,7 +40,10 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::VicePresident->value;
+        return $user->role->name === RolesEnum::Instructor->value 
+        || $user->role->name === RolesEnum::Head->value 
+        || $user->role->name === RolesEnum::VicePresident->value 
+        || $user->role->name === RolesEnum::President->value;
     }
 
     /**
@@ -44,7 +53,8 @@ class TaskPolicy
     {
         return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) 
         && $user->council_id === $task->council_session->council_id) 
-        || $user->role->name === RolesEnum::VicePresident->value;
+        || $user->role->name === RolesEnum::VicePresident->value 
+        || $user->role->name === RolesEnum::President->value;
     }
 
     /**
@@ -54,7 +64,8 @@ class TaskPolicy
     {
         return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) 
         && $user->council_id === $task->council_session->council_id) 
-        || $user->role->name === RolesEnum::VicePresident->value;
+        || $user->role->name === RolesEnum::VicePresident->value 
+        || $user->role->name === RolesEnum::President->value;
     }
 
     /**
@@ -64,7 +75,8 @@ class TaskPolicy
     {
         return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) 
         && $user->council_id === $task->council_session->council_id) 
-        || $user->role->name === RolesEnum::VicePresident->value;
+        || $user->role->name === RolesEnum::VicePresident->value 
+        || $user->role->name === RolesEnum::President->value;
     }
 
     /**
@@ -74,6 +86,7 @@ class TaskPolicy
     {
         return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) 
         && $user->council_id === $task->council_session->council_id) 
-        || $user->role->name === RolesEnum::VicePresident->value;
+        || $user->role->name === RolesEnum::VicePresident->value 
+        || $user->role->name === RolesEnum::President->value;
     }
 }

@@ -33,7 +33,8 @@ class TaskSubmissionPolicy
                 ($user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::Instructor->value) &&
                 $submission->task->council_session->council_id === $user->council_id
             )
-            || $user->role->name === RolesEnum::VicePresident->value;
+            || $user->role->name === RolesEnum::VicePresident->value
+            || $user->role->name === RolesEnum::President->value;
     }
 
     /**
@@ -42,8 +43,10 @@ class TaskSubmissionPolicy
     public function create(User $user): bool
     {
         // Delegate can submit task (create submission)
-        return ($user->role->name === RolesEnum::Delegate->value || $user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value)
-        && $user->council_id !== null ;
+        return (($user->role->name === RolesEnum::Delegate->value || $user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value)
+        && $user->council_id !== null )
+        || $user->role->name === RolesEnum::VicePresident->value
+        || $user->role->name === RolesEnum::President->value;
     }
 
     /**
@@ -53,7 +56,8 @@ class TaskSubmissionPolicy
     {
         return $submission->user_id === $user->id || (($user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::Instructor->value)
         && $submission->task->council_session->council_id === $user->council_id)
-        || $user->role->name === RolesEnum::VicePresident->value;
+        || $user->role->name === RolesEnum::VicePresident->value
+        || $user->role->name === RolesEnum::President->value;
     }
 
     /**
@@ -67,6 +71,7 @@ class TaskSubmissionPolicy
                 ($user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::Instructor->value) &&
                 $submission->task->council_session->council_id === $user->council_id
             )
-            || $user->role->name === RolesEnum::VicePresident->value;
+            || $user->role->name === RolesEnum::VicePresident->value
+            || $user->role->name === RolesEnum::President->value;
     }
 }

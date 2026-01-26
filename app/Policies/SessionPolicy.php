@@ -31,7 +31,9 @@ class SessionPolicy
      */
     public function create(User $user): bool
     {
-        if(($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value) || $user->role->name == RolesEnum::VicePresident->value){
+        if(($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value)
+            || $user->role->name == RolesEnum::VicePresident->value
+            || $user->role->name == RolesEnum::President->value){
             return true;
         }
         return false;
@@ -42,7 +44,9 @@ class SessionPolicy
      */
     public function update(User $user, CouncilSession $session): bool
     {
-        if(($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value) || $user->role->name == RolesEnum::VicePresident->value){
+        if(($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value)
+             || $user->role->name == RolesEnum::VicePresident->value
+            || $user->role->name == RolesEnum::President->value){
             return true;
         }
         return false;
@@ -53,7 +57,9 @@ class SessionPolicy
      */
     public function delete(User $user, CouncilSession $session): bool
     {
-        if(($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value) || $user->role->name == RolesEnum::VicePresident->value){
+        if(($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value) 
+            || $user->role->name == RolesEnum::VicePresident->value
+            || $user->role->name == RolesEnum::President->value){
             return true;
         }
         return false;
@@ -64,7 +70,9 @@ class SessionPolicy
      */
     public function restore(User $user, CouncilSession $session): bool
     {
-        if(($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value) || $user->role->name == RolesEnum::VicePresident->value){
+        if(($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value)
+            || $user->role->name == RolesEnum::VicePresident->value
+            || $user->role->name == RolesEnum::President->value){
             return true;
         }
         return false;
@@ -75,7 +83,9 @@ class SessionPolicy
      */
     public function forceDelete(User $user, CouncilSession $session): bool
     {
-        if(($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value) || $user->role->name == RolesEnum::VicePresident->value){
+        if(($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value) 
+            || $user->role->name == RolesEnum::VicePresident->value
+            || $user->role->name == RolesEnum::President->value){
             return true;
         }
         return false;

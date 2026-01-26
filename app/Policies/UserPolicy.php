@@ -32,7 +32,8 @@ class UserPolicy
         if (in_array($user->role->name, [
             RolesEnum::Head->value,
             RolesEnum::Instructor->value,
-            RolesEnum::VicePresident->value
+            RolesEnum::VicePresident->value,
+            RolesEnum::President->value
         ], true)) {
             return true;
         }
@@ -47,7 +48,8 @@ class UserPolicy
         if (in_array($authUser->role->name, [
             RolesEnum::Head->value,
             RolesEnum::Instructor->value,
-            RolesEnum::VicePresident->value
+            RolesEnum::VicePresident->value,
+            RolesEnum::President->value
         ], true)) {
             return true;
         }
@@ -66,7 +68,8 @@ class UserPolicy
         if (in_array($user->role->name, [
             RolesEnum::Head->value,
             RolesEnum::Instructor->value,
-            RolesEnum::VicePresident->value
+            RolesEnum::VicePresident->value,
+            RolesEnum::President->value
         ], true)) {
             return true;
         }

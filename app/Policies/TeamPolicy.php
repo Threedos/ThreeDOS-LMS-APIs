@@ -27,7 +27,7 @@ class TeamPolicy
      */
     public function view(User $user, Team $team): bool
     {
-        if (in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value])) {
+        if (in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value, RolesEnum::VicePresident->value, RolesEnum::President->value])) {
             return $user->council_id === $team->council_id;
         }
 
@@ -43,7 +43,7 @@ class TeamPolicy
      */
     public function create(User $user): bool
     {
-        return in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value, RolesEnum::VicePresident->value]);
+        return in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value, RolesEnum::VicePresident->value, RolesEnum::President->value]);
     }
 
     /**
@@ -74,7 +74,7 @@ class TeamPolicy
      */
     public function delete(User $user, Team $team): bool
     {
-        if (in_array($user->role->name, [RolesEnum::VicePresident->value])) {
+        if (in_array($user->role->name, [RolesEnum::VicePresident->value, RolesEnum::President->value])) {
             return true;
         }
         return in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value])
@@ -86,6 +86,9 @@ class TeamPolicy
      */
     public function restore(User $user, Team $team): bool
     {
+        if (in_array($user->role->name, [RolesEnum::VicePresident->value, RolesEnum::President->value])) {
+            return true;
+        }
         return in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value])
             && $user->council_id === $team->council_id;
     }
