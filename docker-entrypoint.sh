@@ -85,9 +85,13 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Create storage link (suppress error if exists)
-echo "Creating storage symlink..."
-php artisan storage:link 2>/dev/null || echo "ℹ Storage link already exists"
+# Create storage link if it doesn't exist
+if [ ! -e public/storage ]; then
+    echo "Creating storage symlink..."
+    php artisan storage:link || echo "⚠ Could not create storage link"
+else
+    echo "ℹ Storage link already exists"
+fi
 
 # Display Laravel info
 echo "================================"
