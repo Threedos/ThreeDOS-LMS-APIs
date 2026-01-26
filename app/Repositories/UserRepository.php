@@ -127,7 +127,7 @@ class UserRepository implements UserRepositoryInterface
 
         // 4. Task Statistics
         $councilId = $user->council_id;
-        $totalCouncilTasksCount = Task::whereHas('council_session', function ($q) use ($councilId) {
+        $totalCouncilTasksCount = Task::whereHas('councilSession', function ($q) use ($councilId) {
             $q->where('council_id', $councilId);
         })->count();
 

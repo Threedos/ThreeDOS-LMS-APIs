@@ -25,11 +25,11 @@ class TaskSubmissionRepository implements TaskSubmissionRepositoryInterface
         }
 
         if ($council_id) {
-            $query->whereHas('task.council_session', function ($q) use ($council_id) {
+            $query->whereHas('task.councilSession', function ($q) use ($council_id) {
                 $q->where('council_id', $council_id);
             });
         }
-        $query->with(['task.council_session.council', 'user']);
+        $query->with(['task.councilSession.council', 'user']);
 
         return $query;
     }

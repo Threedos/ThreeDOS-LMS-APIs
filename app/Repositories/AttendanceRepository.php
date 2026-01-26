@@ -23,16 +23,16 @@ class AttendanceRepository implements AttendanceRepositoryInterface
         // President / VicePresident can see everything if they don't provide council_id
         // Others are restricted to their council
         if (!in_array($role, ['VicePresident', 'President'])) {
-            $query->whereHas('council_session', function ($q) use ($council_id) {
+            $query->whereHas('councilSession', function ($q) use ($council_id) {
                 $q->where('council_id', $council_id);
             });
         } elseif (isset($filters['council_id'])) {
-            $query->whereHas('council_session', function ($q) use ($filters) {
+            $query->whereHas('councilSession', function ($q) use ($filters) {
                 $q->where('council_id', $filters['council_id']);
             });
         }
 
-        $query->with(['council_session.council', 'user'])
+        $query->with(['councilSession.council', 'user'])
             ->orderBy('created_at', 'desc');
 
         // Delegate → always restricted to their own attendance
