@@ -11,24 +11,28 @@ RUN apt-get update && apt-get install -y \
 # Install Redis
 RUN pecl install redis && docker-php-ext-enable redis
 
-# Enable Apache modules
-RUN a2enmod rewrite headers
+# Disable conflicting MPMs and enable prefork + necessary modules
+RUN a2dismod mpm_event mpm_worker || true \
+    && a2enmod mpm_prefork rewrite headers
 
 # Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
+# Set working directory
 WORKDIR /var/www/html
 COPY . .
 
+# Install Laravel dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-dev
 
-# Permissions
+# Set permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Entrypoint
+# Copy entrypoint script
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
 
+# Expose container port (Railway will map $PORT automatically)
 EXPOSE 80
