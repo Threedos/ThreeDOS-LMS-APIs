@@ -19,7 +19,7 @@ class TaskRepository implements TaskRepositoryInterface
             $query->where('title', 'like', "%{$search}%");
         }
         if ($filter) {
-            $query->whereHas('councilSession.council', function ($q) use ($filter) {
+            $query->whereHas('council_session.council', function ($q) use ($filter) {
                 $q->where('id', $filter);
             });
         }
