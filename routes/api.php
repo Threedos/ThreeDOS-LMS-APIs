@@ -28,10 +28,25 @@ Route::post('forget-password', [AuthController::class, 'forgetPassword']);
 
 // RateLimiting::class Commented due to testing phase
 Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
+   
+   // Auth Routes
     Route::post('logout', [AuthController::class, 'logout']);
 
-    // Apply cache middleware to resource routes (caches GET requests for 1 hour = 3600 seconds)
+    // Dashboard Routes
     Route::get('users/dashboard', [UserController::class, 'dashboard'])->middleware('cache.response:3600');
+
+    // Bulk Routes
+    Route::post('team-members/bulk', [TeamMemberController::class, 'storeBulk']);
+    Route::post('users/bulk', [UserController::class, 'BulkStore']);
+    Route::post('attendances/bulk', [AttendanceController::class, 'bulkStore']);
+    Route::get('me', [AuthController::class, 'me']);
+    Route::get('/notifications', function (Request $request) {
+        return $request->user()->notifications;
+    })->middleware('cache.response:1800'); // Cache notifications for 30 minutes
+
+
+
+    // Resource Routes
     Route::apiResource('councils', CouncilController::class)->middleware('cache.response:3600');
     Route::apiResource('users', UserController::class)->middleware('cache.response:3600');
     Route::apiResource('roles', RoleController::class)->middleware('cache.response:3600');
@@ -42,14 +57,6 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
     Route::apiResource('teams', TeamController::class);
     Route::apiResource('team-members', TeamMemberController::class);
 
-
-    Route::post('team-members/bulk', [TeamMemberController::class, 'storeBulk']);
-    Route::post('users/bulk', [UserController::class, 'BulkStore']);
-    Route::post('attendances/bulk', [AttendanceController::class, 'bulkStore']);
-    Route::get('me', [AuthController::class, 'me']);
-    Route::get('/notifications', function (Request $request) {
-        return $request->user()->notifications;
-    })->middleware('cache.response:1800'); // Cache notifications for 30 minutes
 
     // Cache management routes
     Route::prefix('cache')->group(function () {
