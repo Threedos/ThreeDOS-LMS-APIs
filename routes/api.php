@@ -23,6 +23,9 @@ Route::get('/instance', function () {
 Route::post('login', [AuthController::class, 'login'])->name('login');
 // Route::post('register', [AuthController::class, 'register']);
 Route::post('forget-password', [AuthController::class, 'forgetPassword']);
+
+
+
 // RateLimiting::class Commented due to testing phase
 Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
@@ -31,7 +34,7 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
     Route::apiResource('councils', CouncilController::class)->middleware('cache.response:3600');
     Route::post('users/bulk', [UserController::class, 'BulkStore']);
     Route::apiResource('users', UserController::class)->middleware('cache.response:3600');
-    Route::get('users/dashboard', [UserController::class, 'dashboard']);
+    Route::get('users/dashboard', [UserController::class, 'dashboard'])->middleware('cache.response:3600');
     Route::apiResource('roles', RoleController::class)->middleware('cache.response:3600');
     Route::apiResource('tasks', TaskController::class)->middleware('cache.response:3600');
     Route::get('me', [AuthController::class, 'me']);
