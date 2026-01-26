@@ -2,37 +2,30 @@
 set -e
 
 echo "=============================="
-echo "Starting Laravel Entrypoint..."
+echo "Starting Laravel with FrankenPHP..."
 echo "=============================="
 
-# Wait for service function (uses bash /dev/tcp, no nc needed)
-wait_for_service () {
-    local host="$1"
-    local port="$2"
-    echo "Waiting for $host:$port..."
-    while ! (echo > /dev/tcp/$host/$port) >/dev/null 2>&1; do
+# Use PORT from environment variable (Railway)
+PORT="${PORT:-80}"
+export FRANKENPHP_CONFIG="listen :$PORT"
+
+# Wait for DB if HOST is provided
+if [ ! -z "$DB_HOST" ]; then
+    echo "Waiting for $DB_HOST:${DB_PORT:-3306}..."
+    until (echo > /dev/tcp/$DB_HOST/${DB_PORT:-3306}) >/dev/null 2>&1; do
         sleep 2
     done
-    echo "$host:$port is available"
-}
+    echo "Database is available"
+fi
 
-# Wait for DB and Redis
-wait_for_service "${DB_HOST:-db}" "${DB_PORT:-3306}"
-wait_for_service "${REDIS_HOST:-redis}" "${REDIS_PORT:-6379}"
-
-# Fix permissions (ONLY what Laravel needs)
+# Fix permissions
 echo "Fixing permissions..."
+mkdir -p storage/framework/{sessions,views,cache} bootstrap/cache
 chown -R www-data:www-data storage bootstrap/cache
 chmod -R 775 storage bootstrap/cache
 
-# Install dependencies if missing
-if [ ! -d vendor ]; then
-    echo "Installing Composer dependencies..."
-    composer install --no-dev --prefer-dist --optimize-autoloader
-fi
-
-# Run migrations
-if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
+# Run migrations if enabled
+if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
     echo "Running migrations..."
     php artisan migrate --force
 
@@ -42,11 +35,14 @@ if [ "${RUN_MIGRATIONS:-true}" = "true" ]; then
     fi
 fi
 
-# Optimize
-php artisan optimize:clear
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+# Cache config/routes for production
+if [ "${APP_ENV:-production}" = "production" ]; then
+    echo "Caching configuration and routes..."
+    php artisan config:cache
+    php artisan route:cache
+    php artisan view:cache
+fi
 
-echo "Starting PHP-FPM..."
-exec php-fpm
+echo "Starting FrankenPHP on port $PORT..."
+# The CMD from Dockerfile will take over after this script
+exec "$@"

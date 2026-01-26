@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->string('description');
             $table->date('due_date');
             $table->string('status');
-            $table->foreignUuid('council_session_id')->nullable()->constrained('council_sessions')->nullOnDelete();
+            $table->foreignUuid('council_session_id')->nullable()->constrained('council_sessions')->nullOnDelete()->cascadeOnUpdate();
             // Made nullable and nullOnDelete as per generic best practice if session is deleted, or maybe cascade? 
             // Original migration had 'nullable()->constrained()'. 
             // I'll stick to nullable. 

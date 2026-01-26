@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->datetime('date');
             $table->text('description')->nullable();
             $table->string('material')->nullable();
-            $table->foreignUuid('council_id')->constrained('councils')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignUuid('council_id')->constrained('councils')->nullOnDelete()->cascadeOnUpdate()->nullable();
             $table->timestamps();
         });
     }

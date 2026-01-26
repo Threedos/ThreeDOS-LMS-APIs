@@ -22,8 +22,8 @@ return new class extends Migration {
             $table->timestamps();
 
             // Foreign Keys
-            $table->foreignUuid('role_id')->constrained('roles')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignUuid('council_id')->constrained('councils')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignUuid('role_id')->constrained('roles')->nullOnDelete()->cascadeOnUpdate()->nullable();
+            $table->foreignUuid('council_id')->constrained('councils')->nullOnDelete()->cascadeOnUpdate()->nullable();
 
             // Extra columns
             $table->timestamp('last_active')->nullable();

@@ -19,7 +19,7 @@ class TaskService
             'pageIndex' => $request->pageIndex,
             'pageSize' => $request->pageSize,
             'search' => $request->search,
-            'filter' => $request->filter,
+            'filter' => $request->filter?? auth()->user()->council_id,
         ];
         return $this->taskRepository->getAllTasks($filters);
     }
