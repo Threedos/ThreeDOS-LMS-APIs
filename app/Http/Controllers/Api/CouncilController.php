@@ -35,14 +35,15 @@ class CouncilController extends Controller
         $pageIndex = $request->input('pageIndex');
         $pageSize = $request->input('pageSize');
         $search = $request->input('search', '');
-
-        $cacheKey = "councils:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
+        
+        // $cacheKey = "councils:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
 
         // Use Redis cache service
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-                return CouncilResource::collection($this->councilService->getAllCouncils($request));
-            }),
+            // $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
+                CouncilResource::collection($this->councilService->getAllCouncils($request))
+            // }),
+            ,
             'Councils retrieved successfully'
         );
     }
