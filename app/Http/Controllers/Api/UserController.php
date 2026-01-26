@@ -113,6 +113,7 @@ class UserController extends Controller
      */
     public function dashboard()
     {
+        
         $this->authorize('view', auth()->user());
         $dashboardData = $this->userService->getDashboardData();
         return $this->successResponse($dashboardData, 'Dashboard data retrieved successfully');

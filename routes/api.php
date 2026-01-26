@@ -31,6 +31,7 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
 
     // Apply cache middleware to resource routes (caches GET requests for 1 hour = 3600 seconds)
+    Route::get('users/dashboard', [UserController::class, 'dashboard'])->middleware('cache.response:3600');
     Route::apiResource('councils', CouncilController::class)->middleware('cache.response:3600');
     Route::apiResource('users', UserController::class)->middleware('cache.response:3600');
     Route::apiResource('roles', RoleController::class)->middleware('cache.response:3600');
@@ -45,7 +46,6 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
     Route::post('team-members/bulk', [TeamMemberController::class, 'storeBulk']);
     Route::post('users/bulk', [UserController::class, 'BulkStore']);
     Route::post('attendances/bulk', [AttendanceController::class, 'bulkStore']);
-    Route::get('dashboard', [UserController::class, 'dashboard'])->middleware('cache.response:3600');
     Route::get('me', [AuthController::class, 'me']);
     Route::get('/notifications', function (Request $request) {
         return $request->user()->notifications;
