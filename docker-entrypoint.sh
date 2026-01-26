@@ -11,8 +11,11 @@ done
 
 echo "MySQL is ready."
 
-# Migrate fresh
-php artisan migrate:fresh --seed || echo "Failed to migrate fresh"
+# Run migrations safely (create missing tables only)
+php artisan migrate --force || echo "Migrations already applied"
+
+# Seed database
+php artisan db:seed --force || echo "Seeding failed or already done"
 
 # Clear and cache configs
 echo "Optimizing application..."
@@ -21,6 +24,6 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Start Laravel server
-echo "Starting web server on port 8000..."
-exec php artisan serve --host=0.0.0.0 --port=8000
+# Apache runs automatically in this image
+echo "Starting Apache..."
+exec apache2-foreground

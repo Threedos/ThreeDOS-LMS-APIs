@@ -12,6 +12,9 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Team;
+use Faker\Factory;
+use App\Models\TeamMember;
 
 class DatabaseSeeder extends Seeder
 {
@@ -105,7 +108,17 @@ class DatabaseSeeder extends Seeder
                     'council_id' => $frontendCouncil->id,
                 ]
             );
-
+            //Delegate (backend)
+            $backendDelegate = User::firstOrCreate(
+                
+                [
+                    'email' => fake()->email(),
+                    'name'       => 'Backend Delegate',
+                    'password'   => Hash::make('password'),
+                    'role_id'    => $roleModels['Delegate']->id,
+                    'council_id' => $backendCouncil->id,
+                ]
+            );
             /*
             |--------------------------------------------------------------------------
             | Council Sessions
@@ -197,9 +210,51 @@ class DatabaseSeeder extends Seeder
                 ]
             );
 
-
-
             
+            /**
+             * 
+             * Teams
+             */
+          $backendTeam1 = Team::firstOrCreate([
+                'team_number' => 1,
+                'council_id' => $backendCouncil->id,
+                'task_link' => null,
+            ]);
+            $backendTeam2 = Team::firstOrCreate([
+                'team_number' => 2,
+                'council_id' => $backendCouncil->id,
+                'task_link' => null,
+            ]);
+            $frontendTeam1 = Team::firstOrCreate([
+                'team_number' => 1,
+                'council_id' => $frontendCouncil->id,
+                'task_link' => null,
+            ]);
+            $frontendTeam2 = Team::firstOrCreate([
+                'team_number' => 2,
+                'council_id' => $frontendCouncil->id,
+                'task_link' => null,
+            ]);
+            $marketingTeam1 = Team::firstOrCreate([
+                'team_number' => 1,
+                'council_id' => $marketingCouncil->id,
+                'task_link' => null,
+            ]);
+            $marketingTeam2 = Team::firstOrCreate([
+                'team_number' => 2,
+                'council_id' => $marketingCouncil->id,
+                'task_link' => null,
+            ]);
+
+            /**
+             * 
+             * Team Members
+             */
+            TeamMember::firstOrCreate([
+                'team_id' => $backendTeam1->id,
+                'user_id' => $backendDelegate->id,
+            ]);
+
         });
     }
 }

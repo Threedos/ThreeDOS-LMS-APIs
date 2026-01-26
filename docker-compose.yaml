@@ -10,9 +10,18 @@ services:
     volumes:
       - .:/var/www/html
     ports:
-      - "8000:8000"
+      - "8000:80"   # Map host 8000 to container Apache 80
     depends_on:
       - db
+    environment:
+      # Optional: Pass Laravel env variables
+      APP_ENV: production
+      APP_DEBUG: false
+      APP_KEY: base64:YOUR_APP_KEY_HERE
+      DB_HOST: db
+      DB_DATABASE: laravel
+      DB_USERNAME: laravel
+      DB_PASSWORD: laravel
 
   db:
     image: mysql:8.0
