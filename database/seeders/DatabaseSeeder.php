@@ -113,9 +113,8 @@ class DatabaseSeeder extends Seeder
             );
             //Delegate (backend)
             $backendDelegate = User::firstOrCreate(
-                
+                ['email' => 'delegate.backend@threedos.local'],
                 [
-                    'email' => 'delegate.backend@threedos.local',
                     'name'       => 'Backend Delegate',
                     'password'   => Hash::make('password'),
                     'role_id'    => $roleModels['Delegate']->id,
