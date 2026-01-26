@@ -99,7 +99,7 @@ class DatabaseSeeder extends Seeder
             );
 
             // Delegate (Frontend)
-            $delegate = User::firstOrCreate(
+            $frontendDelegate = User::firstOrCreate(
                 ['email' => 'delegate.frontend@threedos.local'],
                 [
                     'name'       => 'Frontend Delegate',
@@ -185,7 +185,7 @@ class DatabaseSeeder extends Seeder
             TaskSubmission::firstOrCreate(
                 [
                     'task_id' => $frontendTask->id,
-                    'user_id' => $delegate->id,
+                    'user_id' => $frontendDelegate->id,
                 ],
                 [
                     'file'    => 'frontend_task.zip',
@@ -202,7 +202,7 @@ class DatabaseSeeder extends Seeder
             */
             Attendance::firstOrCreate(
                 [
-                    'user_id'            => $delegate->id,
+                    'user_id'            => $frontendDelegate->id,
                     'council_session_id' => $frontendSession->id,
                 ],
                 [
@@ -254,7 +254,10 @@ class DatabaseSeeder extends Seeder
                 'team_id' => $backendTeam1->id,
                 'user_id' => $backendDelegate->id,
             ]);
-
+            TeamMember::firstOrCreate([
+                'team_id' => $frontendTeam1->id,
+                'user_id' => $frontendDelegate->id,
+            ]);
         });
     }
 }
