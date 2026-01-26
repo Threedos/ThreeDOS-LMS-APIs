@@ -76,4 +76,9 @@ class UserService
         return $this->userRepository->bulkCreateUsers($file);
     }
 
+    public function getDashboardData()
+    {
+        $userId = auth()->id();
+        return $this->userRepository->getDashboardData($userId);
+    }
 }
