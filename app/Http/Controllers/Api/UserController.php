@@ -114,6 +114,11 @@ class UserController extends Controller
      */
     public function dashboard()
     {
+        return response()->json([
+            'success' => true,
+            'message' => 'Dashboard data retrieved successfully',
+            // 'data' => $this->userService->getDashboardData()
+        ]);
         $user = auth()->user();
 
         // Eager load relationships for the current user
