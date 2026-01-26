@@ -30,9 +30,10 @@ class UserService
             $filters['council_id'] = $user->council_id;
         } elseif (in_array($user->role->name, ['Delegate', 'Instructor', 'Head'])) {
             $filters['council_id'] = $user->council_id;
-        } elseif ($user->role->name == 'VicePresident') {
-            $filters['council_id'] = null;
         }
+        // For VicePresident and President, we don't add council_id to $filters 
+        // by default so they can see all users across all councils.
+        // If they provided a council_id in the request, it's already in $filters from above.
 
         return $this->userRepository->getAllUsersPaginated($filters);
     }

@@ -11,27 +11,37 @@ class AttendanceRepository implements AttendanceRepositoryInterface
 {
     public function getAllAttendances(array $filters)
     {
-        $user = $filters['user'];
+        $user = $filters['user'] ?? auth()->user();
         $role = $user->role->name;
-        $council_id = $user->council_id;
+        $council_id = $filters['council_id'] ?? $user->council_id; // Use target council if provided, else user's council
 
         $pageIndex = $filters['pageIndex'] ?? 1;
         $pageSize = $filters['pageSize'] ?? 20;
 
-        $query = Attendance::query()
-            ->whereHas('council_session', function ($q) use ($council_id) {
-                $q->where('council_id', $council_id);
-            })
-            ->with(['council_session.council'])
-            ->orderBy('created_at', 'desc');
+        $query = Attendance::query();
 
-        // Delegate → only his attendance
-        if ($role === 'Delegate') {
-            $query->where('user_id', $user->id);
+        // President / VicePresident can see everything if they don't provide council_id
+        // Others are restricted to their council
+        if (!in_array($role, ['VicePresident', 'President'])) {
+            $query->whereHas('council_session', function ($q) use ($council_id) {
+                $q->where('council_id', $council_id);
+            });
+        } elseif (isset($filters['council_id'])) {
+            $query->whereHas('council_session', function ($q) use ($filters) {
+                $q->where('council_id', $filters['council_id']);
+            });
         }
 
-        // Instructor / Head / VicePresident → full council attendance
-        // (no extra condition needed)
+        $query->with(['council_session.council', 'user'])
+            ->orderBy('created_at', 'desc');
+
+        // Delegate → always restricted to their own attendance
+        if ($role === 'Delegate') {
+            $query->where('user_id', $user->id);
+        } elseif (!empty($filters['user_id'])) {
+            // Instructor / Head / VP can filter by a specific user_id
+            $query->where('user_id', $filters['user_id']);
+        }
 
         return $query->paginate($pageSize, ['*'], 'pageIndex', $pageIndex);
     }

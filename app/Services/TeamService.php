@@ -13,13 +13,21 @@ class TeamService
         $this->teamRepository = $teamRepository;
     }
 
-    public function getAllTeams()
+    public function getAllTeams(array $filters = [])
     {
         $user = auth()->user();
-        $filters = [
-            'council_id' => $user->council_id,
-            'is_vice_president' => $user->role->name === 'VicePresident',
-        ];
+
+        // Base filters from user context
+        if (!in_array($user->role->name, ['VicePresident', 'President'])) {
+            $filters['council_id'] = $user->council_id;
+        }
+
+        $filters['is_vice_president'] = in_array($user->role->name, ['VicePresident', 'President']);
+
+        // If a Delegate is requesting, they can only see their own teams unless filtered otherwise (which they shouldn't be able to)
+        if ($user->role->name === 'Delegate') {
+            $filters['user_id'] = $user->id;
+        }
 
         return $this->teamRepository->getAllTeams($filters);
     }

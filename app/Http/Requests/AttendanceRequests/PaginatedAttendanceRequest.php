@@ -26,8 +26,8 @@ class PaginatedAttendanceRequest extends FormRequest
             'pageIndex' => 'nullable|integer',
             'pageSize' => 'nullable|integer',
             'search' => 'nullable|string',
-            
- 
+            'user_id' => 'nullable|exists:users,id',
+            'council_id' => 'nullable|exists:councils,id',
         ];
     }
 }

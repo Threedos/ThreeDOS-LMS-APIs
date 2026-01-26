@@ -30,18 +30,16 @@ class AttendanceController extends Controller
      */
     public function index(PaginatedAttendanceRequest $request)
     {
-        $council_id = $request->user()->council_id;
         $pageIndex = $request->pageIndex ?? 1;
         $pageSize = $request->pageSize ?? 20;
+        $user_id = $request->user_id;
+        $target_council_id = $request->council_id;
 
-        $cacheKey = "attendances:council_{$council_id}:page_{$pageIndex}:size_{$pageSize}";
+        $cacheKey = "attendances:u_{$request->user()->id}:p_{$pageIndex}:s_{$pageSize}:target_u_{$user_id}:target_c_{$target_council_id}";
 
         $data = $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-            $filters = [
-                'user' => $request->user(),
-                'pageIndex' => $request->pageIndex ?? 1,
-                'pageSize' => $request->pageSize ?? 20,
-            ];
+            $filters = $request->validated();
+            $filters['user'] = $request->user();
             return $this->attendanceService->getAllAttendances($filters);
         });
 
@@ -50,6 +48,7 @@ class AttendanceController extends Controller
             'Success'
         );
     }
+
 
     /**
      * Store a newly created resource in storage.

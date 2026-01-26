@@ -11,12 +11,24 @@ class TeamRepository implements TeamRepositoryInterface
     {
         $council_id = $filters['council_id'] ?? null;
         $is_vice_president = $filters['is_vice_president'] ?? false;
+        $user_id = $filters['user_id'] ?? null;
 
-        if ($council_id === null && $is_vice_president) {
-            return Team::orderBy('created_at', 'desc')->get();
+        $query = Team::query();
+
+        if ($council_id !== null) {
+            $query->where('council_id', $council_id);
+        } elseif (!$is_vice_president) {
+            // If not VP and no council_id provided (shouldn't happen with Service logic), 
+            // we might want to return nothing or handle it. For now,Service ensures council_id or VP.
         }
 
-        return Team::where('council_id', $council_id)->orderBy('created_at', 'desc')->get();
+        if ($user_id) {
+            $query->whereHas('teamMembers', function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            });
+        }
+
+        return $query->orderBy('created_at', 'desc')->get();
     }
 
     public function getTeamById($id)

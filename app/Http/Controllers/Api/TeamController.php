@@ -26,13 +26,17 @@ class TeamController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('viewAny', Team::class);
-        $cacheKey = "teams:all";
+        $user_id = $request->input('user_id');
+        $council_id = $request->input('council_id');
+
+        $cacheKey = "teams:all:user_{$user_id}:council_{$council_id}";
+
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () {
-                $teams = $this->teamService->getAllTeams();
+            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
+                $teams = $this->teamService->getAllTeams($request->all());
                 return TeamResource::collection($teams);
             }),
             'Teams retrieved successfully'
