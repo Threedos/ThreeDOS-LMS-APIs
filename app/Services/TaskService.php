@@ -13,16 +13,17 @@ class TaskService
         $this->taskRepository = $taskRepository;
     }
 
-    public function getAllTasks(TaskPaginatedRequest $request)
-    {
-        $filters = [
-            'pageIndex' => $request->pageIndex,
-            'pageSize' => $request->pageSize,
-            'search' => $request->search,
-            'filter' => $request->filter?? auth()->user()->council_id,
-        ];
-        return $this->taskRepository->getAllTasks($filters);
-    }
+public function getAllTasks(TaskPaginatedRequest $request)
+{
+    return $this->taskRepository->getAllTasks([
+        'pageIndex' => $request->pageIndex,
+        'pageSize'  => $request->pageSize,
+        'search'    => $request->search,
+        'filter'    => $request->filter, // optional
+        'user'      => auth()->user(),
+    ]);
+}
+
 
     public function getTaskById($taskId)
     {
