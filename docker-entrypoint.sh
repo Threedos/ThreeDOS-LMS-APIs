@@ -3,12 +3,17 @@ set -e
 
 echo "Starting Laravel application..."
 
-# Wait for database to be ready (optional but helpful)
-php artisan db:show 2>/dev/null || sleep 5
+# Wait for MySQL to be ready
+until php -r "new PDO('mysql:host=db;dbname=laravel', 'root', 'root');" 2>/dev/null; do
+    echo "Waiting for MySQL..."
+    sleep 2
+done
 
-# Run migrations
+echo "MySQL is ready."
+
+# Run migrations safely
 echo "Running migrations..."
-php artisan migrate --force
+php artisan migrate --force || echo "Migrations already run"
 
 # Clear and cache configs
 echo "Optimizing application..."

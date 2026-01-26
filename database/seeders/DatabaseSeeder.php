@@ -63,15 +63,15 @@ class DatabaseSeeder extends Seeder
             */
 
             // Vice President (NO council)
-            // $vicePresident = User::firstOrCreate(
-            //     ['email' => 'vp@threedos.local'],
-            //     [
-            //         'name'       => 'Vice President',
-            //         'password'   => Hash::make('password'),
-            //         'role_id'    => $roleModels['VicePresident']->id,
-            //         'council_id' => null,
-            //     ]
-            // );
+            $vicePresident = User::firstOrCreate(
+                ['email' => 'vp@threedos.local'],
+                [
+                    'name'       => 'Vice President',
+                    'password'   => Hash::make('password'),
+                    'role_id'    => $roleModels['VicePresident']->id,
+                    'council_id' => null,
+                ]
+            );
 
             // Head (Backend)
             $head = User::firstOrCreate(
@@ -196,6 +196,10 @@ class DatabaseSeeder extends Seeder
                     'status' => 'present',
                 ]
             );
+
+
+
+            
         });
     }
 }
