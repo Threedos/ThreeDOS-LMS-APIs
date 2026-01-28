@@ -11,7 +11,7 @@ class CouncilSessionRepository implements CouncilSessionRepositoryInterface
     {
         $council_id = $filters['council_id'];
 
-        if ($filters['role'] === 'VicePresident' ) {
+        if ($filters['role'] === 'VicePresident' || $filters['role'] === 'President') {
             return CouncilSession::withCount('attendance')
                 ->when($filters['search'], fn($q) => $q->where('title', 'like', "%{$filters['search']}%"))
                 ->orderBy('created_at', 'desc')

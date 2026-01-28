@@ -24,7 +24,7 @@ class SessionResource extends JsonResource
             'council_id' => $this->council_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'attendance' => AttendanceResource::collection($this->whenLoaded('attendance')),
+        'attendance_count' => $this->attendance_count,
 
         ];
     }
