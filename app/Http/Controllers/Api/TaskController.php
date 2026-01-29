@@ -40,10 +40,10 @@ class TaskController extends Controller
 
         // Use Redis cache service
         return $this->successResponse(
-            $this->cacheService->rememberPaginated($cacheKey, 3600, function () use ($request) {
+            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
                 $tasks = $this->taskService->getAllTasks($request);
                 return new TaskCollection($tasks);
-            }, $pageIndex, $pageSize),
+            }),
             'Tasks retrieved successfully'
         );
     }

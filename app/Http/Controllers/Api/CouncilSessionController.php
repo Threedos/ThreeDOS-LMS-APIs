@@ -34,7 +34,7 @@ class CouncilSessionController extends Controller
         $cacheKey = "sessions:council_{$council_id}:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
 
         return $this->successResponse(
-            $this->cacheService->rememberPaginated($cacheKey, 3600, function () use ($request) {
+            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
                 $filters = [
                     'council_id' => $request->user()->council_id,
                     'role' => $request->user()->role->name,
@@ -43,7 +43,7 @@ class CouncilSessionController extends Controller
                     'pageSize' => $request->pageSize,
                 ];
                 return new SessionCollection($this->sessionService->getAllSessions($filters));
-            },  $pageIndex, $pageSize),
+            }),
             'Sessions retrieved successfully'
         );
     }

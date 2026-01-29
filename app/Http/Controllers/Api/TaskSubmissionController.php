@@ -42,9 +42,9 @@ class TaskSubmissionController extends Controller
         $cacheKey = "task_submissions:{$scope}_{$scopeId}:page_{$pageIndex}:size_{$pageSize}:search_{$search}:filter_{$filter}:sort_{$sort}:task_{$task_id}:user_{$user_id}:status_{$status}";
 
         return $this->successResponse(
-            $this->cacheService->rememberPaginated($cacheKey, 3600, function () use ($request) {
+            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
                 return new TaskSubmissionCollection($this->taskSubmissionService->getPaginatedSubmissions($request));
-            }, $pageIndex, $pageSize),
+            }),
             'Submissions retrieved successfully'
         );
     }
