@@ -57,20 +57,20 @@ class UserController extends Controller
         $cacheKey = "users:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
         if ($request->role) {
             return $this->successResponse(
-                $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
+                $this->cacheService->rememberPaginated($cacheKey, 3600, function () use ($request) {
                     return $this->userService->getAllUsers($request);
-                }),
+                }, $pageIndex, $pageSize),
                 'Users retrieved successfully'
             );
         }
 
         // Use Redis cache service
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
+            $this->cacheService->rememberPaginated($cacheKey, 3600, function () use ($request) {
                 $usersPaginator = $this->userService->getAllUsersPaginated($request);
                 $usersCollection = new UserCollection($usersPaginator);
                 return $usersCollection->response()->getData(true);
-            }),
+            }, $pageIndex, $pageSize),
             'Users retrieved successfully'
         );
     }
