@@ -4,7 +4,8 @@ namespace App\Repositories;
 
 use App\Interfaces\TeamRepositoryInterface;
 use App\Models\Team;
-
+use App\Models\TeamMember;
+ use Illuminate\Support\Facades\DB;
 class TeamRepository implements TeamRepositoryInterface
 {
     public function getAllTeams(array $filters)
@@ -47,9 +48,15 @@ class TeamRepository implements TeamRepositoryInterface
         $team->update($details);
         return $team;
     }
+      
 
-    public function deleteTeam($id)
-    {
-        return Team::destroy($id);
-    }
+        public function deleteTeam($id)
+        {
+            return DB::transaction(function () use ($id) {
+                TeamMember::where('team_id', $id)->delete();
+                return Team::destroy($id);
+            });
+        }
+
+    
 }
