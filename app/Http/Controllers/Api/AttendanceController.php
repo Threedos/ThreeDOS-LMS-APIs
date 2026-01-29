@@ -48,19 +48,42 @@ class AttendanceController extends Controller
     //         'Success'
     //     );
     // }
-
 public function index(PaginatedAttendanceRequest $request)
 {
+    $pageIndex = $request->pageIndex ?? 1;
+    $pageSize = $request->pageSize ?? 20;
+
     $filters = $request->validated();
     $filters['user'] = $request->user();
 
-    $attendances = $this->attendanceService->getAllAttendances($filters);
+    $cacheKey = "attendances:u_{$request->user()->id}:p_{$pageIndex}:s_{$pageSize}";
+
+    $attendances = $this->cacheService->rememberPaginated(
+        $cacheKey,
+        3600,
+        fn() => $this->attendanceService->getAllAttendances($filters),
+        $pageIndex,
+        $pageSize
+    );
 
     return $this->successResponse(
         new AttendanceCollection($attendances),
         'Success'
     );
 }
+
+// public function index(PaginatedAttendanceRequest $request)
+// {
+//     $filters = $request->validated();
+//     $filters['user'] = $request->user();
+
+//     $attendances = $this->attendanceService->getAllAttendances($filters);
+
+//     return $this->successResponse(
+//         new AttendanceCollection($attendances),
+//         'Success'
+//     );
+// }
 
     /**
      * Store a newly created resource in storage.
