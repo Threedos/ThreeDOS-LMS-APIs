@@ -25,65 +25,18 @@ class AttendanceController extends Controller
         $this->attendanceService = $attendanceService;
     }
 
-    /**
-     * Display a listing of the resource.
-     */
-    // public function index(PaginatedAttendanceRequest $request)
-    // {
-    //     $pageIndex = $request->pageIndex ?? 1;
-    //     $pageSize = $request->pageSize ?? 20;
-    //     $user_id = $request->user_id;
-    //     $target_council_id = $request->council_id;
+    public function index(PaginatedAttendanceRequest $request)
+    {
+        $filters = $request->validated();
+        $filters['user'] = $request->user();
 
-    //     $cacheKey = "attendances:u_{$request->user()->id}:p_{$pageIndex}:s_{$pageSize}:target_u_{$user_id}:target_c_{$target_council_id}";
+        $attendances = $this->attendanceService->getAllAttendances($filters);
 
-    //     $data = $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-    //         $filters = $request->validated();
-    //         $filters['user'] = $request->user();
-    //         return $this->attendanceService->getAllAttendances($filters);
-    //     });
-
-    //     return $this->successResponse(
-    //         new AttendanceCollection($data),
-    //         'Success'
-    //     );
-    // }
-public function index(PaginatedAttendanceRequest $request)
-{
-    $pageIndex = $request->pageIndex ?? 1;
-    $pageSize = $request->pageSize ?? 20;
-
-    $filters = $request->validated();
-    $filters['user'] = $request->user();
-
-    // $cacheKey = "attendances:u_{$request->user()->id}:p_{$pageIndex}:s_{$pageSize}";
-
-    // $attendances = $this->cacheService->rememberPaginated(
-    //     $cacheKey,
-    //     3600,
-    //     fn() => $this->attendanceService->getAllAttendances($filters),
-    //     $pageIndex,
-    //     $pageSize
-    // );
-    $attendances = $this->attendanceService->getAllAttendances($filters);
-    return $this->successResponse(
-        new AttendanceCollection($attendances),
-        'Success'
-    );
-}
-
-// public function index(PaginatedAttendanceRequest $request)
-// {
-//     $filters = $request->validated();
-//     $filters['user'] = $request->user();
-
-//     $attendances = $this->attendanceService->getAllAttendances($filters);
-
-//     return $this->successResponse(
-//         new AttendanceCollection($attendances),
-//         'Success'
-//     );
-// }
+        return $this->successResponse(
+            new AttendanceCollection($attendances),
+            'Success'
+        );
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -113,12 +66,10 @@ public function index(PaginatedAttendanceRequest $request)
      */
     public function show(string $id)
     {
-        $cacheKey = "attendance:{$id}";
+        $attendance = $this->attendanceService->getAttendanceById($id);
 
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
-                return $this->attendanceService->getAttendanceById($id);
-            }),
+            $attendance,
             'Success'
         );
     }

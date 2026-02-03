@@ -26,25 +26,8 @@ class TaskSubmissionController extends Controller
 
     public function index(TaskSubmissionPaginatedRequest $request)
     {
-        $user = $request->user();
-        $scope = ($user->role->name == 'Instructor' || $user->role->name == 'Head') ? 'council' : 'user';
-        $scopeId = ($scope == 'council') ? $user->council_id : $user->id;
-
-        $pageIndex = $request->input('pageIndex', 1);
-        $pageSize = $request->input('pageSize', 10);
-        $search = $request->input('search', '');
-        $filter = $request->input('filter', '');
-        $sort = $request->input('sort', '');
-        $task_id = $request->input('task_id', '');
-        $user_id = $request->input('user_id', '');
-        $status = $request->input('status', '');
-
-        $cacheKey = "task_submissions:{$scope}_{$scopeId}:page_{$pageIndex}:size_{$pageSize}:search_{$search}:filter_{$filter}:sort_{$sort}:task_{$task_id}:user_{$user_id}:status_{$status}";
-
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-                return new TaskSubmissionCollection($this->taskSubmissionService->getPaginatedSubmissions($request));
-            }),
+            new TaskSubmissionCollection($this->taskSubmissionService->getPaginatedSubmissions($request)),
             'Submissions retrieved successfully'
         );
     }
@@ -61,14 +44,11 @@ class TaskSubmissionController extends Controller
 
     public function show(string $id)
     {
-        $cacheKey = "task_submission:{$id}";
+        $submission = TaskSubmission::findOrFail($id);
+        $this->authorize('view', $submission);
 
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 60, function () use ($id) {
-                $submission = TaskSubmission::findOrFail($id);
-                $this->authorize('view', $submission);
-                return $this->taskSubmissionService->getTaskSubmissionById($id);
-            }),
+            $this->taskSubmissionService->getTaskSubmissionById($id),
             'Submission retrieved successfully'
         );
     }

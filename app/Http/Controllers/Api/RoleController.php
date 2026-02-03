@@ -23,11 +23,8 @@ class RoleController extends Controller
      */
     public function index()
     {
-        // Use Redis cache service
         return $this->successResponse(
-            $this->cacheService->remember('roles:all', 3600, function () {
-                return $this->roleService->getAllRoles();
-            }),
+            $this->roleService->getAllRoles(),
             'Roles retrieved successfully'
         );
     }
@@ -59,11 +56,8 @@ class RoleController extends Controller
      */
     public function show(string $id)
     {
-        // Use Redis cache service
         return $this->successResponse(
-            $this->cacheService->remember('role:' . $id, 3600, function () use ($id) {
-                return $this->roleService->getRoleById($id);
-            }),
+            $this->roleService->getRoleById($id),
             'Role retrieved successfully'
         );
     }

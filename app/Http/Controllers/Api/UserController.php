@@ -50,27 +50,19 @@ class UserController extends Controller
     public function index(PaginatedRequest $request)
     {
         $this->authorize('viewAny', User::class);
-        $user = auth()->user();
-        $pageIndex = $request->input('pageIndex', 1);
-        $pageSize = $request->input('pageSize', 10);
-        $search = $request->input('search', '');
-        $cacheKey = "users:council_{$user->council_id}:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
+
         if ($request->role) {
             return $this->successResponse(
-                $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-                    return $this->userService->getAllUsers($request);
-                }),
+                $this->userService->getAllUsers($request),
                 'Users retrieved successfully'
             );
         }
 
-        // Use Redis cache service
+        $usersPaginator = $this->userService->getAllUsersPaginated($request);
+        $usersCollection = new UserCollection($usersPaginator);
+
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-                $usersPaginator = $this->userService->getAllUsersPaginated($request);
-                $usersCollection = new UserCollection($usersPaginator);
-                return $usersCollection->response()->getData(true);
-            }),
+            $usersCollection->response()->getData(true),
             'Users retrieved successfully'
         );
     }
@@ -94,16 +86,13 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $cacheKey = "user:{$id}";
+        $userModel = $this->userService->getUserById($id);
+        $this->authorize('view', $userModel);
 
-        // Use Redis cache service with remember pattern
+        $resource = UserResource::make($userModel);
+
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
-                $userModel = $this->userService->getUserById($id);
-                $this->authorize('view', $userModel);
-                $resource = UserResource::make($userModel);
-                return $resource->response()->getData(true);
-            }),
+            $resource->response()->getData(true),
             'User retrieved successfully'
         );
     }
@@ -113,14 +102,11 @@ class UserController extends Controller
      */
     public function dashboard()
     {
-        $id = auth()->user()->id;
-        $cacheKey = "dashboard:{$id}";
+        $this->authorize('view', auth()->user());
+        $dashboardData = $this->userService->getDashboardData();
+
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () {
-                $this->authorize('view', auth()->user());
-                $dashboardData = $this->userService->getDashboardData();
-                return $dashboardData;
-            }),
+            $dashboardData,
             'Dashboard data retrieved successfully'
         );
     }

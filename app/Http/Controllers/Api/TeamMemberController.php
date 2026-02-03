@@ -28,11 +28,10 @@ class TeamMemberController extends Controller
     public function index()
     {
         $this->authorize('viewAny', TeamMember::class);
-        $cacheKey = "team-members:all";
+        $members = $this->teamMemberService->getAllTeamMembers();
+
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () {
-                return $this->teamMemberService->getAllTeamMembers();
-            }),
+            $members,
             'Team members retrieved successfully'
         );
     }
@@ -76,11 +75,10 @@ class TeamMemberController extends Controller
     public function show(string $id)
     {
         $this->authorize('view', TeamMember::class);
-        $cacheKey = "team-member:{$id}";
+        $member = $this->teamMemberService->getTeamMemberById($id);
+
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
-                return $this->teamMemberService->getTeamMemberById($id);
-            }),
+            $member,
             'Team member retrieved successfully'
         );
     }
@@ -104,21 +102,21 @@ class TeamMemberController extends Controller
     /**
      * Remove the specified resource from storage.
      */
- public function destroy(string $id)
-{
-    $teamMember = TeamMember::findOrFail($id);
+    public function destroy(string $id)
+    {
+        $teamMember = TeamMember::findOrFail($id);
 
-    // Pass the model instance, not the class
-    $this->authorize('delete', $teamMember);
+        // Pass the model instance, not the class
+        $this->authorize('delete', $teamMember);
 
-    $this->teamMemberService->deleteTeamMember($id);
+        $this->teamMemberService->deleteTeamMember($id);
 
-    // Clear team and team member cache
-    $this->cacheService->forget("team-member:{$id}");
-    $this->cacheService->clearResourceCache('team-members');
-    $this->cacheService->clearResourceCache('teams');
+        // Clear team and team member cache
+        $this->cacheService->forget("team-member:{$id}");
+        $this->cacheService->clearResourceCache('team-members');
+        $this->cacheService->clearResourceCache('teams');
 
-    return $this->noContentResponse('Team member deleted successfully');
-}
+        return $this->noContentResponse('Team member deleted successfully');
+    }
 
 }

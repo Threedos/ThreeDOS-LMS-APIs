@@ -26,24 +26,16 @@ class CouncilSessionController extends Controller
      */
     public function index(PaginatedSessionRequest $request)
     {
-        $council_id = $request->user()->council_id;
-        $pageIndex = $request->pageIndex;
-        $pageSize = $request->pageSize;
-        $search = $request->search ?? '';
-
-        $cacheKey = "sessions:council_{$council_id}:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
+        $filters = [
+            'council_id' => $request->user()->council_id,
+            'role' => $request->user()->role->name,
+            'search' => $request->search,
+            'pageIndex' => $request->pageIndex,
+            'pageSize' => $request->pageSize,
+        ];
 
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-                $filters = [
-                    'council_id' => $request->user()->council_id,
-                    'role' => $request->user()->role->name,
-                    'search' => $request->search,
-                    'pageIndex' => $request->pageIndex,
-                    'pageSize' => $request->pageSize,
-                ];
-                return new SessionCollection($this->sessionService->getAllSessions($filters));
-            }),
+            new SessionCollection($this->sessionService->getAllSessions($filters)),
             'Sessions retrieved successfully'
         );
     }
@@ -68,12 +60,10 @@ class CouncilSessionController extends Controller
      */
     public function show(string $id)
     {
-        $cacheKey = "session:{$id}";
+        $session = $this->sessionService->getSessionById($id);
 
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
-                return $this->sessionService->getSessionById($id);
-            }),
+            $session,
             'Session retrieved successfully'
         );
     }

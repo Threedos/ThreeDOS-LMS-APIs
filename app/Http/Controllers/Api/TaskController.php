@@ -32,19 +32,10 @@ class TaskController extends Controller
     {
         $this->authorize('viewAny', Task::class);
 
-        $pageIndex = $request->input('pageIndex');
-        $pageSize = $request->input('pageSize');
-        $search = $request->input('search', '');
-        $filter = $request->input('filter', '');
-        $council_id = auth()->user()->council->id;
-        $cacheKey = "tasks:council_{$council_id}:page_{$pageIndex}:size_{$pageSize}:search_{$search}:filter_{$filter}";
+        $tasks = $this->taskService->getAllTasks($request);
 
-        // Use Redis cache service
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-                $tasks = $this->taskService->getAllTasks($request);
-                return new TaskCollection($tasks);
-            }),
+            new TaskCollection($tasks),
             'Tasks retrieved successfully'
         );
     }
@@ -69,15 +60,11 @@ class TaskController extends Controller
      */
     public function show(string $id)
     {
-        $cacheKey = "task:{$id}";
+        $task = Task::findOrFail($id);
+        $this->authorize('view', $task);
 
-        // Use Redis cache service with remember pattern
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
-                $task = Task::findOrFail($id);
-                $this->authorize('view', $task);
-                return $this->taskService->getTaskById($id);
-            }),
+            $this->taskService->getTaskById($id),
             'Task retrieved successfully'
         );
     }

@@ -28,8 +28,8 @@ Route::post('forget-password', [AuthController::class, 'forgetPassword']);
 
 // RateLimiting::class Commented due to testing phase
 Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
-   
-   // Auth Routes
+
+    // Auth Routes
     Route::post('logout', [AuthController::class, 'logout']);
 
     // Dashboard Routes
@@ -54,8 +54,8 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
     Route::apiResource('sessions', CouncilSessionController::class)->middleware('cache.response:3600');
     Route::apiResource('attendances', AttendanceController::class)->middleware('cache.response:3600');
     Route::apiResource('task-submissions', TaskSubmissionController::class)->middleware('cache.response:3600');
-    Route::apiResource('teams', TeamController::class);
-    Route::apiResource('team-members', TeamMemberController::class);
+    Route::apiResource('teams', TeamController::class)->middleware('cache.response:3600');
+    Route::apiResource('team-members', TeamMemberController::class)->middleware('cache.response:3600');
 
 
     // Cache management routes

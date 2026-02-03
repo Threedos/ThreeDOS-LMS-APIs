@@ -33,18 +33,8 @@ class CouncilController extends Controller
     {
         $this->authorize('viewAny', Council::class);
 
-        $pageIndex = $request->input('pageIndex');
-        $pageSize = $request->input('pageSize');
-        $search = $request->input('search', '');
-
-        $council_id = auth()->user()->council_id;
-        $cacheKey = "councils:page_{$pageIndex}:size_{$pageSize}:search_{$search}:council_id_{$council_id}";
-
-        // Use Redis cache service
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-                return CouncilResource::collection($this->councilService->getAllCouncils($request));
-            }),
+            CouncilResource::collection($this->councilService->getAllCouncils($request)),
             'Councils retrieved successfully'
         );
     }
@@ -74,15 +64,11 @@ class CouncilController extends Controller
      */
     public function show(string $id)
     {
-        $cacheKey = "council:{$id}";
+        $council = Council::findOrFail($id);
+        $this->authorize('view', $council);
 
-        // Use Redis cache service with remember pattern
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
-                $council = Council::findOrFail($id);
-                $this->authorize('view', $council);
-                return $this->councilService->getCouncilById($id);
-            }),
+            $this->councilService->getCouncilById($id),
             'Council retrieved successfully'
         );
     }

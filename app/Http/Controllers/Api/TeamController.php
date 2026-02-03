@@ -29,16 +29,10 @@ class TeamController extends Controller
     public function index(Request $request)
     {
         $this->authorize('viewAny', Team::class);
-        $user_id = $request->input('user_id');
-        $council_id = $request->input('council_id');
-
-        $cacheKey = "teams:all:user_{$user_id}:council_{$council_id}";
+        $teams = $this->teamService->getAllTeams($request->all());
 
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
-                $teams = $this->teamService->getAllTeams($request->all());
-                return TeamResource::collection($teams);
-            }),
+            TeamResource::collection($teams),
             'Teams retrieved successfully'
         );
     }
@@ -62,13 +56,11 @@ class TeamController extends Controller
      */
     public function show(string $id)
     {
-        $cacheKey = "team:{$id}";
+        $team = $this->teamService->getTeamById($id);
+        $this->authorize('view', $team);
+
         return $this->successResponse(
-            $this->cacheService->remember($cacheKey, 3600, function () use ($id) {
-                $team = $this->teamService->getTeamById($id);
-                $this->authorize('view', $team);
-                return new TeamResource($team);
-            }),
+            new TeamResource($team),
             'Team retrieved successfully'
         );
     }
