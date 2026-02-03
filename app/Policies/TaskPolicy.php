@@ -52,7 +52,7 @@ class TaskPolicy
     public function update(User $user, Task $task): bool
     {
         return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) 
-        && $user->council_id === $task->council_session->council_id) 
+        && $user->council->id === $task->council_session->council_id) 
         || $user->role->name === RolesEnum::VicePresident->value 
         || $user->role->name === RolesEnum::President->value;
     }
@@ -63,7 +63,7 @@ class TaskPolicy
     public function delete(User $user, Task $task): bool
     {
         return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) 
-        && $user->council_id === $task->council_session->council_id) 
+        && $user->council->id === $task->council_session->council_id) 
         || $user->role->name === RolesEnum::VicePresident->value 
         || $user->role->name === RolesEnum::President->value;
     }
@@ -74,7 +74,7 @@ class TaskPolicy
     public function restore(User $user, Task $task): bool
     {
         return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) 
-        && $user->council_id === $task->council_session->council_id) 
+        && $user->council->id === $task->council_session->council_id) 
         || $user->role->name === RolesEnum::VicePresident->value 
         || $user->role->name === RolesEnum::President->value;
     }
@@ -85,7 +85,7 @@ class TaskPolicy
     public function forceDelete(User $user, Task $task): bool
     {
         return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) 
-        && $user->council_id === $task->council_session->council_id) 
+        && $user->council->id === $task->council_session->council_id) 
         || $user->role->name === RolesEnum::VicePresident->value 
         || $user->role->name === RolesEnum::President->value;
     }
