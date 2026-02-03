@@ -33,7 +33,7 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
 
     // Dashboard Routes
-    Route::get('users/dashboard', [UserController::class, 'dashboard'])->middleware('cache.response:3600');
+    Route::get('users/dashboard', [UserController::class, 'dashboard'])->middleware('cache.response:1800');
 
     // Bulk Routes
     Route::post('team-members/bulk', [TeamMemberController::class, 'storeBulk']);
@@ -47,13 +47,13 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
 
 
     // Resource Routes
-    Route::apiResource('councils', CouncilController::class)->middleware('cache.response:3600');
-    Route::apiResource('users', UserController::class)->middleware('cache.response:3600');
-    Route::apiResource('roles', RoleController::class)->middleware('cache.response:3600');
-    Route::apiResource('tasks', TaskController::class)->middleware('cache.response:3600');
-    Route::apiResource('sessions', CouncilSessionController::class)->middleware('cache.response:3600');
-    Route::apiResource('attendances', AttendanceController::class)->middleware('cache.response:3600');
-    Route::apiResource('task-submissions', TaskSubmissionController::class)->middleware('cache.response:3600');
+    Route::apiResource('councils', CouncilController::class)->middleware('cache.response:1800');
+    Route::apiResource('users', UserController::class)->middleware('cache.response:1800');
+    Route::apiResource('roles', RoleController::class)->middleware('cache.response:1800');
+    Route::apiResource('tasks', TaskController::class)->middleware('cache.response:1800');
+    Route::apiResource('sessions', CouncilSessionController::class)->middleware('cache.response:1800');
+    Route::apiResource('attendances', AttendanceController::class)->middleware('cache.response:1800');
+    Route::apiResource('task-submissions', TaskSubmissionController::class)->middleware('cache.response:1800');
     Route::apiResource('teams', TeamController::class)->middleware('cache.response:3600');
     Route::apiResource('team-members', TeamMemberController::class)->middleware('cache.response:3600');
 
