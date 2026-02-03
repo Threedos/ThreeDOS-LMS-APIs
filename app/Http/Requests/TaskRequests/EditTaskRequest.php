@@ -30,7 +30,7 @@ class EditTaskRequest extends FormRequest
             'description' => 'required|string|max:255',
             'council_session_id' => 'required|exists:council_sessions,id',
             'due_date' => 'nullable|date',
-            'status' => 'nullable|string|in:pending,in_progress,completed',
+            'status' => 'nullable|string|in:Pending,In Progress,Completed',
         ];
     }
 }
