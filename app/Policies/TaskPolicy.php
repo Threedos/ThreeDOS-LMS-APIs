@@ -52,7 +52,7 @@ class TaskPolicy
     public function update(User $user, Task $task): bool
     {
         return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) 
-        && $user->council->id === $task->council_session->council_id) 
+        && $user->council->id === optional($task->councilSession)->council_id) 
         || $user->role->name === RolesEnum::VicePresident->value 
         || $user->role->name === RolesEnum::President->value;
     }
@@ -63,7 +63,7 @@ class TaskPolicy
     public function delete(User $user, Task $task): bool
     {
         return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) 
-        && $user->council->id === $task->council_session->council_id) 
+        && $user->council->id === optional($task->councilSession)->council_id) 
         || $user->role->name === RolesEnum::VicePresident->value 
         || $user->role->name === RolesEnum::President->value;
     }

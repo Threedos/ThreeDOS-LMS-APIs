@@ -45,6 +45,7 @@ class SessionPolicy
     public function update(User $user, CouncilSession $session): bool
     {
         if(($user->role->name == RolesEnum::Head->value || $user->role->name == RolesEnum::Instructor->value)
+            && $user->council->id === $session->council_id
              || $user->role->name == RolesEnum::VicePresident->value
             || $user->role->name == RolesEnum::President->value){
             return true;
