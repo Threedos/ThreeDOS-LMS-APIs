@@ -50,11 +50,11 @@ class UserController extends Controller
     public function index(PaginatedRequest $request)
     {
         $this->authorize('viewAny', User::class);
-
+        $user = auth()->user();
         $pageIndex = $request->input('pageIndex', 1);
         $pageSize = $request->input('pageSize', 10);
         $search = $request->input('search', '');
-        $cacheKey = "users:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
+        $cacheKey = "users:council_{$user->council_id}:page_{$pageIndex}:size_{$pageSize}:search_{$search}";
         if ($request->role) {
             return $this->successResponse(
                 $this->cacheService->remember($cacheKey, 3600, function () use ($request) {
