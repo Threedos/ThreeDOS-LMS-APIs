@@ -56,16 +56,16 @@ public function index(PaginatedAttendanceRequest $request)
     $filters = $request->validated();
     $filters['user'] = $request->user();
 
-    $cacheKey = "attendances:u_{$request->user()->id}:p_{$pageIndex}:s_{$pageSize}";
+    // $cacheKey = "attendances:u_{$request->user()->id}:p_{$pageIndex}:s_{$pageSize}";
 
-    $attendances = $this->cacheService->rememberPaginated(
-        $cacheKey,
-        3600,
-        fn() => $this->attendanceService->getAllAttendances($filters),
-        $pageIndex,
-        $pageSize
-    );
-
+    // $attendances = $this->cacheService->rememberPaginated(
+    //     $cacheKey,
+    //     3600,
+    //     fn() => $this->attendanceService->getAllAttendances($filters),
+    //     $pageIndex,
+    //     $pageSize
+    // );
+    $attendances = $this->attendanceService->getAllAttendances($filters);
     return $this->successResponse(
         new AttendanceCollection($attendances),
         'Success'
