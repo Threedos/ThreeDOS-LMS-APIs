@@ -11,6 +11,7 @@ use App\Http\Requests\TaskRequests\TaskPaginatedRequest;
 use App\Http\Requests\TaskRequests\TaskStoreRequest;
 use App\Services\CacheService;
 use App\Http\Resources\TaskCollection;
+use App\Http\Requests\TaskRequests\EditTaskRequest;
 
 class TaskController extends Controller
 {
@@ -84,7 +85,7 @@ class TaskController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(EditTaskRequest $request, string $id)
     {
         $task = Task::findOrFail($id);
         $this->authorize('update', $task);
