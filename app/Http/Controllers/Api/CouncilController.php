@@ -11,6 +11,7 @@ use App\Models\Council;
 use Illuminate\Support\Facades\Cache;
 use App\Services\CacheService;
 use App\Http\Resources\CouncilResource;
+use App\Http\Requests\CouncilRequests\UpdateCouncilRequest;
 
 class CouncilController extends Controller
 {
@@ -89,7 +90,7 @@ class CouncilController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCouncilRequest $request, string $id)
     {
         $council = Council::findOrFail($id);
         $this->authorize('update', $council);
