@@ -26,7 +26,7 @@ class EditTaskRequest extends FormRequest
     {
         return [
             //
-            'name' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'description' => 'required|string|max:255',
             'council_session_id' => 'required|exists:council_sessions,id',
             'due_date' => 'nullable|date',
