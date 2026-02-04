@@ -35,7 +35,6 @@ class CreateTaskSubmissionRequest extends FormRequest
             'task_id.required' => 'Task ID is required',
             'task_id.exists' => 'Task ID does not exist',
             'file.required' => 'File is required',
-            'user_id.required' => 'User ID is required',
             'user_id.exists' => 'User ID does not exist',
         ];
     }
