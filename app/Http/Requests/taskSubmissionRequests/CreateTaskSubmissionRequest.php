@@ -23,9 +23,20 @@ class CreateTaskSubmissionRequest extends FormRequest
     {
         return [
             //
-            'task_id'=>'required',
+            'task_id'=>'required|exists:tasks,id',
             'file'=>'required',
-            
+            'user_id'=>'nullable|exists:users,id',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'task_id.required' => 'Task ID is required',
+            'task_id.exists' => 'Task ID does not exist',
+            'file.required' => 'File is required',
+            'user_id.required' => 'User ID is required',
+            'user_id.exists' => 'User ID does not exist',
         ];
     }
 }

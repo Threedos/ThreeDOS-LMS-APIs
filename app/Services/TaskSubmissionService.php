@@ -6,6 +6,10 @@ use App\Interfaces\TaskSubmissionRepositoryInterface;
 use App\Http\Requests\TaskSubmissionRequests\TaskSubmissionPaginatedRequest;
 use App\Notifications\EventNotification;
 use App\Enums\TaskStatusEnum;
+use App\Enums\RolesEnum;
+use App\Models\Task;
+use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Storage;
 
 class TaskSubmissionService
@@ -22,16 +26,16 @@ class TaskSubmissionService
         $user = $request->user();
         $filters = $request->validated();
 
-        if (in_array($user->role->name, ['VicePresident', 'President'])) {
+        if (in_array($user->role->name, [RolesEnum::VicePresident->value, RolesEnum::President->value])) {
             return $this->taskSubmissionRepository->getAllTaskSubmissionsForCouncil($filters);
         }
 
         // Add auth-context for others
         $filters['council_id'] = $user->council_id;
 
-        if ($user->role->name == 'Instructor' || $user->role->name == 'Head') {
+        if ($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) {
             return $this->taskSubmissionRepository->getAllTaskSubmissionsForCouncil($filters);
-        } elseif ($user->role->name == 'Delegate') {
+        } elseif ($user->role->name === RolesEnum::Delegate->value) {
             $filters['user_id'] = $user->id; // Force own ID for delegates
             return $this->taskSubmissionRepository->getAllTaskSubmissionsForUser($filters);
         }
@@ -47,19 +51,33 @@ class TaskSubmissionService
     {
         $user = auth()->user();
 
-        // if (!($submissionDetails['file'] instanceof \Illuminate\Http\UploadedFile)) {
-        //     throw new \InvalidArgumentException('Invalid file upload');
-        // }
+        // 1. Resolve user_id: Use provided one or default to auth user
+        $delegateId = $submissionDetails['user_id'] ?? $user->id;
 
-        // $filePath = Storage::disk('s3')
-        //     ->putFile('task-submissions', $submissionDetails['file']);
+        // 2. Force own ID for delegates (Prevents them from submitting for others)
+        if ($user->role->name === RolesEnum::Delegate->value) {
+            $delegateId = $user->id;
+        }
 
-        // if (!$filePath) {
-        //     throw new \RuntimeException('Failed to upload file to S3');
-        // }
+        // 3. Security Check: Ensure Task and Target User belong to the same council (for non-admins)
+        if (!in_array($user->role->name, [RolesEnum::VicePresident->value, RolesEnum::President->value])) {
+            // Validate Task
+            $task = Task::with('councilSession')->findOrFail($submissionDetails['task_id']);
+            if ($task->councilSession->council_id !== $user->council_id) {
+                throw new AuthorizationException('Unauthorized task submission. Task belongs to another council.');
+            }
+
+            // Validate Delegate (if submitting for someone else)
+            if ($delegateId !== $user->id) {
+                $targetUser = User::findOrFail($delegateId);
+                if ($targetUser->council_id !== $user->council_id) {
+                    throw new AuthorizationException('Target delegate does not belong to your council.');
+                }
+            }
+        }
 
         $data = [
-            'user_id' => $user->id,
+            'user_id' => $delegateId,
             'task_id' => $submissionDetails['task_id'],
             'file' => $submissionDetails['file'],
             'status' => TaskStatusEnum::SUBMITTED->value,
