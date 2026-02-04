@@ -25,7 +25,7 @@ class CreateTaskSubmissionRequest extends FormRequest
             //
             'task_id'=>'required|exists:tasks,id',
             'file'=>'required',
-            'user_id'=>'nullable|exists:users,id',
+            'user_id'=>'sometimes|exists:users,id',
         ];
     }
 
