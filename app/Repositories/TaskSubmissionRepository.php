@@ -76,10 +76,10 @@ class TaskSubmissionRepository implements TaskSubmissionRepositoryInterface
 
         if (!empty($filters['task_id'])) {
             $task_id = $filters['task_id'];
-            $task = \App\Models\Task::with('councilSession.council')->findOrFail($task_id);
+            $task = Task::with('councilSession.council')->findOrFail($task_id);
             $council_id = $task->councilSession->council_id;
 
-            $query = \App\Models\User::query()
+            $query = User::query()
                 ->where('users.council_id', $council_id)
                 ->whereHas('role', function ($q) {
                     $q->where('name', 'Delegate');
@@ -132,7 +132,7 @@ class TaskSubmissionRepository implements TaskSubmissionRepositoryInterface
                 $submission->updated_at = $item->updated_at;
 
                 // Load relations
-                $user = new \App\Models\User();
+                $user = new User();
                 $user->id = $item->user_id;
                 $user->name = $item->user_name;
                 $submission->setRelation('user', $user);
