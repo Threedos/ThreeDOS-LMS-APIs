@@ -31,7 +31,7 @@ class TaskSubmissionPolicy
             $submission->user_id === $user->id ||
             (
                 ($user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::Instructor->value) &&
-                $submission->task->council_session->council_id === $user->council_id
+                $submission->task->council_session->council_id === $user->council->id
             )
             || $user->role->name === RolesEnum::VicePresident->value
             || $user->role->name === RolesEnum::President->value;
@@ -55,7 +55,7 @@ class TaskSubmissionPolicy
     public function update(User $user, TaskSubmission $submission): bool
     {
         return $submission->user_id === $user->id || (($user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::Instructor->value)
-        && $submission->task->council_session->council_id === $user->council_id)
+        && $submission->task->council_session->council_id === $user->council->id)
         || $user->role->name === RolesEnum::VicePresident->value
         || $user->role->name === RolesEnum::President->value;
     }
@@ -69,7 +69,7 @@ class TaskSubmissionPolicy
             $submission->user_id === $user->id ||
             (
                 ($user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::Instructor->value) &&
-                $submission->task->council_session->council_id === $user->council_id
+                $submission->task->council_session->council_id === $user->council->id
             )
             || $user->role->name === RolesEnum::VicePresident->value
             || $user->role->name === RolesEnum::President->value;
