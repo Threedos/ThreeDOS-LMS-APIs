@@ -17,11 +17,10 @@ class Task extends Model
         'due_date',
         'status',
         'council_session_id',
-        // 'council_id',
     ];
-    //to be enhance why council_id when i have session id which is related to council_id
+   
     public function councilSession()
     {
-        return $this->belongsTo(CouncilSession::class);
+        return $this->belongsTo(CouncilSession::class,'council_session_id','id');
     }
 }
