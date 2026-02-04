@@ -21,7 +21,7 @@ class TaskSubmissionResource extends JsonResource
             'file' => $this->file,
             'grade' => $this->grade,
             'status' => $this->status,
-            'council_session' => $this->task->councilSession?->name,
+            'council_session' => $this->task->councilSession?->title,
             'council' => $this->task->councilSession?->council?->name,
             'council_id' => $this->task->councilSession?->council?->id,
             'created_at' => $this->created_at,
