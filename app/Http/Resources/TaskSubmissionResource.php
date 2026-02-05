@@ -17,6 +17,7 @@ class TaskSubmissionResource extends JsonResource
         return [
             'id' => $this->id,
             'task' => $this->task->title,
+            'task_id' => $this->task->id,
             'user' => $this->user->name,
             'file' => $this->file,
             'grade' => $this->grade,
