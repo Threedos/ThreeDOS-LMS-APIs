@@ -9,8 +9,7 @@ return [
     'allowed_origins' => [
         'http://localhost:4200',
         'http://127.0.0.1:4200',
-    'https://threedoosapp.netlify.app',
-        'https://threedosapp-production.up.railway.app'
+        'https://threedoosapp.netlify.app',
     ],
 
     'allowed_origins_patterns' => [],
@@ -19,7 +18,7 @@ return [
 
     'exposed_headers' => ['Authorization'],
 
-    'max_age' => 0,
+    'max_age' => 86400,
 
     'supports_credentials' => false,
 ];
