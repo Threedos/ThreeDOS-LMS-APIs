@@ -10,7 +10,6 @@ use App\Enums\RolesEnum;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Support\Facades\Storage;
 
 class TaskSubmissionService
 {
@@ -91,7 +90,6 @@ class TaskSubmissionService
     {
         $submission = $this->taskSubmissionRepository
             ->updateTaskSubmission($submissionId, $submissionDetails);
-
 
         return $submission;
     }

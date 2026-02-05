@@ -9,7 +9,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\TaskSubmissionRequests\TaskSubmissionPaginatedRequest;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Services\CacheService;
-use App\Http\Requests\taskSubmissionRequests\CreateTaskSubmissionRequest;
+use App\Http\Requests\TaskSubmissionRequests\CreateTaskSubmissionRequest;
+use App\Http\Requests\TaskSubmissionRequests\UpdateTaskSubmissionRequest;
 use App\Http\Resources\TaskSubmissionCollection;
 
 class TaskSubmissionController extends Controller
@@ -53,7 +54,7 @@ class TaskSubmissionController extends Controller
         );
     }
 
-    public function update(Request $request, string $id)
+    public function update(UpdateTaskSubmissionRequest $request, string $id)
     {
         $submission = TaskSubmission::findOrFail($id);
         $this->authorize('update', $submission);
