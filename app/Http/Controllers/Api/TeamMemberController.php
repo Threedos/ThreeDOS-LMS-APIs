@@ -10,6 +10,7 @@ use App\Http\Requests\BulkTeamMemberRequest;
 use App\Services\TeamMemberService;
 use App\Services\CacheService;
 use App\Http\Requests\TeamMemberRequest;
+use App\Http\Requests\UpdateTeamMemberRequest;
 class TeamMemberController extends Controller
 {
     use AuthorizesRequests;
@@ -86,10 +87,10 @@ class TeamMemberController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateTeamMemberRequest $request, string $id)
     {
         $this->authorize('update', TeamMember::class);
-        $member = $this->teamMemberService->updateTeamMember($id, $request->only(['rate', 'role', 'task']));
+        $member = $this->teamMemberService->updateTeamMember($id, $request->validated());
 
         // Clear team and team member cache
         $this->cacheService->forget("team-member:{$id}");

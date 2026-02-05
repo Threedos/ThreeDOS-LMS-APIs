@@ -11,7 +11,7 @@ class UpdateTeamMemberRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,6 +23,10 @@ class UpdateTeamMemberRequest extends FormRequest
     {
         return [
             //
+          
+            'role' => 'required|string|in:member,leader,co-leader',
+            'rate' => 'nullable|numeric',
+            'task' => 'nullable|string',
         ];
     }
 }
