@@ -48,7 +48,7 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
 
 
     // Resource Routes
-    Route::post('ai-chat', [AiChatController::class, 'chat'])->middleware(['throttle:5,1', 'throttle:50,1440']);
+    Route::post('ai-chat', [AiChatController::class, 'chat'])->middleware(['throttle:20,1', 'throttle:100,720']);
     Route::apiResource('councils', CouncilController::class)->middleware('cache.response:1800');
     Route::apiResource('users', UserController::class)->middleware('cache.response:1800');
     Route::apiResource('roles', RoleController::class)->middleware('cache.response:1800');
