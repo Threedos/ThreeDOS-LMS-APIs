@@ -16,15 +16,14 @@ class GeminiService
     public function chat(string $message): string
     {
         try {
-            // Railway limits HTTP requests to ~15s
-            // Make sure PHP does not time out earlier
-            set_time_limit(15);
-            ini_set('default_socket_timeout', 15);
 
-            // Limit max_tokens so AI responds quickly
             $result = Gemini::generativeModel('gemini-2.5-flash')
-                ->generateContent($message, timeout: 15, max_tokens: 120);
-
+                ->generateContent([
+                    'input' => $message,
+                    'maxOutputTokens' => 120, // keep response short
+                ], [
+                    'timeout' => 15            // HTTP client timeout
+                ]);
             $aiText = $result->text();
 
             // Log response length for monitoring
