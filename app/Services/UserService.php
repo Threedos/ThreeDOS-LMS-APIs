@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\RolesEnum;
 use App\Interfaces\UserRepositoryInterface;
 use App\Http\Requests\PaginatedRequest;
 use App\Http\Resources\UserResource;
@@ -77,9 +78,21 @@ class UserService
         return $this->userRepository->bulkCreateUsers($file);
     }
 
-    public function getDashboardData()
+    public function getDashboardData($request)
     {
-        $userId = auth()->id();
+
+
+        $authUser = auth()->user();
+        $roleName = $authUser->role->name;
+
+        if ($roleName == RolesEnum::Delegate->value) {
+            $userId = $authUser->id;
+        } else {
+            $userId = $request->input('user_id');
+        }
+
         return $this->userRepository->getDashboardData($userId);
     }
+
+    
 }

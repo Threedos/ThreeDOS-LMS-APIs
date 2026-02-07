@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UserRequests\DashboardsRequest;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -100,10 +101,10 @@ class UserController extends Controller
     /**
      * Display specific charts and statistics for dashboard
      */
-    public function dashboard()
+    public function dashboard(DashboardsRequest $request)
     {
         $this->authorize('view', auth()->user());
-        $dashboardData = $this->userService->getDashboardData();
+        $dashboardData = $this->userService->getDashboardData($request);
 
         return $this->successResponse(
             $dashboardData,
