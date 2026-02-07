@@ -14,7 +14,7 @@ class TeamMemberPolicy
      */
     public function viewAny(User $user): bool
     {
-        return in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value, RolesEnum::VicePresident->value, RolesEnum::President->value]);
+        return in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value, RolesEnum::HR->value, RolesEnum::VicePresident->value, RolesEnum::President->value]);
     }
 
     /**
@@ -22,7 +22,7 @@ class TeamMemberPolicy
      */
     public function view(User $user, TeamMember $teamMember): bool
     {
-        if (in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value, RolesEnum::VicePresident->value, RolesEnum::President->value])) {
+        if (in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value, RolesEnum::HR->value, RolesEnum::VicePresident->value, RolesEnum::President->value])) {
             return $user->council_id === $teamMember->team->council_id;
         }
 
@@ -42,7 +42,7 @@ class TeamMemberPolicy
      */
     public function update(User $user, TeamMember $teamMember): bool
     {
-        return in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value])
+        return in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value, RolesEnum::HR->value])
             && $user->council_id === $teamMember->team->council_id
             || $user->role->name === RolesEnum::VicePresident->value
             || $user->role->name === RolesEnum::President->value;

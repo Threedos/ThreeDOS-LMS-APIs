@@ -14,7 +14,9 @@ class TaskSubmissionPolicy
     {
         return $user->role->name === RolesEnum::Head->value
          || $user->role->name === RolesEnum::Instructor->value 
-         || $user->role->name === RolesEnum::VicePresident->value;
+         || $user->role->name === RolesEnum::HR->value
+         || $user->role->name === RolesEnum::VicePresident->value
+         || $user->role->name === RolesEnum::President->value;
     }
 
 
@@ -32,7 +34,7 @@ class TaskSubmissionPolicy
         return
             $submission->user_id === $user->id ||
             (
-                ($user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::Instructor->value) &&
+                ($user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::HR->value) &&
                 $submission->task->councilSession->council_id === $user->council->id
             )
             || $user->role->name === RolesEnum::VicePresident->value
@@ -45,7 +47,9 @@ class TaskSubmissionPolicy
     public function create(User $user): bool
     {
         // Delegate can submit task (create submission)
-        return (($user->role->name === RolesEnum::Delegate->value || $user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value)
+        return (($user->role->name === RolesEnum::Delegate->value || $user->role->name === RolesEnum::Instructor->value
+         || $user->role->name === RolesEnum::Head->value
+          || $user->role->name === RolesEnum::HR->value)
         && $user->council->id !== null )
         || $user->role->name === RolesEnum::VicePresident->value
         || $user->role->name === RolesEnum::President->value;
@@ -56,7 +60,9 @@ class TaskSubmissionPolicy
      */
     public function update(User $user, TaskSubmission $submission): bool
     {
-        return $submission->user_id === $user->id || (($user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::Instructor->value)
+        return $submission->user_id === $user->id 
+        || (($user->role->name === RolesEnum::Head->value 
+        || $user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::HR->value)
         && $submission->task->councilSession->council->id === $user->council->id)
         || $user->role->name === RolesEnum::VicePresident->value
         || $user->role->name === RolesEnum::President->value;
@@ -70,8 +76,8 @@ class TaskSubmissionPolicy
         return
             $submission->user_id == $user->id ||
             (
-                ($user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::Instructor->value) &&
-                $submission->task->councilSession->council->id === $user->council->id
+                ($user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::HR->value)
+                && $submission->task->councilSession->council->id === $user->council->id
                 )
             || $user->role->name === RolesEnum::VicePresident->value
             || $user->role->name === RolesEnum::President->value;

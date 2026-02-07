@@ -35,6 +35,7 @@ class CouncilPolicy
         // Usually Council creation might be Super Admin or Head.
         // Let's stick to user request: "Head, Instructor, Delegate(which only view most of models)"
         return $user->role->name === RolesEnum::Instructor->value 
+        || $user->role->name === RolesEnum::HR->value
         || $user->role->name === RolesEnum::Head->value 
         || $user->role->name===RolesEnum::VicePresident->value
         || $user->role->name===RolesEnum::President->value;
@@ -45,7 +46,7 @@ class CouncilPolicy
      */
     public function update(User $user, Council $council): bool
     {
-        return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) 
+        return (($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value ) 
         && $user->council_id === $council->id) ||  $user->role->name===RolesEnum::VicePresident->value
         || $user->role->name===RolesEnum::President->value;
     }
