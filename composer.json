@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.4",
         "ext-redis": "*",
+        "google-gemini-php/laravel": "^2.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "league/flysystem": "^3.0",
