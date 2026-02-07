@@ -41,7 +41,7 @@ class GeminiService
             ]);
 
             // Return Railway-friendly fallback message
-            return 'Sorry, the AI could not respond in time. Please try again with a shorter question.';
+            return 'Gemini Exception on Railway: ' . $e->getMessage();
         }
     }
 }
