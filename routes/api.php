@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\CacheController;
 use App\Http\Middleware\RateLimiting;
 use App\Http\Controllers\Api\TeamController;
 use App\Http\Controllers\Api\TeamMemberController;
+use App\Http\Controllers\Api\AiChatController;
 
 
 //Routes
@@ -47,6 +48,7 @@ Route::middleware(['auth:api', 'throttle:60,1'])->group(function () {
 
 
     // Resource Routes
+    Route::post('ai-chat', [AiChatController::class, 'chat'])->middleware(['throttle:5,1', 'throttle:50,1440']);
     Route::apiResource('councils', CouncilController::class)->middleware('cache.response:1800');
     Route::apiResource('users', UserController::class)->middleware('cache.response:1800');
     Route::apiResource('roles', RoleController::class)->middleware('cache.response:1800');

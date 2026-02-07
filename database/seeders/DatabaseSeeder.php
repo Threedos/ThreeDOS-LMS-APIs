@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
                 'VicePresident',
                 'Head',
                 'Instructor',
+                'HR',
                 'Delegate',
             ];
 
@@ -101,6 +102,16 @@ class DatabaseSeeder extends Seeder
                 ]
             );
 
+            //HR 
+            $hr = User::firstOrCreate(
+                ['email' => 'hr@threedos.local'],
+                [
+                    'name'       => 'HR',
+                    'password'   => Hash::make('password'),
+                    'role_id'    => $roleModels['HR']->id,
+                    'council_id' => $backendCouncil->id,
+                ]
+            );
             // Delegate (Frontend)
             $frontendDelegate = User::firstOrCreate(
                 ['email' => 'delegate.frontend@threedos.local'],
