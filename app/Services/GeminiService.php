@@ -17,10 +17,7 @@ class GeminiService
         try {
             // Generate content with Gemini
             $result = Gemini::generativeModel('gemini-2.5-flash')
-                ->generateContent([
-                    'input' => $message,
-                    // 'maxOutputTokens' => 120, // keep response short for Railway
-                ]);
+                ->generateContent($message);
 
             $aiText = $result->text();
 
