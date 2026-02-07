@@ -21,8 +21,8 @@ class GeminiService
             ini_set('default_socket_timeout', 60);
 
             // Make the API request with a proper timeout
-            $result = Gemini::generativeModel(model: 'gemini-2.5-flash')
-                ->generateContent($message, timeout: 60); // 60s timeout
+            $result = Gemini::generativeModel('gemini-2.5-flash')
+                ->generateContent($message, timeout: 15, max_tokens: 150);
 
             $aiText = $result->text();
 
