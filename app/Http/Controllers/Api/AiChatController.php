@@ -21,6 +21,8 @@ class AiChatController extends Controller
     public function chat(Request $request)
     {
         $request->validate([
+            'session_id' => 'required|string|max:1000',
+            'material' => 'required|string|max:1000',
             'message' => 'required|string|max:1000',
         ]);
 
