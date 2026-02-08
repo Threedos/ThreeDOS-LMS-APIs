@@ -87,7 +87,13 @@ class UserService
 
         if ($roleName == RolesEnum::Delegate->value) {
             $userId = $authUser->id;
-        } else {
+        } elseif(
+            $roleName == RolesEnum::HR->value 
+            || $roleName == RolesEnum::Instructor->value 
+            || $roleName == RolesEnum::Head->value
+            || $roleName == RolesEnum::VicePresident->value 
+            || $roleName == RolesEnum::President->value
+        ) {
             $userId = $request->input('user_id');
         }
 
