@@ -21,11 +21,11 @@ class AiChatController extends Controller
     public function chat(Request $request)
     {
         $request->validate([
-            'session_id' => 'required|string|max:1000|exists:council_sessions,id',
+            // 'session_id' => 'required|string|max:1000|exists:council_sessions,id',
             'message' => 'required|string|max:1000',
         ]);
 
-        $response = $this->geminiService->chat($request->message, $request->session_id);
+        $response = $this->geminiService->chat($request->message);
 
         return $this->successResponse($response, 'AI response retrieved successfully.');
     }
