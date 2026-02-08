@@ -19,6 +19,7 @@ class TaskPolicy
         return in_array($user->role->name, [
             RolesEnum::Instructor->value,
             RolesEnum::Head->value,
+            RolesEnum::HR->value,
             RolesEnum::Delegate->value,
             RolesEnum::VicePresident->value,
             RolesEnum::President->value

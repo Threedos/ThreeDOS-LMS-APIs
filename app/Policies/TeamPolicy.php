@@ -17,6 +17,7 @@ class TeamPolicy
         return in_array($user->role->name, [
             RolesEnum::Head->value,
             RolesEnum::Instructor->value,
+            RolesEnum::HR->value,
             RolesEnum::Delegate->value,
             RolesEnum::VicePresident->value
         ]);
@@ -27,7 +28,7 @@ class TeamPolicy
      */
     public function view(User $user, Team $team): bool
     {
-        if (in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value, RolesEnum::VicePresident->value, RolesEnum::President->value])) {
+        if (in_array($user->role->name, [RolesEnum::Head->value, RolesEnum::Instructor->value, RolesEnum::VicePresident->value, RolesEnum::President->value , RolesEnum::HR->value])) {
             return $user->council_id === $team->council_id;
         }
 
