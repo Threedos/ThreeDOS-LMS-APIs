@@ -32,7 +32,7 @@ class TaskPolicy
     public function view(User $user, Task $task): bool
     {
         // Users can view tasks belonging to their council
-        return $user->council_id === $task->council_id;
+        return $user->council_id === $task->councilSession?->council_id;
     }
 
 
