@@ -89,7 +89,8 @@ class TeamMemberController extends Controller
      */
     public function update(UpdateTeamMemberRequest $request, string $id)
     {
-        $this->authorize('update', TeamMember::class);
+        $teamMember = TeamMember::findOrFail($id);
+        $this->authorize('update', $teamMember);
         $member = $this->teamMemberService->updateTeamMember($id, $request->validated());
 
         // Clear team and team member cache
