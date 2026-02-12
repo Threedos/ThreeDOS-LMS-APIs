@@ -32,7 +32,7 @@ class TaskSubmissionService
         // Add auth-context for others
         $filters['council_id'] = $user->council_id;
 
-        if ($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value) {
+        if ($user->role->name === RolesEnum::Instructor->value || $user->role->name === RolesEnum::Head->value || $user->role->name === RolesEnum::HR->value) {
             return $this->taskSubmissionRepository->getAllTaskSubmissionsForCouncil($filters);
         } elseif ($user->role->name === RolesEnum::Delegate->value) {
             $filters['user_id'] = $user->id; // Force own ID for delegates
