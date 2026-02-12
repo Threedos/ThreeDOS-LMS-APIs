@@ -23,7 +23,7 @@ class DashboardsRequest extends FormRequest
     {
         return [
             //
-            'user_id'=>'sometimes|string'
+            'user_id'=>'sometimes|string|exists:users,id',
         ];
     }
 }
