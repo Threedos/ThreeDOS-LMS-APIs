@@ -19,7 +19,8 @@ class TeamPolicy
             RolesEnum::Instructor->value,
             RolesEnum::HR->value,
             RolesEnum::Delegate->value,
-            RolesEnum::VicePresident->value
+            RolesEnum::VicePresident->value,
+            RolesEnum::President->value
         ]);
     }
 
