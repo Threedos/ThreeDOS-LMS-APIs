@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Interfaces\CouncilRepositoryInterface;
 use App\Http\Requests\CouncilRequests\AllCouncilRequest;
+use App\Enums\RolesEnum;
 class CouncilService
 {
     protected $councilRepository;
@@ -20,9 +21,9 @@ class CouncilService
             'search' => $request->search,
         ];
 
-        if (in_array($user->role->name, ['Delegate', 'Instructor', 'Head'])) {
+        if (in_array($user->role->name, [RolesEnum::Delegate->value, RolesEnum::Instructor->value, RolesEnum::Head->value, RolesEnum::HR->value])) {
             $filters['id'] = $user->council_id;
-        } elseif ($user->role->name == 'VicePresident' || $user->role->name == 'President') {
+        } elseif ($user->role->name == RolesEnum::VicePresident->value || $user->role->name == RolesEnum::President->value) {
             $filters['id'] = null;
         }
 
