@@ -53,6 +53,7 @@ class ApiExceptionHandler
             'method' => $request->method(),
             'input' => $request->except(['password', 'password_confirmation']),
             'user_id' => Auth::id(),
+            'user_name' => Auth::user()->name,
         ]);
         
         // --- 3. Return error response using ApiResponse trait ---
