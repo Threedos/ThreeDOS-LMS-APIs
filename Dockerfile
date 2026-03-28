@@ -45,4 +45,4 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Correct Apache port
-EXPOSE 80
+EXPOSE 8000
