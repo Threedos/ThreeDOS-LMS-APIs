@@ -1,6 +1,5 @@
-# Base image with PHP 8.4 and Apache
-FROM php:8.4-apache
-
+# Base image with PHP 8.5 and Apache
+FROM php:8.5-apache
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git unzip zip libzip-dev libpng-dev libjpeg-dev libfreetype6-dev libicu-dev \
@@ -16,14 +15,21 @@ RUN a2dismod mpm_event mpm_worker || true \
     && a2enmod rewrite headers
 
 # Composer
-COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
+
 
 # Set working directory
 WORKDIR /var/www/html
+
+# Set Apache DocumentRoot to Laravel's public directory
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
+
 COPY . .
 
 # Install Laravel dependencies
-RUN composer install --no-interaction --optimize-autoloader --no-dev
+RUN composer install --no-interaction --optimize-autoloader --no-dev --ignore-platform-reqs
 
 # Set permissions for Laravel
 RUN chown -R www-data:www-data /var/www/html \
@@ -35,4 +41,4 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 # Expose container port
-EXPOSE 8000
+EXPOSE 80

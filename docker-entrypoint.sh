@@ -4,7 +4,12 @@ set -e
 echo "Starting Laravel application..."
 
 # Wait for database
-php artisan db:show 2>/dev/null || sleep 5
+echo "Waiting for database connection..."
+until php artisan db:show &>/dev/null; do
+    echo "Database is not ready yet, sleeping 3 seconds..."
+    sleep 3
+done
+echo "Database connection established!"
 
 echo "Running migrations..."
 php artisan migrate --force
