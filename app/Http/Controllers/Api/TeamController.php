@@ -26,6 +26,14 @@ class TeamController extends Controller
     /**
      * Display a listing of the resource.
      */
+    /**
+     * List Teams
+     *
+     * Retrieve all teams for the current council.
+     *
+     * @tags Teams
+     * @response 200 scenario="Success" {"status": "success", "message": "Teams retrieved successfully", "data": []}
+     */
     public function index(Request $request)
     {
         $this->authorize('viewAny', Team::class);
@@ -39,6 +47,15 @@ class TeamController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     */
+    /**
+     * Create Team
+     *
+     * Create a new team within the council.
+     *
+     * @tags Teams
+     * @response 201 scenario="Created" {"status": "success", "message": "Team created successfully", "data": {"id": 1}}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
      */
     public function store(StoreTeamRequest $request)
     {
@@ -54,6 +71,15 @@ class TeamController extends Controller
     /**
      * Display the specified resource.
      */
+    /**
+     * Get Team
+     *
+     * Retrieve a specific team by its ID.
+     *
+     * @tags Teams
+     * @response 200 scenario="Success" {"status": "success", "message": "Team retrieved successfully", "data": {}}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
+     */
     public function show(string $id)
     {
         $team = $this->teamService->getTeamById($id);
@@ -67,6 +93,16 @@ class TeamController extends Controller
 
     /**
      * Update the specified resource in storage.
+     */
+    /**
+     * Update Team
+     *
+     * Update an existing team's details.
+     *
+     * @tags Teams
+     * @response 200 scenario="Success" {"status": "success", "message": "Team updated successfully", "data": null}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function update(Request $request, string $id)
     {
@@ -83,6 +119,16 @@ class TeamController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     */
+    /**
+     * Delete Team
+     *
+     * Permanently delete a team by its ID.
+     *
+     * @tags Teams
+     * @response 204 scenario="No Content" {}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function destroy(string $id)
     {

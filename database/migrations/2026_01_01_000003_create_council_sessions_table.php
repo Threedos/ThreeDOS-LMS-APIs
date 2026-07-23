@@ -10,8 +10,10 @@ return new class extends Migration {
         if (!Schema::hasTable('council_sessions')) {
             Schema::create('council_sessions', function (Blueprint $table) {
                 $table->uuid('id')->primary();
-                $table->string('name');
+                $table->string('title');
+                $table->date('date')->nullable();
                 $table->text('description')->nullable();
+                $table->string('material')->nullable();
 
                 $table->foreignUuid('council_id')
                       ->nullable()

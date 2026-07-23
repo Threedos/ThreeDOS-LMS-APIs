@@ -24,6 +24,14 @@ class CouncilSessionController extends Controller
     /**
      * Display a listing of the resource.
      */
+    /**
+     * List Sessions
+     *
+     * Retrieve a paginated list of council sessions for the authenticated user.
+     *
+     * @tags Council Sessions
+     * @response 200 scenario="Success" {"status": "success", "message": "Sessions retrieved successfully", "data": []}
+     */
     public function index(PaginatedSessionRequest $request)
     {
         $filters = [
@@ -43,6 +51,14 @@ class CouncilSessionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    /**
+     * Create Session
+     *
+     * Create a new council session.
+     *
+     * @tags Council Sessions
+     * @response 201 scenario="Created" {"status": "success", "message": "Council session created successfully", "data": {}}
+     */
     public function store(StoreSessionRequest $request)
     {
         $session = $this->sessionService->createSession($request->validated());
@@ -58,6 +74,15 @@ class CouncilSessionController extends Controller
     /**
      * Display the specified resource.
      */
+    /**
+     * Get Session
+     *
+     * Retrieve a specific council session by its ID.
+     *
+     * @tags Council Sessions
+     * @response 200 scenario="Success" {"status": "success", "message": "Session retrieved successfully", "data": {}}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
+     */
     public function show(string $id)
     {
         $session = $this->sessionService->getSessionById($id);
@@ -70,6 +95,15 @@ class CouncilSessionController extends Controller
 
     /**
      * Update the specified resource in storage.
+     */
+    /**
+     * Update Session
+     *
+     * Update an existing council session.
+     *
+     * @tags Council Sessions
+     * @response 200 scenario="Success" {"status": "success", "message": "Session updated successfully", "data": {}}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function update(UpdateSessionRequest $request, string $id)
     {
@@ -86,6 +120,15 @@ class CouncilSessionController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     */
+    /**
+     * Delete Session
+     *
+     * Permanently delete a council session by its ID.
+     *
+     * @tags Council Sessions
+     * @response 204 scenario="No Content" {}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function destroy(string $id)
     {

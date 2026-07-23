@@ -18,6 +18,16 @@ class AuthController extends Controller
         $this->authService = $authService;
     }
 
+    /**
+     * Login
+     *
+     * Authenticate with email and password to obtain a JWT Bearer token.
+     *
+     * @unauthenticated
+     * @tags Auth
+     * @response 200 scenario="Success" {"status": "success", "message": "Login successfully", "data": {"user_name": "John Doe", "role": "Admin", "access_token": "eyJ...", "expires_in": 3600}}
+     * @response 401 scenario="Invalid credentials" {"status": "error", "message": "Invalid credentials"}
+     */
     public function login(LoginRequest $request)
     {
         $result = $this->authService->login($request->only('email', 'password'));
@@ -34,12 +44,31 @@ class AuthController extends Controller
         ], 'Login successfully');
     }
 
+    /**
+     * Logout
+     *
+     * Revoke the current JWT token and log the user out.
+     *
+     * @tags Auth
+     * @response 200 scenario="Success" {"status": "success", "message": "Logout successfully", "data": null}
+     */
     public function logout(Request $request)
     {
-        $this->authService->logout(auth()->user());
+        $this->authService->logout(auth('api')->user());
         return $this->successResponse(null, 'Logout successfully');
     }
 
+    /**
+     * Forgot Password
+     *
+     * Send a password reset link to the provided email address.
+     *
+     * @unauthenticated
+     * @tags Auth
+     * @response 200 scenario="Reset link sent" {"status": "success", "message": "Success", "data": null}
+     * @response 404 scenario="User not found" {"status": "error", "message": "User not found"}
+     * @response 422 scenario="Failed" {"status": "error", "message": "Failed to send reset link"}
+     */
     public function forgetPassword(Request $request)
     {
         $request->validate(['email' => 'required|email']);
@@ -74,9 +103,17 @@ class AuthController extends Controller
             : $this->errorResponse('Invalid token', 422);
     }
 
+    /**
+     * Current User
+     *
+     * Retrieve the currently authenticated user's profile.
+     *
+     * @tags Auth
+     * @response 200 scenario="Success" {"status": "success", "message": "User retrieved successfully", "data": {"id": 1, "name": "John Doe", "email": "john@example.com"}}
+     */
     public function me()
     {
-        $user = auth()->user();
+        $user = auth('api')->user();
         return $this->successResponse(new UserProfileResource($user), 'User retrieved successfully');
     }
 }

@@ -12,7 +12,7 @@ use App\Http\Requests\UserRequests\CreateUserRequest;
 use App\Http\Requests\UserRequests\UpdateUserRequest;
 use App\Http\Requests\UserRequests\BulkCreateUserRequest;
 use App\Imports\UsersImport;
-use Maatwebsite\Excel\Facades\Excel;
+// use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\PaginatedRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserCollection;
@@ -33,6 +33,15 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage in bulk.
      */
+    /**
+     * Bulk Import Users
+     *
+     * Import multiple users at once via an uploaded file (CSV/XLSX).
+     *
+     * @tags Users
+     * @response 200 scenario="Success" {"status": "success", "message": "Users imported successfully", "data": null}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
+     */
     public function BulkStore(BulkCreateUserRequest $request)
     {
         $this->authorize('create', User::class);
@@ -47,6 +56,14 @@ class UserController extends Controller
 
     /**
      * Display a listing of the resource.
+     */
+    /**
+     * List Users
+     *
+     * Retrieve a paginated list of users. Filter by role using the `role` query parameter.
+     *
+     * @tags Users
+     * @response 200 scenario="Paginated" {"status": "success", "message": "Users retrieved successfully", "data": {"data": [], "meta": {"current_page": 1, "per_page": 15, "total": 100}}}
      */
     public function index(PaginatedRequest $request)
     {
@@ -71,6 +88,15 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    /**
+     * Create User
+     *
+     * Create a new user account.
+     *
+     * @tags Users
+     * @response 201 scenario="Created" {"status": "success", "message": "User created successfully", "data": null}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
+     */
     public function store(CreateUserRequest $request)
     {
         $this->authorize('create', User::class);
@@ -84,6 +110,15 @@ class UserController extends Controller
 
     /**
      * Display the specified resource.
+     */
+    /**
+     * Get User
+     *
+     * Retrieve a specific user by their ID.
+     *
+     * @tags Users
+     * @response 200 scenario="Success" {"status": "success", "message": "User retrieved successfully", "data": {"id": 1, "name": "John Doe", "email": "john@example.com"}}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function show(string $id)
     {
@@ -101,9 +136,17 @@ class UserController extends Controller
     /**
      * Display specific charts and statistics for dashboard
      */
+    /**
+     * Dashboard Statistics
+     *
+     * Retrieve charts and statistics data for the dashboard.
+     *
+     * @tags Users
+     * @response 200 scenario="Success" {"status": "success", "message": "Dashboard data retrieved successfully", "data": {}}
+     */
     public function dashboard(DashboardsRequest $request)
     {
-        $this->authorize('view', auth()->user());
+        $this->authorize('view', auth('api')->user());
         $dashboardData = $this->userService->getDashboardData($request);
 
         return $this->successResponse(
@@ -114,6 +157,16 @@ class UserController extends Controller
 
     /**
      * Update the specified resource in storage.
+     */
+    /**
+     * Update User
+     *
+     * Update the details of an existing user.
+     *
+     * @tags Users
+     * @response 200 scenario="Success" {"status": "success", "message": "User updated successfully", "data": null}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function update(UpdateUserRequest $request, string $id)
     {
@@ -131,6 +184,16 @@ class UserController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     */
+    /**
+     * Delete User
+     *
+     * Permanently delete a user by their ID.
+     *
+     * @tags Users
+     * @response 200 scenario="Success" {"status": "success", "message": "User deleted successfully", "data": null}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function destroy(string $id)
     {

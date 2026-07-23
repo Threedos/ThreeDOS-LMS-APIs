@@ -25,6 +25,14 @@ class AttendanceController extends Controller
         $this->attendanceService = $attendanceService;
     }
 
+    /**
+     * List Attendances
+     *
+     * Retrieve a paginated list of attendance records.
+     *
+     * @tags Attendances
+     * @response 200 scenario="Success" {"status": "success", "message": "Success", "data": []}
+     */
     public function index(PaginatedAttendanceRequest $request)
     {
         $filters = $request->validated();
@@ -41,6 +49,15 @@ class AttendanceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    /**
+     * Create Attendance
+     *
+     * Record an attendance entry for a user in a session.
+     *
+     * @tags Attendances
+     * @response 201 scenario="Created" {"status": "success", "message": "Success", "data": {}}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
+     */
     public function store(StoreAttendanceRequest $request)
     {
         $this->authorize('create', Attendance::class);
@@ -51,6 +68,15 @@ class AttendanceController extends Controller
         return $this->createdResponse($attendance, 'Success');
     }
 
+    /**
+     * Bulk Import Attendances
+     *
+     * Import multiple attendance records at once via an uploaded file.
+     *
+     * @tags Attendances
+     * @response 200 scenario="Success" {"status": "success", "message": "Success", "data": null}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
+     */
     public function bulkStore(BulkCreateAttendanceRequest $request)
     {
         $this->authorize('create', Attendance::class);
@@ -63,6 +89,15 @@ class AttendanceController extends Controller
 
     /**
      * Display the specified resource.
+     */
+    /**
+     * Get Attendance
+     *
+     * Retrieve a specific attendance record by its ID.
+     *
+     * @tags Attendances
+     * @response 200 scenario="Success" {"status": "success", "message": "Success", "data": {}}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function show(string $id)
     {
@@ -77,6 +112,15 @@ class AttendanceController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    /**
+     * Update Attendance
+     *
+     * Update an existing attendance record.
+     *
+     * @tags Attendances
+     * @response 200 scenario="Success" {"status": "success", "message": "Success", "data": {}}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
+     */
     public function update(UpdateAttendanceRequest $request, string $id)
     {
         $attendance = $this->attendanceService->updateAttendance($id, $request->validated());
@@ -89,6 +133,15 @@ class AttendanceController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     */
+    /**
+     * Delete Attendance
+     *
+     * Permanently delete an attendance record by its ID.
+     *
+     * @tags Attendances
+     * @response 204 scenario="No Content" {}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function destroy(string $id)
     {

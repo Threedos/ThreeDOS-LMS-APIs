@@ -18,6 +18,14 @@ class AiChatController extends Controller
         $this->geminiService = $geminiService;
     }
 
+    /**
+     * AI Chat
+     *
+     * Send a message to the Gemini AI and receive a response.
+     *
+     * @tags AI Chat
+     * @response 200 scenario="Success" {"status": "success", "message": "AI response retrieved successfully.", "data": "The AI response text..."}
+     */
     public function chat(Request $request)
     {
         $request->validate([

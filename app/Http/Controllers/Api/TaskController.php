@@ -28,6 +28,14 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
+    /**
+     * List Tasks
+     *
+     * Retrieve a paginated list of tasks for the authenticated user's council.
+     *
+     * @tags Tasks
+     * @response 200 scenario="Success" {"status": "success", "message": "Tasks retrieved successfully", "data": []}
+     */
     public function index(TaskPaginatedRequest $request)
     {
         $this->authorize('viewAny', Task::class);
@@ -42,6 +50,15 @@ class TaskController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     */
+    /**
+     * Create Task
+     *
+     * Create a new task assigned to a council session.
+     *
+     * @tags Tasks
+     * @response 201 scenario="Created" {"status": "success", "message": "Task created successfully", "data": {}}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
      */
     public function store(TaskStoreRequest $request)
     {
@@ -58,6 +75,15 @@ class TaskController extends Controller
     /**
      * Display the specified resource.
      */
+    /**
+     * Get Task
+     *
+     * Retrieve a specific task by its ID.
+     *
+     * @tags Tasks
+     * @response 200 scenario="Success" {"status": "success", "message": "Task retrieved successfully", "data": {}}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
+     */
     public function show(string $id)
     {
         $task = Task::findOrFail($id);
@@ -71,6 +97,16 @@ class TaskController extends Controller
 
     /**
      * Update the specified resource in storage.
+     */
+    /**
+     * Update Task
+     *
+     * Update an existing task's details.
+     *
+     * @tags Tasks
+     * @response 200 scenario="Success" {"status": "success", "message": "Task updated successfully", "data": null}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function update(EditTaskRequest $request, string $id)
     {
@@ -88,6 +124,16 @@ class TaskController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     */
+    /**
+     * Delete Task
+     *
+     * Permanently delete a task by its ID.
+     *
+     * @tags Tasks
+     * @response 200 scenario="Success" {"status": "success", "message": "Task deleted successfully", "data": null}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function destroy(string $id)
     {

@@ -26,6 +26,14 @@ class TeamMemberController extends Controller
     /**
      * Display a listing of the resource.
      */
+    /**
+     * List Team Members
+     *
+     * Retrieve all team members.
+     *
+     * @tags Team Members
+     * @response 200 scenario="Success" {"status": "success", "message": "Team members retrieved successfully", "data": []}
+     */
     public function index()
     {
         $this->authorize('viewAny', TeamMember::class);
@@ -39,6 +47,15 @@ class TeamMemberController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     */
+    /**
+     * Add Team Member
+     *
+     * Add a user to a team.
+     *
+     * @tags Team Members
+     * @response 201 scenario="Created" {"status": "success", "message": "Team member created successfully", "data": null}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
      */
     public function store(TeamMemberRequest $request)
     {
@@ -54,6 +71,15 @@ class TeamMemberController extends Controller
             'Team member created successfully'
         );
     }
+    /**
+     * Bulk Add Team Members
+     *
+     * Add multiple users to teams in a single request.
+     *
+     * @tags Team Members
+     * @response 201 scenario="Created" {"status": "success", "message": "Team members created successfully", "data": {"count": 5}}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
+     */
     public function storeBulk(BulkTeamMemberRequest $request)
     {
         $this->authorize('create', TeamMember::class);
@@ -73,6 +99,15 @@ class TeamMemberController extends Controller
     /**
      * Display the specified resource.
      */
+    /**
+     * Get Team Member
+     *
+     * Retrieve a specific team member record by its ID.
+     *
+     * @tags Team Members
+     * @response 200 scenario="Success" {"status": "success", "message": "Team member retrieved successfully", "data": {}}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
+     */
     public function show(string $id)
     {
         $this->authorize('view', TeamMember::class);
@@ -86,6 +121,16 @@ class TeamMemberController extends Controller
 
     /**
      * Update the specified resource in storage.
+     */
+    /**
+     * Update Team Member
+     *
+     * Update the role or team assignment of a team member.
+     *
+     * @tags Team Members
+     * @response 200 scenario="Success" {"status": "success", "message": "Team member updated successfully", "data": {}}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function update(UpdateTeamMemberRequest $request, string $id)
     {
@@ -103,6 +148,16 @@ class TeamMemberController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     */
+    /**
+     * Remove Team Member
+     *
+     * Remove a user from a team.
+     *
+     * @tags Team Members
+     * @response 204 scenario="No Content" {}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function destroy(string $id)
     {

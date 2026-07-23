@@ -16,8 +16,11 @@ class CacheController extends Controller
     }
 
     /**
-     * Get cache statistics.
+     * Cache Statistics
      *
+     * Get cache statistics including total keys, memory usage, and hit/miss rates.
+     *
+     * @tags Cache
      * @return \Illuminate\Http\JsonResponse
      */
     public function stats()
@@ -28,8 +31,11 @@ class CacheController extends Controller
     }
 
     /**
-     * Clear all endpoint cache.
+     * Clear All Endpoint Cache
      *
+     * Clear all cached endpoint responses.
+     *
+     * @tags Cache
      * @return \Illuminate\Http\JsonResponse
      */
     public function clearEndpointCache()
@@ -43,8 +49,11 @@ class CacheController extends Controller
     }
 
     /**
-     * Clear cache for a specific resource.
+     * Clear Resource Cache
      *
+     * Clear cached data for a specific resource type (users, councils, tasks, etc.).
+     *
+     * @tags Cache
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
@@ -64,8 +73,11 @@ class CacheController extends Controller
     }
 
     /**
-     * Clear cache for a specific user.
+     * Clear User Cache
      *
+     * Clear all cached data associated with a specific user.
+     *
+     * @tags Cache
      * @param  string  $userId
      * @return \Illuminate\Http\JsonResponse
      */

@@ -29,6 +29,14 @@ class CouncilController extends Controller
     /**
      * Display a listing of the resource.
      */
+    /**
+     * List Councils
+     *
+     * Retrieve all councils accessible to the authenticated user.
+     *
+     * @tags Councils
+     * @response 200 scenario="Success" {"status": "success", "message": "Councils retrieved successfully", "data": []}
+     */
     public function index(AllCouncilRequest $request)
     {
         $this->authorize('viewAny', Council::class);
@@ -41,6 +49,15 @@ class CouncilController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     */
+    /**
+     * Create Council
+     *
+     * Create a new council with a name and description.
+     *
+     * @tags Councils
+     * @response 201 scenario="Created" {"status": "success", "message": "Council created successfully", "data": null}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
      */
     public function store(CouncilCreateRequest $request)
     {
@@ -62,6 +79,15 @@ class CouncilController extends Controller
     /**
      * Display the specified resource.
      */
+    /**
+     * Get Council
+     *
+     * Retrieve a specific council by its ID.
+     *
+     * @tags Councils
+     * @response 200 scenario="Success" {"status": "success", "message": "Council retrieved successfully", "data": {}}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
+     */
     public function show(string $id)
     {
         $council = Council::findOrFail($id);
@@ -75,6 +101,16 @@ class CouncilController extends Controller
 
     /**
      * Update the specified resource in storage.
+     */
+    /**
+     * Update Council
+     *
+     * Update the name or description of an existing council.
+     *
+     * @tags Councils
+     * @response 200 scenario="Success" {"status": "success", "message": "Success", "data": null}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function update(UpdateCouncilRequest $request, string $id)
     {
@@ -94,6 +130,16 @@ class CouncilController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     */
+    /**
+     * Delete Council
+     *
+     * Permanently delete a council by its ID.
+     *
+     * @tags Councils
+     * @response 200 scenario="Success" {"status": "success", "message": "Success", "data": null}
+     * @response 403 scenario="Forbidden" {"status": "error", "message": "Unauthorized"}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function destroy(string $id)
     {

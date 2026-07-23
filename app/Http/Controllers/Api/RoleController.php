@@ -21,6 +21,14 @@ class RoleController extends Controller
     /**
      * Display a listing of the resource.
      */
+    /**
+     * List Roles
+     *
+     * Retrieve all available roles.
+     *
+     * @tags Roles
+     * @response 200 scenario="Success" {"status": "success", "message": "Roles retrieved successfully", "data": []}
+     */
     public function index()
     {
         return $this->successResponse(
@@ -31,6 +39,14 @@ class RoleController extends Controller
 
     /**
      * Store a newly created resource in storage.
+     */
+    /**
+     * Create Role
+     *
+     * Create a new user role.
+     *
+     * @tags Roles
+     * @response 201 scenario="Created" {"status": "success", "message": "Role created successfully", "data": {}}
      */
     public function store(Request $request)
     {
@@ -54,6 +70,15 @@ class RoleController extends Controller
     /**
      * Display the specified resource.
      */
+    /**
+     * Get Role
+     *
+     * Retrieve a specific role by its ID.
+     *
+     * @tags Roles
+     * @response 200 scenario="Success" {"status": "success", "message": "Role retrieved successfully", "data": {}}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
+     */
     public function show(string $id)
     {
         return $this->successResponse(
@@ -64,6 +89,15 @@ class RoleController extends Controller
 
     /**
      * Update the specified resource in storage.
+     */
+    /**
+     * Update Role
+     *
+     * Update an existing role's name.
+     *
+     * @tags Roles
+     * @response 200 scenario="Success" {"status": "success", "message": "Role updated successfully", "data": null}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function update(Request $request, string $id)
     {
@@ -78,6 +112,15 @@ class RoleController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     */
+    /**
+     * Delete Role
+     *
+     * Permanently delete a role by its ID.
+     *
+     * @tags Roles
+     * @response 200 scenario="Success" {"status": "success", "message": "Role deleted successfully", "data": null}
+     * @response 404 scenario="Not found" {"status": "error", "message": "Not Found"}
      */
     public function destroy(string $id)
     {
