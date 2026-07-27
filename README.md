@@ -1,462 +1,271 @@
-# API Documentation
-
-## Overview
-
-**Base URL**: `https://threedos-apis-production.up.railway.app/api`
-
-**Authentication**:
-All protected routes require a Bearer Token in the `Authorization` header.
-Header format: `Authorization: Bearer <your_access_token>`
-
-**Response Format**:
-Responses are generally in JSON format.
-Success responses typically have a `200` or `201` status code.
-Error responses typically have `401`, `403`, `404`, `422` (validation), or `500` status codes.
-
----
-
-## Authentication
-
-### Login
-Authenticate a user and retrieve an access token.
-
-- **URL**: `/login`
-- **Method**: `POST`
-- **Auth Required**: No
-- **Body Parameters**:
-  - `email` (string, required): User's email address.
-  - `password` (string, required): User's password.
-- **Success Response** (200):
-  ```json
-  {
-    "user": {
-      "name": "User Name",
-      "email": "user@example.com",
-      "role":"RoleName",
-      "council":"CouncilName"
-    },
-    "access_token": "eyJ0eX...",
-    "expires_in": 3600
-  }
-  ```
-- **Error Response** (401): INVALID_CREDENTIALS
-
-### Logout
-Invalidate the current access token.
-
-- **URL**: `/logout`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Success Response** (200):
-  ```json
-  {
-    "message": "Token revoked"
-  }
-  ```
-
-### Get Current Instance
-Check which instance is serving the request (Hostname).
-
-- **URL**: `/instance`
-- **Method**: `GET`
-- **Auth Required**: No
-- **Success Response** (200):
-  ```json
-  "instance-hostname"
-  ```
-
----
-
-## Councils
-
-### List Councils
-Retrieve a paginated list of councils.
-
-- **URL**: `/councils`
-- **Method**: `GET`
-- **Auth Required**: Yes (Cached response)
-- **Query Parameters**:
-  - `pageIndex` (integer, optional, default: 1): Page number.
-  - `pageSize` (integer, optional, default: 10): Items per page.
-  - `search` (string, optional): Search term for council name.
-- **Success Response** (200):
-  ```json
-  {
-    "data": [
-      {
-        "id": "uuid",
-        "name": "Council Name",
-        "description": "Description...",
-        ...
-      }
-    ],
-    "links": { ... },
-    "meta": { ... }
-  }
-  ```
-
-### Create Council
-Create a new council.
-
-- **URL**: `/councils`
-- **Method**: `POST`
-- **Auth Required**: Yes (Permissions: 'create' Council)
-- **Body Parameters**:
-  - `name` (string, required, max: 255): Name of the council.
-  - `description` (string, required): Description of the council.
-- **Success Response** (201):
-  ```json
-  {
-    "message": "Council created successfully"
-  }
-  ```
-
-### Get Council
-Retrieve a specific council by ID.
-
-- **URL**: `/councils/{id}`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Success Response** (200):
-  ```json
-  {
-    "id": "uuid",
-    "name": "Council Name",
-    "description": "...",
-    ...
-  }
-  ```
-
-### Update Council
-Update an existing council.
-
-- **URL**: `/councils/{id}`
-- **Method**: `PUT` / `PATCH`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `name` (string, optional)
-  - `description` (string, optional)
-- **Success Response** (200):
-  ```json
-  {
-    "message": "Council updated successfully"
-  }
-  ```
-
-### Delete Council
-Delete a council.
-
-- **URL**: `/councils/{id}`
-- **Method**: `DELETE`
-- **Auth Required**: Yes
-- **Success Response** (200):
-  ```json
-  {
-    "message": "Council deleted successfully"
-  }
-  ```
-
----
-
-## Users
-
-### List Users
-Retrieve a paginated list of users.
-
-- **URL**: `/users`
-- **Method**: `GET`
-- **Auth Required**: Yes (Cached response)
-- **Query Parameters**:
-  - `pageIndex` (integer, optional, default: 1)
-  - `pageSize` (integer, optional, default: 10)
-  - `search` (string, optional): Search by name or email.
-- **Success Response** (200):
-  ```json
-  {
-    "data": [ ... ],
-    "links": ...,
-    "meta": ...
-  }
-  ```
-
-### Create User
-Create a new user manually.
-
-- **URL**: `/users`
-- **Method**: `POST`
-- **Auth Required**: Yes (Permissions: 'create' User)
-- **Body Parameters**:
-  - `name` (string, required, max: 255)
-  - `email` (string, required, email, max: 255)
-  - `password` (string, required, min: 8)
-  - `role_id` (uuid, required, must exist in roles)
-  - `council_id` (uuid, required, must exist in councils)
-- **Success Response** (201):
-  ```json
-  "User created successfully"
-  ```
-
-### Bulk Create Users
-Import users from a file (e.g., Excel/CSV).
-
-- **URL**: `/users/bulk`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `file` (file, required): The file containing user data.
-- **Success Response** (200):
-  ```json
-  {
-    "message": "Users imported successfully"
-  }
-  ```
-
-### Get User
-Retrieve a specific user by ID.
-
-- **URL**: `/users/{id}`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Success Response** (200): User Object
-
-### Update User
-Update an existing user.
-
-- **URL**: `/users/{id}`
-- **Method**: `PUT` / `PATCH`
-- **Auth Required**: Yes
-- **Body Parameters** (include any to update):
-  - `name`, `email`, `password` (re-hashed if sent), `role_id`, `council_id`
-- **Success Response** (200):
-  ```json
-  {
-    "message": "User updated successfully"
-  }
-  ```
-
-### Delete User
-Delete a user.
-
-- **URL**: `/users/{id}`
-- **Method**: `DELETE`
-- **Auth Required**: Yes
-- **Success Response** (200):
-  ```json
-  {
-    "message": "User deleted successfully"
-  }
-  ```
-
----
-
-## Roles
-
-### List Roles
-Retrieve all roles.
-
-- **URL**: `/roles`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Success Response** (200): List of roles.
-
-### Create Role
-Create a new role.
-
-- **URL**: `/roles`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `name` (string, required)
-- **Success Response** (201): Role Object
-
-### Get/Update/Delete Role
-Standard resource routes:
-- `GET /roles/{id}`
-- `PUT /roles/{id}`
-- `DELETE /roles/{id}`
-
----
-
-## Tasks
-
-### List Tasks
-Retrieve tasks. Scoped to the user's council.
-
-- **URL**: `/tasks`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Query Parameters**:
-  - `pageIndex`, `pageSize`
-  - `search` (string): Search title/description.
-  - `filter` (string): Optional filter.
-- **Success Response** (200): Paginated tasks.
-
-### Create Task
-Create a new task.
-
-- **URL**: `/tasks`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `title` (string, required)
-  - `description` (string, required)
-  - `due_date` (datetime, optional)
-  - `status` (string, optional)
-  - `council_id` (uuid, required)
-- **Success Response** (201): Task Object
-
-### Get/Update/Delete Task
-Standard resource routes:
-- `GET /tasks/{id}`
-- `PUT /tasks/{id}`
-- `DELETE /tasks/{id}`
-
----
-
-## Task Submissions (Assignments)
-
-### List Submissions
-Retrieve submissions. 
-- Instructors/Heads see submissions for their council.
-- Delegates see their own submissions.
-
-- **URL**: `/task-submissions`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Query Parameters**: `pageIndex`, `pageSize`
-- **Success Response** (200): Paginated submissions.
-
-### Create Submission
-Submit a task.
-
-- **URL**: `/task-submissions`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `task_id` (uuid, required): The ID of the task being submitted.
-  - `file` (file/string, required): The file path or object.
-  - *Note*: Other fields like `comment` or `status` may be accepted but are not strictly validated as required by the current request validator.
-- **Success Response** (201): Submission Object
-
-### Get/Update/Delete Submission
-Standard resource routes:
-- `GET /task-submissions/{id}`
-- `PUT /task-submissions/{id}`
-- `DELETE /task-submissions/{id}`
-
----
-
-## Sessions (Council Sessions)
-
-### List Sessions
-Retrieve sessions for the user's council.
-
-- **URL**: `/sessions`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Query Parameters**: `pageIndex`, `pageSize`, `search` (Search by title)
-- **Success Response** (200): Paginated sessions (includes `attendance_count`).
-
-### Create Session
-Create a new session.
-
-- **URL**: `/sessions`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `title` (string, required)
-  - `date` (date/datetime, required)
-  - `description` (string, nullable)
-  - `material` (string, nullable)
-  - `council_id` (uuid, required, exists in councils)
-- **Success Response** (201): Session Object
-
-### Get/Update/Delete Session
-Standard resource routes:
-- `GET /sessions/{id}`
-- `PUT /sessions/{id}`
-- `DELETE /sessions/{id}`
-
----
-
-## Attendances
-
-### List Attendances
-Retrieve attendances for the council.
-
-- **URL**: `/attendances`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Query Parameters**: `pageIndex`, `pageSize`
-- **Success Response** (200): Paginated list.
-
-### Create Attendance
-Record a single attendance.
-
-- **URL**: `/attendances`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `user_id` (uuid, required)
-  - `council_session_id` (uuid, required)
-  - `status` (string, required, e.g., 'Present', 'Absent')
-  - `council_id` (uuid, required)
-- **Success Response** (201): Attendance Object
-
-### Bulk Create Attendance
-Import attendance from file.
-
-- **URL**: `/attendances/bulk`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `file` (file, required)
-- **Success Response** (200):
-  ```json
-  { "message": "Attendances imported successfully" }
-  ```
-
-### Get/Update/Delete Attendance
-Standard resource routes:
-- `GET /attendances/{id}`
-- `PUT /attendances/{id}`
-- `DELETE /attendances/{id}`
-
----
-
-## Notifications
-
-### Get Notifications
-Get notifications for the current user.
-
-- **URL**: `/notifications`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Success Response** (200): List of notifications (Cached for 30 mins)
-
----
-
-## Cache Management (Admin)
-
-### Get Cache Stats
-- **URL**: `/cache/stats`
-- **Method**: `GET`
-- **Success Response** (200):
-  ```json
-  { "status": "success", "data": { ... } }
-  ```
-
-### Clear Endpoint Cache
-- **URL**: `/cache/endpoint`
-- **Method**: `DELETE`
-- **Success Response** (200): Clears all endpoint caches.
-
-### Clear Resource Cache
-- **URL**: `/cache/resource`
-- **Method**: `DELETE`
-- **Body Parameters**:
-  - `resource` (string, required): One of `users`, `councils`, `tasks`, `sessions`, `attendances`, `roles`, `task-submissions`.
-
-### Clear User Cache
-- **URL**: `/cache/user/{userId}`
-- **Method**: `DELETE`
+# ThreeDOS APIs
+
+ThreeDOS APIs is a backend-only, API-first council management system built with Laravel 12. It centralizes council operations such as authentication, council and session management, tasks, submissions, teams, attendance, user management, caching, and the AI mentor chat workflow.
+
+## What This Project Does
+
+ThreeDOS is designed for student councils and training organizations that need:
+
+- Role-based access control
+- Council-scoped data isolation
+- Task assignment and submission tracking
+- Attendance management
+- Team and team-member management
+- Bulk imports for users, attendance, and team members
+- Redis-backed cache inspection and invalidation
+- A Gemini-powered mentor that guides users instead of solving tasks for them
+
+## Tech Stack
+
+- Laravel 12
+- PHP 8.4+
+- JWT authentication via `tymon/jwt-auth`
+- Redis for caching and cache inspection
+- Google Gemini integration via `google-gemini-php/laravel`
+- MailerSend mail driver
+- Laravel Telescope for observability
+- Vite for frontend asset compilation
+
+## Requirements
+
+Before running the project locally, you need:
+
+- PHP 8.4+
+- Composer
+- Node.js and npm
+- A database engine supported by Laravel, such as MySQL
+- Redis for cache features
+
+## Quick Start
+
+### 1. Install dependencies
+
+```bash
+composer install
+npm install
+```
+
+### 2. Create your environment file
+
+Copy `.env.example` to `.env` and update the values for your machine.
+
+### 3. Generate the app key
+
+```bash
+php artisan key:generate
+```
+
+### 4. Set your app-specific secrets
+
+Make sure these values are configured in `.env`:
+
+- `DB_CONNECTION`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`
+- `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`
+- `JWT_SECRET`
+- `GEMINI_API_KEY`
+- `MAIL_*` values if you want email delivery to work
+
+### 5. Run migrations
+
+```bash
+php artisan migrate
+```
+
+### 6. Seed demo data
+
+```bash
+php artisan db:seed
+```
+
+This seeds example councils, roles, users, sessions, tasks, teams, team members, submissions, and attendance records.
+
+### 7. Build frontend assets
+
+```bash
+npm run build
+```
+
+## Recommended Local Workflow
+
+The repository includes Composer scripts that combine the common setup and development commands.
+
+### Full setup
+
+```bash
+composer setup
+```
+
+This runs:
+
+- `composer install`
+- `.env` creation if missing
+- `php artisan key:generate`
+- `php artisan migrate --force`
+- `npm install`
+- `npm run build`
+
+### Development mode
+
+```bash
+composer dev
+```
+
+This starts:
+
+- Laravel development server
+- Queue listener
+- Laravel Pail logs
+- Vite dev server
+
+### Run tests
+
+```bash
+composer test
+```
+
+## Example Demo Accounts
+
+After running `php artisan db:seed`, you can log in with these sample accounts:
+
+| Role | Email | Password |
+|---|---|---|
+| Vice President | `vp@threedos.local` | `password` |
+| Head | `head.backend@threedos.local` | `password` |
+| Instructor | `instructor.frontend@threedos.local` | `password` |
+| HR | `hr@threedos.local` | `password` |
+| Delegate | `delegate.frontend@threedos.local` | `password` |
+| Delegate | `delegate.backend@threedos.local` | `password` |
+
+## API Usage
+
+### Base URL
+
+Production:
+
+```text
+https://threedos-apis-production.up.railway.app/api
+```
+
+### Authentication
+
+Most endpoints require a Bearer token in the `Authorization` header.
+
+```http
+Authorization: Bearer <your_access_token>
+```
+
+### Login Example
+
+```bash
+curl -X POST "https://threedos-apis-production.up.railway.app/api/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "vp@threedos.local",
+    "password": "password"
+  }'
+```
+
+### Using the Token
+
+```bash
+curl "https://threedos-apis-production.up.railway.app/api/me" \
+  -H "Authorization: Bearer <your_access_token>"
+```
+
+## Main API Areas
+
+- Authentication: `/login`, `/logout`, `/forget-password`, `/me`
+- Councils: `/councils`
+- Users: `/users`, `/users/bulk`, `/users/dashboard`
+- Roles: `/roles`
+- Sessions: `/sessions`
+- Tasks: `/tasks`
+- Task submissions: `/task-submissions`
+- Teams: `/teams`
+- Team members: `/team-members`, `/team-members/bulk`
+- Attendances: `/attendances`, `/attendances/bulk`
+- AI chat: `/ai-chat`
+- Cache admin: `/cache/stats`, `/cache/endpoint`, `/cache/resource`, `/cache/user/{userId}`
+- Notifications: `/notifications`
+
+## Common Request Rules
+
+### Council isolation
+
+Most data is scoped to the authenticated user’s council. Vice President and President have global access, while other roles are limited by policies and request authorization.
+
+### Status values
+
+- Task status: `Pending`, `In Progress`, `Completed`
+- Attendance status: `present`, `absent`, `late`
+- Submission status is controlled by service logic and defaults to `submitted` on creation
+
+### Bulk import formats
+
+- Users: `.xlsx`, `.xls`, `.csv`
+- Attendance: Excel file only
+- Team members: JSON array in a `members` field
+
+## Documentation
+
+The detailed specifications live in the `docs` folder:
+
+- [PRD](docs/PRD.md)
+- [FRD](docs/FRD.md)
+- [SDD](docs/SDD.md)
+- [SRS](docs/SRS.md)
+- [API Documentation](docs/API_DOCUMENTATION.md)
+
+The Postman collection is available in [ThreeDOS_API.postman_collection.json](ThreeDOS_API.postman_collection.json).
+
+## Troubleshooting
+
+### Login fails
+
+- Confirm the user exists in the seeded data or your database.
+- Check that `APP_KEY` and `JWT_SECRET` are set.
+- Verify the password is correct.
+
+### Cache endpoints do not work
+
+- Make sure Redis is running and reachable.
+- Confirm the Redis settings in `.env`.
+
+### Mail or password reset does not work
+
+- Set the correct `MAIL_*` values.
+- Verify your mail provider credentials.
+
+### AI chat fails
+
+- Set `GEMINI_API_KEY` in `.env`.
+- Confirm outbound network access is allowed in your environment.
+
+## Useful Commands
+
+```bash
+php artisan serve
+php artisan migrate
+php artisan db:seed
+php artisan test
+npm run dev
+npm run build
+```
+
+## Project Structure Overview
+
+- `app/Http/Controllers/Api` contains the API controllers
+- `app/Http/Requests` contains validation and authorization rules
+- `app/Services` contains business logic
+- `app/Repositories` contains data access logic
+- `app/Policies` contains access rules
+- `app/Http/Resources` shapes API responses
+- `database/seeders` contains demo seed data
+- `docs` contains the PRD, FRD, SDD, SRS, and API reference
+
+## Notes
+
+- This repository is backend-only.
+- The API uses JSON responses.
+- Redis-backed cache invalidation is part of the design and should be enabled in deployed environments.
+- The AI mentor is intentionally constrained to guidance and should not be used as a task-solving endpoint.
