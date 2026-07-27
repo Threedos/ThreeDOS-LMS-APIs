@@ -1,184 +1,139 @@
 # Software Requirements Specification (SRS) - ThreeDOS Management System
 
-**Version:** 2.0
-**Status:** Draft
-**Last Updated:** 2026-02-07
+**Version:** 3.0
+**Status:** Final
+**Last Updated:** 2026-07-27
 
----
+## 1. Purpose
 
-## 1. Introduction
-This document provides the complete technical specification for the ThreeDOS-APIs backend. It details the system architecture, database schema, API contracts, and security mechanisms implemented in the Laravel application.
+This document summarizes the implemented backend requirements for ThreeDOS-APIs. It focuses on the functional, security, and interface requirements exposed by the Laravel application.
 
-## 2. System Architecture
+## 2. System Overview
 
-### 2.1 Tech Stack
-*   **Framework**: Laravel 12.x (PHP 8.2+)
-*   **Database**: MySQL / PostgreSQL (Production)
-*   **Caching**: Redis (Key-Value Store)
-*   **Authentication**: JWT (JSON Web Tokens) via `tymon/jwt-auth`
-*   **Server**: Nginx / Apache
-*   **Queue Driver**: Redis (for asynchronous jobs)
+ThreeDOS-APIs is a RESTful backend for council-based operations. The application uses JWT authentication, Redis caching, Laravel policies, request validation, service/repository layering, and JSON responses.
 
-### 2.2 System Diagram
-```mermaid
-graph TD
-    Client[Client App/Frontend] -->|HTTP Requests| LB[Load Balancer/Nginx]
-    LB -->|Routing| API[Laravel API]
-    API -->|Auth Check| JWT[JWT Guard]
-    API -->|Data Retrieval| Cache[Redis Cache]
-    API -->|Persistence| DB[(Database)]
-    API -->|File Storage| S3[AWS S3 / Local]
+## 3. External Interfaces
+
+### 3.1 Primary API Base
+
+- Base URL: `https://threedos-apis-production.up.railway.app/api`
+
+### 3.2 Auth Header
+
+- Protected routes require `Authorization: Bearer <token>`.
+
+### 3.3 Common Response Shape
+
+```json
+{
+  "status": "success",
+  "message": "...",
+  "data": null
+}
 ```
 
-## 3. Database Design
+## 4. Functional Requirements
 
-### 3.1 Entity Relationship Diagram (ERD)
-```mermaid
-erDiagram
-    Users ||--o{ Councils : "belongs to"
-    Users ||--o| Roles : "has one"
-    Users ||--o{ TaskSubmissions : "submits"
-    Users ||--o{ TeamMembers : "member of"
-    Users ||--o{ Attendances : "logs"
-    
-    Councils ||--o{ CouncilSessions : "has"
-    Councils ||--o{ Teams : "contains"
-    
-    CouncilSessions ||--o{ Tasks : "assigns"
-    CouncilSessions ||--o{ Attendances : "records"
-    
-    Tasks ||--o{ TaskSubmissions : "receives"
-    
-    Teams ||--o{ TeamMembers : "consists of"
-```
+### 4.1 Authentication
 
-### 3.2 Schema Specifications
+- Users shall log in with email and password.
+- Users shall receive a JWT token on successful login.
+- Users shall log out and revoke the token.
+- Users shall request password reset emails.
+- Users shall reset passwords with token confirmation.
+- Users shall read their profile through `/me`.
 
-#### `users` Table
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `id` | UUID | PK | Unique identifier. |
-| `name` | String | Required | Full name of the user. |
-| `email` | String | Unique | Email address for login. |
-| `password` | String | Hashed | Bcrypt hashed password. |
-| `role_id` | UUID | FK | Reference to `roles` table. |
-| `council_id` | UUID | FK, Nullable | Reference to `councils` table. |
-| `access_token`| Text | Nullable | Current active JWT token. |
-| `status` | Enum | 'active', 'inactive' | User account status. |
+### 4.2 Council Management
 
-#### `tasks` Table
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `id` | UUID | PK | Unique identifier. |
-| `title` | String | Required | Title of the task. |
-| `description` | String | Required | Detailed instructions. |
-| `due_date` | Date | Nullable | Deadline for submission. |
-| `status` | String | Def: 'Pending' | 'Pending', 'In Progress', 'Completed'. |
-| `council_session_id` | UUID | FK | Links task to a specific meeting/session. |
+- Authorized users shall create, list, view, update, and delete councils.
+- Council access shall be scope-aware by role.
 
-#### `task_submissions` Table
-| Column | Type | Constraints | Description |
-| :--- | :--- | :--- | :--- |
-| `id` | UUID | PK | Unique identifier. |
-| `task_id` | UUID | FK | Reference to parent task. |
-| `user_id` | UUID | FK | Reference to student submitting. |
-| `file` | String | Required | Path to uploaded file. |
-| `grade` | String | Nullable | Grade assigned by instructor. |
-| `comment` | String | Nullable | Feedback text. |
+### 4.3 User Management
 
-## 4. API Specification
+- Authorized users shall create, list, view, update, delete, and bulk import users.
+- Dashboard data shall be available through a dedicated users dashboard route.
 
-### 4.1 Authentication Endpoints
+### 4.4 Session Management
 
-#### POST `/api/login`
-*   **Request Body**:
-    ```json
-    {
-        "email": "user@example.com",
-        "password": "password"
-    }
-    ```
-*   **Response (200 OK)**:
-    ```json
-    {
-        "status": "success",
-        "message": "Login successfully",
-        "data": {
-            "user_name": "John Doe",
-            "role": "Delegate",
-            "access_token": "eyJ0eXAi...",
-            "expires_in": 3600
-        }
-    }
-    ```
+- Authorized users shall create, list, view, update, and delete sessions.
+- Session creation and update shall require a matching council for non-global users.
 
-### 4.2 Task Management
+### 4.5 Task Management
 
-#### POST `/api/tasks`
-*   **Authorization**: `Head` or `Instructor` of the linked Council.
-*   **Validation Rules**:
-    *   `title`: required, string, max:255
-    *   `description`: required, string
-    *   `council_session_id`: required, exists:council_sessions,id
-*   **Response (201 Created)**: Returns created task object.
+- Authorized users shall create, list, view, update, and delete tasks.
+- Task status shall be constrained to the lifecycle states defined by the application.
 
-#### PUT `/api/tasks/{id}`
-*   **Validation Rules**:
-    *   `status`: in:Pending,In Progress,Completed
-    *   `due_date`: date
-*   **Side Effects**: Invalidates `tasks` and `task-submissions` cache keys.
+### 4.6 Task Submissions
 
-### 4.3 Submission Management
+- Delegates shall create submissions for tasks.
+- Council admins shall view council submissions.
+- Submission records shall support grading and comments.
 
-#### POST `/api/task-submissions`
-*   **Validation Rules**:
-    *   `task_id`: required, exists:tasks,id
-    *   `file`: required, string (path)
-*   **Logic**: Creates a record linking user to task. Defaults status to 'Submitted'.
+### 4.7 Teams and Team Members
 
-#### PUT `/api/task-submissions/{id}`
-*   **Authorization**: Instructor (for grading) or Owner (for resubmission).
-*   **Validation Rules**:
-    *   `grade`: numeric
-    *   `comment`: string
-    *   `status`: string
+- Authorized users shall create, list, view, update, and delete teams.
+- Authorized users shall create, list, view, update, delete, and bulk import team members.
 
-### 4.4 Team Management
+### 4.8 Attendance
 
-#### POST `/api/teams`
-*   **Authorization**: `Head` or `Instructor`.
-*   **Validation Rules**:
-    *   `team_number`: required
-    *   `council_id`: required, exists:councils,id
+- Authorized users shall create, list, view, update, delete, and bulk import attendance.
 
-#### POST `/api/team-members`
-*   **Validation Rules**:
-    *   `team_id`: required, exists:teams,id
-    *   `user_id`: required, exists:users,id
-    *   `role`: in:Leader,Member,Co-Leader
+### 4.9 AI Mentor
 
-## 5. Security Specification
+- Authenticated users shall send prompts to the Gemini-backed mentor.
+- The mentor shall guide learning instead of generating final task solutions.
 
-### 5.1 RBAC (Role-Based Access Control)
-Access is enforced via Policies and custom middleware logic in Controllers.
+### 4.10 Cache Administration
 
-| Role | View Own | View Council | View Global | Create Tasks | Grade |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| Delegate | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Instructor | ✅ | ✅ | ❌ | ✅ | ✅ |
-| Head | ✅ | ✅ | ❌ | ✅ | ✅ |
-| Vice President | ✅ | ✅ | ✅ | ✅ | ✅ |
-| President | ✅ | ✅ | ✅ | ✅ | ✅ |
+- Authorized users shall inspect cache stats.
+- Authorized users shall clear endpoint, resource, and user cache scopes.
 
-### 5.2 Data Isolation Middleware
-*   **Logic**: usage of `auth()->user()->council_id` to filter database queries.
-*   **Validation**: `StoreTeamRequest` checks `auth()->user()->council_id === $this->council_id` to prevent cross-council modifications.
+## 5. Requirements by Role
 
-## 6. Error Handling
-The API returns standard HTTP status codes:
-*   `200`: Success
-*   `201`: Created
-*   `401`: Unauthorized (Invalid Token)
-*   `403`: Forbidden (Role mismatch)
-*   `404`: Not Found (Resource doesn't exist)
-*   `422`: Validation Error (Input failed rules)
+| Role | Scope |
+|---|---|
+| Delegate | Own submissions and council-scoped reads where allowed |
+| Instructor | Council operational control |
+| Head | Council operational control with broader authority |
+| HR | User, attendance, and team-member workflows |
+| VicePresident | Global access across councils |
+| President | Global access across councils |
+
+## 6. Security Requirements
+
+- JWT shall protect private API routes.
+- Policies shall enforce authorization at the resource level.
+- Request classes shall reject invalid payloads and unsafe council mismatches.
+- Council-scoped data shall not be writable across council boundaries for non-global users.
+- The AI mentor shall refuse full task completion requests.
+
+## 7. Data and Validation Requirements
+
+- User creation requires name, email, password, role, and council.
+- Council creation requires name and description.
+- Session creation requires title, date, and council.
+- Task creation requires title, description, and council session.
+- Task submission requires task and file.
+- Attendance requires user, session, and status.
+
+## 8. Performance and Caching Requirements
+
+- Standard GET endpoints shall use response caching.
+- Teams and team-members shall use longer-lived caches.
+- Write operations shall invalidate related cache keys.
+- Redis shall support cache statistics and targeted invalidation.
+
+## 9. Error Handling Requirements
+
+- The API shall return `401` for authentication failures.
+- The API shall return `403` for authorization failures.
+- The API shall return `404` when a resource is missing.
+- The API shall return `422` when validation fails.
+- The API shall return `200` or `201` for successful requests.
+
+## 10. Traceability Notes
+
+- PRD describes the product intent.
+- FRD describes the functional behavior.
+- SDD describes the implementation design.
+- API documentation describes the request and response surface.

@@ -4,523 +4,366 @@
 
 **Base URL**: `https://threedos-apis-production.up.railway.app/api`
 
-**Authentication**:
-All protected routes require a Bearer Token in the `Authorization` header.
-Header format: `Authorization: Bearer <your_access_token>`
+**Authentication**: Protected routes require `Authorization: Bearer <token>`.
 
-**Response Format**:
-Responses are generally in JSON format.
-Success responses typically have a `200` or `201` status code.
-Error responses typically have `401`, `403`, `404`, `422` (validation), or `500` status codes.
+**Common envelope**:
 
----
+```json
+{
+  "status": "success",
+  "message": "...",
+  "data": null
+}
+```
 
 ## Authentication
 
-### Login
-Authenticate a user and retrieve an access token.
+### POST `/login`
+Authenticate with email and password.
 
-- **URL**: `/login`
-- **Method**: `POST`
-- **Auth Required**: No
-- **Body Parameters**:
-  - `email` (string, required): User's email address.
-  - `password` (string, required): User's password.
-- **Success Response** (200):
-  ```json
-  {
-    "status": "success",
-    "message": "Login successfully",
-    "data": {
-      "user_name": "User Name",
-      "role": "RoleName",
-      "access_token": "eyJ0eX...",
-      "expires_in": 3600
-    }
+Request body:
+
+```json
+{
+  "email": "user@example.com",
+  "password": "secret"
+}
+```
+
+Success response:
+
+```json
+{
+  "status": "success",
+  "message": "Login successfully",
+  "data": {
+    "user_name": "John Doe",
+    "role": "Delegate",
+    "access_token": "eyJ...",
+    "expires_in": 3600
   }
-  ```
-- **Error Response** (401): INVALID_CREDENTIALS
+}
+```
 
-### Logout
-Invalidate the current access token.
+### POST `/logout`
+Revoke the current token.
 
-- **URL**: `/logout`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Success Response** (200):
-  ```json
-  {
-    "status": "success",
-    "message": "Logout successfully",
-    "data": null
-  }
-  ```
-
-### Get My Profile
-Retrieve the authenticated user's profile information.
-
-- **URL**: `/me`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Success Response** (200):
-  ```json
-  {
-    "status": "success",
-    "message": "User retrieved successfully",
-    "data": {
-      "name": "User Name",
-      "email": "user@example.com",
-      "role": "RoleName",
-      "council": "CouncilName",
-      "status": "active",
-      "last_active": "2026-01-22 00:00:00"
-    }
-  }
-  ```
-
-### Forget Password
+### POST `/forget-password`
 Send a password reset link.
 
-- **URL**: `/forget-password`
-- **Method**: `POST`
-- **Auth Required**: No
-- **Body Parameters**:
-  - `email` (string, required)
+### POST `/reset-password`
+Reset a password using token, email, password, and confirmation.
 
-### Get Current Instance
-Check which instance is serving the request (Hostname).
+### GET `/me`
+Return the authenticated user profile.
 
-- **URL**: `/instance`
-- **Method**: `GET`
-- **Auth Required**: No
-- **Success Response** (200):
-  ```json
-  "instance-hostname"
-  ```
-
----
-
-## Councils
-
-### List Councils
-Retrieve a paginated list of councils.
-
-- **URL**: `/councils`
-- **Method**: `GET`
-- **Auth Required**: Yes (Cached response)
-- **Query Parameters**:
-  - `pageIndex` (integer, optional, default: 1): Page number.
-  - `pageSize` (integer, optional, default: 10): Items per page.
-  - `search` (string, optional): Search term for council name.
-- **Success Response** (200):
-  ```json
-  {
-    "status": "success",
-    "message": "Councils retrieved successfully",
-    "data": [
-      {
-        "id": "uuid",
-        "name": "Council Name",
-        "description": "Description..."
-      }
-    ],
-    "links": { ... },
-    "meta": { ... }
-  }
-  ```
-
-### Create Council
-Create a new council.
-
-- **URL**: `/councils`
-- **Method**: `POST`
-- **Auth Required**: Yes (Permissions: 'create' Council)
-- **Body Parameters**:
-  - `name` (string, required, max: 255): Name of the council.
-  - `description` (string, required): Description of the council.
-- **Success Response** (201):
-  ```json
-  {
-    "status": "success",
-    "message": "Council created successfully",
-    "data": null
-  }
-  ```
-
-### Get Council
-Retrieve a specific council by ID.
-
-- **URL**: `/councils/{id}`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Success Response** (200): Council object.
-
-### Update Council
-Update an existing council.
-
-- **URL**: `/councils/{id}`
-- **Method**: `PUT` / `PATCH`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `name` (string, optional)
-  - `description` (string, optional)
-- **Success Response** (200):
-  ```json
-  {
-    "status": "success",
-    "message": "Success",
-    "data": null
-  }
-  ```
-
-### Delete Council
-Delete a council.
-
-- **URL**: `/councils/{id}`
-- **Method**: `DELETE`
-- **Auth Required**: Yes
-- **Success Response** (200):
-  ```json
-  {
-    "status": "success",
-    "message": "Success",
-    "data": null
-  }
-  ```
-
----
+### GET `/instance`
+Return the current host name.
 
 ## Users
 
-### List Users
-Retrieve a paginated list of users.
+### GET `/users`
+List users with pagination and filtering.
 
-- **URL**: `/users`
-- **Method**: `GET`
-- **Auth Required**: Yes (Cached response)
-- **Query Parameters**:
-  - `pageIndex` (integer, optional, default: 1)
-  - `pageSize` (integer, optional, default: 10)
-  - `search` (string, optional): Search by name or email.
-- **Success Response** (200): Standard paginated response.
+Query parameters:
 
-### Create User
-Create a new user manually.
+- `pageIndex`
+- `pageSize`
+- `search`
+- `sort`
+- `role_id`
+- `filter=council`
 
-- **URL**: `/users`
-- **Method**: `POST`
-- **Auth Required**: Yes (Permissions: 'create' User)
-- **Body Parameters**:
-  - `name` (string, required, max: 255)
-  - `email` (string, required, email, max: 255)
-  - `password` (string, required, min: 8)
-  - `role_id` (uuid, required)
-  - `council_id` (uuid, required)
-- **Success Response** (201):
-  ```json
-  {
-    "status": "success",
-    "message": "User created successfully",
-    "data": null
-  }
-  ```
+### POST `/users`
+Create a user.
 
-### Bulk Create Users
-Import users from an Excel/CSV file.
-Columns expected: `name`, `email`, `password` (optional), `role` (role name), `council` (council name).
+Required fields:
 
-- **URL**: `/users/bulk`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `file` (file, required): Multipart form-data.
-- **Success Response** (200):
-  ```json
-  {
-    "status": "success",
-    "message": "Users imported successfully",
-    "data": null
-  }
-  ```
+- `name`
+- `email`
+- `password`
+- `role_id`
+- `council_id`
 
-### Get User
-Retrieve a specific user by ID.
+### POST `/users/bulk`
+Bulk import users from `.xlsx`, `.xls`, or `.csv`.
 
-- **URL**: `/users/{id}`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Success Response** (200): User Object.
+### GET `/users/{id}`
+Fetch a user.
 
-### Update User
-Update an existing user.
+### PUT/PATCH `/users/{id}`
+Update a user.
 
-- **URL**: `/users/{id}`
-- **Method**: `PUT` / `PATCH`
-- **Auth Required**: Yes
-- **Body Parameters**: Any user field (`name`, `email`, `password`, `role_id`, `council_id`).
-- **Success Response** (200):
-  ```json
-  {
-    "status": "success",
-    "message": "User updated successfully",
-    "data": null
-  }
-  ```
-
-### Delete User
+### DELETE `/users/{id}`
 Delete a user.
 
-- **URL**: `/users/{id}`
-- **Method**: `DELETE`
-- **Auth Required**: Yes
-- **Success Response** (200):
-  ```json
-  {
-    "status": "success",
-    "message": "User deleted successfully",
-    "data": null
-  }
-  ```
+### GET `/users/dashboard`
+Return dashboard metrics.
 
----
+## Councils
+
+### GET `/councils`
+List councils visible to the authenticated user.
+
+### POST `/councils`
+Create a council.
+
+Required fields:
+
+- `name`
+- `description`
+
+### GET `/councils/{id}`
+Fetch a council.
+
+### PUT/PATCH `/councils/{id}`
+Update a council.
+
+### DELETE `/councils/{id}`
+Delete a council.
 
 ## Roles
 
-### List Roles
-Retrieve all roles.
+### GET `/roles`
+List all roles.
 
-- **URL**: `/roles`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Success Response** (200): List of roles.
+### GET `/roles/{id}`
+Fetch a role.
 
-### Create Role
-Create a new role.
+## Sessions
 
-- **URL**: `/roles`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `name` (string, required)
-- **Success Response** (201): Role Object.
+### GET `/sessions`
+List council sessions.
 
-### Get/Update/Delete Role
-Standard resource routes:
-- `GET /roles/{id}`
-- `PUT /roles/{id}`
-- `DELETE /roles/{id}`
+Query parameters:
 
----
+- `pageIndex`
+- `pageSize`
+- `search`
+
+### POST `/sessions`
+Create a session.
+
+Required fields:
+
+- `title`
+- `date`
+- `council_id`
+
+Optional fields:
+
+- `description`
+- `material`
+
+### GET `/sessions/{id}`
+Fetch a session.
+
+### PUT/PATCH `/sessions/{id}`
+Update a session.
+
+### DELETE `/sessions/{id}`
+Delete a session.
 
 ## Tasks
 
-### List Tasks
-Retrieve tasks. Scoped to the user's council.
+### GET `/tasks`
+List tasks.
 
-- **URL**: `/tasks`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Query Parameters**:
-  - `pageIndex`, `pageSize`
-  - `search` (string): Search title.
-  - `filter` (string): Optional council_id filter.
-- **Success Response** (200): Paginated tasks.
+Query parameters:
 
-### Create Task
-Create a new task.
+- `pageIndex`
+- `pageSize`
+- `search`
+- `filter`
 
-- **URL**: `/tasks`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `title` (string, required)
-  - `description` (string, required)
-  - `due_date` (datetime, optional)
-  - `status` (string, optional)
-  - `council_session_id` (uuid, required)
-- **Success Response** (201): Task Object.
+### POST `/tasks`
+Create a task.
 
-### Get/Update/Delete Task
-Standard resource routes:
-- `GET /tasks/{id}`
-- `PUT /tasks/{id}`
-- `DELETE /tasks/{id}`
+Required fields typically include:
 
----
+- `title`
+- `description`
+- `council_session_id`
 
-## Task Submissions (Assignments)
+### GET `/tasks/{id}`
+Fetch a task.
 
-### List Submissions
-Retrieve submissions. 
-- Instructors/Heads see submissions for their council.
-- Delegates see their own submissions.
+### PUT/PATCH `/tasks/{id}`
+Update a task.
 
-- **URL**: `/task-submissions`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Query Parameters**: `pageIndex`, `pageSize`
-- **Success Response** (200): Paginated submissions.
+### DELETE `/tasks/{id}`
+Delete a task.
 
-### Create Submission
-Submit a task.
+## Task Submissions
 
-- **URL**: `/task-submissions`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `task_id` (uuid, required)
-  - `file` (file, required): Multipart form-data.
-- **Success Response** (201): Submission Object.
+### GET `/task-submissions`
+List submissions.
 
-### Get/Update/Delete Submission
-Standard resource routes:
-- `GET /task-submissions/{id}`
-- `PUT /task-submissions/{id}`
-- `DELETE /task-submissions/{id}`
+Query parameters:
 
----
+- `pageIndex`
+- `pageSize`
+- `search`
+- `filter`
+- `sort`
+- `task_id`
+- `user_id`
+- `status`
 
-## Sessions (Council Sessions)
+### POST `/task-submissions`
+Create a submission.
 
-### List Sessions
-Retrieve sessions for the user's council.
+Required fields:
 
-- **URL**: `/sessions`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Query Parameters**: `pageIndex`, `pageSize`, `search`
-- **Success Response** (200): Paginated sessions (includes `attendance_count`).
+- `task_id`
+- `file`
 
-### Create Session
-Create a new session.
+Optional field:
 
-- **URL**: `/sessions`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `title` (string, required)
-  - `date` (date, required)
-  - `description` (string, nullable)
-  - `material` (string, nullable)
-  - `council_id` (uuid, required)
-- **Success Response** (201): Session Object.
+- `user_id`
 
-### Get/Update/Delete Session
-Standard resource routes:
-- `GET /sessions/{id}`
-- `PUT /sessions/{id}`
-- `DELETE /sessions/{id}`
+### GET `/task-submissions/{id}`
+Fetch a submission.
 
----
+### PUT/PATCH `/task-submissions/{id}`
+Update a submission.
+
+### DELETE `/task-submissions/{id}`
+Delete a submission.
+
+## Teams
+
+### GET `/teams`
+List teams.
+
+### POST `/teams`
+Create a team.
+
+Required fields:
+
+- `team_number`
+- `council_id`
+
+### GET `/teams/{id}`
+Fetch a team.
+
+### PUT/PATCH `/teams/{id}`
+Update a team.
+
+### DELETE `/teams/{id}`
+Delete a team.
+
+## Team Members
+
+### GET `/team-members`
+List team members.
+
+### POST `/team-members`
+Create one team member.
+
+Required fields:
+
+- `team_id`
+- `user_id`
+
+Optional fields:
+
+- `rate`
+- `role`
+- `task`
+
+### POST `/team-members/bulk`
+Bulk add team members.
+
+Request body:
+
+```json
+{
+  "members": [
+    {
+      "team_id": "uuid",
+      "user_id": "uuid",
+      "role": "member"
+    }
+  ]
+}
+```
+
+### GET `/team-members/{id}`
+Fetch a team member.
+
+### PUT/PATCH `/team-members/{id}`
+Update a team member.
+
+### DELETE `/team-members/{id}`
+Delete a team member.
 
 ## Attendances
 
-### List Attendances
-Retrieve attendances for the council.
+### GET `/attendances`
+List attendance records.
 
-- **URL**: `/attendances`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Query Parameters**: `pageIndex`, `pageSize`
-- **Success Response** (200): Paginated list.
+Query parameters:
 
-### Create Attendance
-Record a single attendance.
+- `pageIndex`
+- `pageSize`
+- `search`
+- `user_id`
+- `council_id`
 
-- **URL**: `/attendances`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `user_id` (uuid, required)
-  - `council_session_id` (uuid, required)
-  - `status` (string, required, enum: `present`, `absent`, `late`)
-- **Success Response** (201): Attendance Object.
+### POST `/attendances`
+Create an attendance record.
 
-### Bulk Create Attendance
-Import attendance from file.
-Columns expected: `email` (user email), `name` (session title), `date`, `status`.
+Required fields:
 
-- **URL**: `/attendances/bulk`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `file` (file, required)
-- **Success Response** (200):
-  ```json
-  {
-    "status": "success",
-    "message": "Success",
-    "data": null
-  }
-  ```
+- `user_id`
+- `council_session_id`
+- `status` with `present`, `absent`, or `late`
 
-### Get/Update/Delete Attendance
-Standard resource routes:
-- `GET /attendances/{id}`
-- `PUT /attendances/{id}`
-- `DELETE /attendances/{id}`
+### POST `/attendances/bulk`
+Bulk import attendance from an Excel file.
 
----
+### GET `/attendances/{id}`
+Fetch an attendance record.
 
-## Teams Management
+### PUT/PATCH `/attendances/{id}`
+Update an attendance record.
 
-### List Teams
-- **URL**: `/teams`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Success Response** (200): List of teams.
+### DELETE `/attendances/{id}`
+Delete an attendance record.
 
-### Create Team
-- **URL**: `/teams`
-- **Method**: `POST`
-- **Auth Required**: Yes
-- **Body Parameters**:
-  - `team_number` (string, required)
-  - `council_id` (uuid, required)
-- **Success Response** (201): Team ID.
+## AI Chat
 
-### Team Members Actions
-Bulk add or manage team members.
+### POST `/ai-chat`
+Send a message to the Gemini mentor.
 
-- **POST** `/team-members`: Bulk add members.
-  - **Body**: `members` (array of objects with `team_id`, `user_id`, `rate`, `role` (member/leader/co-leader), `task`).
-- **GET/PUT/DELETE** `/team-members/{id}`: Resource management.
+Request body:
 
----
+```json
+{ "message": "Explain this topic" }
+```
+
+## Cache
+
+### GET `/cache/stats`
+Return cache statistics.
+
+### DELETE `/cache/endpoint`
+Clear endpoint cache entries.
+
+### DELETE `/cache/resource`
+Clear cache for a named resource.
+
+### DELETE `/cache/user/{userId}`
+Clear cache for one user.
 
 ## Notifications
 
-### Get Notifications
-Get notifications for the current user.
+### GET `/notifications`
+Return the authenticated user’s notifications.
 
-- **URL**: `/notifications`
-- **Method**: `GET`
-- **Auth Required**: Yes
-- **Success Response** (200): List of notifications (Cached for 30 mins).
+## Notes
 
----
-
-## Cache Management (Admin)
-
-### Get Cache Stats
-- **URL**: `/cache/stats`
-- **Method**: `GET`
-- **Success Response** (200):
-  ```json
-  { "status": "success", "data": { ... } }
-  ```
-
-### Clear Endpoint Cache
-- **URL**: `/cache/endpoint`
-- **Method**: `DELETE`
-- **Success Response** (200): Clears all endpoint caches.
-
-### Clear Resource Cache
-- **URL**: `/cache/resource`
-- **Method**: `DELETE`
-- **Body Parameters**:
-  - `resource` (string, required): One of `users`, `councils`, `tasks`, `sessions`, `attendances`, `roles`, `task-submissions`.
-
-### Clear User Cache
-- **URL**: `/cache/user/{userId}`
-- **Method**: `DELETE`
+- Most GET routes use `cache.response:1800`.
+- `teams` and `team-members` use `cache.response:3600`.
+- Access control is enforced by policies and form request authorization.

@@ -1,99 +1,181 @@
-# Product Requirements Document (PRD) - ThreeDOS Management System
-
-**Version:** 2.0
-**Status:** Draft
-**Last Updated:** 2026-02-07
+﻿# Product Requirements Document (PRD)
+# ThreeDOS Management System
 
 ---
 
-## 1. Executive Summary
-The ThreeDOS Management System is a comprehensive backend platform designed to digitalize and streamline the operations of student activities and educational councils. It serves as a centralized hub for managing users, councils, teams, tasks, and attendance, replacing manual tracking methods with a secure, role-based API ecosystem.
+| Field | Value |
+|---|---|
+| **Document Version** | 4.0 |
+| **Status** | Final |
+| **Last Updated** | 2026-07-27 |
+| **Owner** | ThreeDOS Product Team |
+| **Base URL** | `https://threedos-apis-production.up.railway.app/api` |
 
-## 2. Product Scope
-### In Scope
-- **User Management**: Authentication, profile management, and role assignment.
-- **Council Operations**: Creation and management of councils and their sessions.
-- **Task Lifecycle**: Assignment, submission, grading, and feedback.
-- **Team Dynamics**: Grouping delegates into teams with internal hierarchies (Leader/Member).
-- **Attendance Tracking**: Logging presence for sessions with status (Present/Absent/Late).
-- **Performance**: High-performance data retrieval using Redis caching.
+## 1. Product Summary
 
-### Out of Scope
-- Frontend Interface (This is a Backend-only API project).
-- Real-time chat messaging system (Notifications are supported, but not chat).
-- Payment processing.
+ThreeDOS is a backend-first council management API for student organizations and training programs. It centralizes the operational work that is usually spread across chat apps, spreadsheets, and manual approvals.
 
-## 3. User Personas & Roles
+The product exists to answer three operational questions:
 
-### 3.1 The Delegate
-* **Description**: A regular member of a specific council.
-* **Needs**: To know what tasks are due, submit their work, and check their attendance record.
-* **Pain Points**: Missing deadlines due to lack of notifications, uncertainty about submission status.
+- What happened in a council session?
+- Who was assigned work, who submitted, and who was graded?
+- Who can see or modify the data across councils?
 
-### 3.2 The Instructor
-* **Description**: A mentor or supervisor responsible for a group of delegates.
-* **Needs**: To create tasks, grade submissions, log attendance for sessions, and manage teams.
-* **Pain Points**: Grading via spreadsheets is error-prone; creating teams manually is tedious.
+## 2. Why the Product Exists
 
-### 3.3 The Head
-* **Description**: The leader of a specific Council.
-* **Needs**: High-level view of their council's performance, ability to manage instructors and delegates within their council.
-* **Pain Points**: Difficulty in tracking the overall progress of the council.
+The codebase is designed around recurring pain points in council operations:
 
-### 3.4 The Vice President (VP) & President
-* **Description**: Top-level executives with organization-wide oversight.
-* **Needs**: Access to data across *all* councils, ability to create/delete councils and manage high-level settings.
-* **Pain Points**: Fragmented data across different councils making "big picture" analysis hard.
+- Manual tracking of tasks, attendance, and grades is slow and error-prone.
+- Council data needs to be isolated from other councils.
+- Leadership needs both council-level and global visibility.
+- Delegates need a guided assistant that helps them learn without solving the work for them.
 
-## 4. User Stories
+## 3. What Users Use It For
 
-### 4.1 Authentication & Security
-*   **US-1.1**: As a user, I want to log in using my email and password so that I can access my account securely.
-*   **US-1.2**: As a user, I want to reset my password via email if I forget it.
-*   **US-1.3**: As the system, I want to block excessive login attempts (throttling) to prevent brute-force attacks.
+| Role | Main Usage |
+|---|---|
+| Delegate | Review own tasks, submit work, check attendance, ask the AI mentor questions |
+| Instructor | Create and manage sessions, tasks, teams, attendance, and submissions |
+| Head | Lead a council and manage the operational workflow |
+| HR | Manage people records and support attendance/team workflows |
+| VicePresident | Oversee all councils and perform global operations |
+| President | Full global authority |
 
-### 4.2 Council & Session Management
-*   **US-2.1 (VP/President)**: I want to create a new Council with a name and description.
-*   **US-2.2 (Head/Instructor)**: I want to create a "Session" (meeting) for my council to track when we meet.
-*   **US-2.3**: I want sessions to be automatically viewable only by members of that council.
+## 4. Product Scope
 
-### 4.3 Task Management
-*   **US-3.1 (Head/Instructor)**: I want to create a task linked to a specific session, with a title, description, and due date.
-*   **US-3.2 (Head/Instructor)**: I want to edit a task's details if the requirements change.
-*   **US-3.3 (Delegate)**: I want to view a list of all tasks assigned to my council.
+### 4.1 In Scope
 
-### 4.4 Submissions & Grading
-*   **US-4.1 (Delegate)**: I want to upload a file as my submission for a task.
-*   **US-4.2 (Instructor)**: I want to view all submissions for a task.
-*   **US-4.3 (Instructor)**: I want to grade a submission and leave a text comment for feedback.
+- JWT authentication and profile retrieval
+- Password reset workflow
+- Council CRUD
+- User CRUD and bulk import
+- Council session CRUD
+- Task CRUD and status updates
+- Task submission CRUD and grading
+- Team CRUD and member management
+- Attendance CRUD and bulk import
+- AI mentor chat
+- Cache statistics and invalidation endpoints
 
-### 4.5 Team Management
-*   **US-5.1 (Instructor)**: I want to create teams and assign specific users to them.
-*   **US-5.2 (Instructor)**: I want to designate a "Leader" and "Co-Leader" for each team.
-*   **US-5.3 (Instructor)**: I want to bulk-import team members from a file to save time.
+### 4.2 Out of Scope
 
-### 4.6 Attendance
-*   **US-6.1 (Instructor)**: I want to log attendance for a session, marking users as Present, Absent, or Late.
-*   **US-6.2 (Delegate)**: I want to see my own attendance history to know my standing.
+- Frontend applications
+- Real-time chat between users
+- Push notification infrastructure
+- Payroll, finance, and payment workflows
 
-## 5. Functional Requirements
+## 5. Product Goals
 
-### 5.1 Dashboard Logic
-*   **Delegates**: See only their own stats (tasks completed, attendance %).
-*   **Instructors/Heads**: See stats for their specific Council.
-*   **VP/President**: See global stats across the entire organization.
+| Goal | Outcome |
+|---|---|
+| Reduce manual council work | Replace spreadsheets and informal tracking with API records |
+| Improve accountability | Every submission, attendance record, and task has a traceable owner and timestamp |
+| Enforce data boundaries | Council data stays inside the correct council unless global access is intended |
+| Support scale | Bulk import and caching reduce admin overhead |
+| Help delegates learn | The AI mentor guides instead of solving tasks |
 
-### 5.2 Data Isolation
-*   Users must strictly be limited to accessing data within their own `council_id`, unless they are VP/President.
-*   Middleware must enforce this check on every request.
+## 6. Personas
 
-## 6. Non-Functional Requirements
-*   **Performance**: API response time should be under 700ms for cached read operations.
-*   **Scalability**: System should handle 500+ concurrent users (optimized via Redis).
-*   **Maintainability**: Code must follow PSR-12 standards and strictly adhere to the Service-Repository pattern.
-*   **Availability**: 99.9% uptime target.
+### Delegate
 
-## 7. Roadmap & Future Scope
-*   **Phase 2**: Notification system integration (Email/Push).
-*   **Phase 3**: Mobile App utilizing these APIs.
-*   **Phase 4**: Advanced Analytics & Reporting Module.
+Needs a simple way to see responsibilities and submit work. Delegates should only access their own submissions and other council data when policy allows.
+
+### Instructor
+
+Needs to run the day-to-day workflow for a council, including sessions, tasks, submissions, teams, and attendance.
+
+### Head
+
+Needs the same council operations as an instructor with broader authority over the council.
+
+### HR
+
+Needs operational access to people management and attendance-related flows.
+
+### VicePresident and President
+
+Need global visibility and write access across councils.
+
+## 7. Core User Journeys
+
+### 7.1 Authentication Journey
+
+1. User logs in with email and password.
+2. API returns a JWT token, user name, role, and expiry.
+3. Authenticated user can load `/me` for profile data.
+4. User can log out and revoke the token.
+
+### 7.2 Council Operations Journey
+
+1. A privileged user creates a council.
+2. The council becomes the parent for sessions, teams, users, tasks, and attendance.
+3. Council writes invalidate related caches.
+
+### 7.3 Session-to-Submission Journey
+
+1. A session is created for a council.
+2. Tasks are attached to the session.
+3. Delegates submit files for tasks.
+4. Instructors and council leaders grade or review submissions.
+
+### 7.4 Team and Attendance Journey
+
+1. A team is created inside a council.
+2. Members are added individually or in bulk.
+3. Attendance is logged by session and can be imported from Excel.
+
+### 7.5 AI Mentor Journey
+
+1. A delegate sends a message to the chat endpoint.
+2. Gemini responds with a guided explanation.
+3. The mentor avoids providing a complete answer or final deliverable.
+
+## 8. Business Rules
+
+### 8.1 Council Isolation
+
+- Non-global users are scoped to their own council.
+- Users cannot write records into another council unless the logic explicitly allows it.
+- VP and President are the only roles with intended cross-council access.
+
+### 8.2 RBAC
+
+- Head and Instructor can manage most operational data in their council.
+- HR can participate in user, attendance, and team-member flows.
+- Delegate is mostly read-own / submit-own.
+- Global executives can override council boundaries.
+
+### 8.3 Caching
+
+- Standard GET endpoints are cached for 30 minutes.
+- Teams and team-members are cached for 60 minutes.
+- Write operations clear the impacted resource caches.
+
+### 8.4 Imports
+
+- Users import accepts `.xlsx`, `.xls`, and `.csv`.
+- Attendance import accepts Excel files.
+- Team-member import accepts an array of member objects.
+
+## 9. Success Metrics
+
+- 100 percent of task activity is stored in the API.
+- Attendance can be tracked without spreadsheets.
+- Users can work within council boundaries without cross-contamination.
+- Leadership can inspect the system using dashboards and cache stats.
+
+## 10. Product Notes
+
+- The backend exposes a small admin cache surface for debugging and support.
+- The dashboard endpoint is role-aware and returns either own stats or council/global stats depending on the user role.
+- The AI mentor is intentionally constrained to guidance.
+
+| Phase | Feature | Status |
+|---|---|---|
+| Phase 1 | Core API (Auth, Councils, Tasks, Submissions, Teams, Attendance) | Done |
+| Phase 2 | AI Mentor (Gemini 2.5 Flash integration) | Done |
+| Phase 3 | Email Notifications (MailerSend) | Done / Removed |
+| Phase 4 | Advanced Analytics and Reporting Module | Done / Removed |
+---
+
+*Document maintained by the ThreeDOS Backend Development Team.*
